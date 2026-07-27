@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#F6F2E8">
   <title>Loue ta piscine — piscines, jacuzzis et saunas de particuliers</title>
-  <meta name="description" content="Réservez la piscine d’à côté — séance ouverte dès 6 €, privatisation ou journée entière. Prix tout compris, hôtes vérifiés.">
+  <meta name="description" content="Réservez la piscine d’à côté — séance ouverte dès 6 €, privatisation ou journée entière. Prix tout compris, hôtes vérifiés.">
   <meta name="robots" content="noindex">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%23F6F2E8'/%3E%3Cpath d='M9 26c4-4 8-4 12 0s8 4 12 0 8-4 12 0' fill='none' stroke='%2308323A' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M10 34c4-4 8-4 12 0s8 4 12 0' fill='none' stroke='%2308323A' stroke-width='2.6' stroke-linecap='round'/%3E%3Ccircle cx='35' cy='13' r='5' fill='%23F5D463'/%3E%3C/svg%3E">
   <link rel="preload" href="fonts/generalsans-400.woff2" as="font" type="font/woff2" crossorigin>
@@ -35,7 +35,7 @@
     <div class="header-actions">
       <button class="icon-action" id="favoritesButton" type="button" aria-label="Favoris">
         <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
-        <i id="favoriteCount">0</i>
+        <i id="favoriteCount" class="num">0</i>
       </button>
       <button class="icon-action" type="button" aria-label="Messages">
         <svg viewBox="0 0 24 24"><path d="M4 5h16v12H9l-5 3V5Z"/><path d="M8 10h8M8 13h5"/></svg>
@@ -65,7 +65,7 @@
       <div class="hero-photo">
         <img src="assets/famille-hero-v2.webp" alt="Enfants et adultes profitant d’une piscine privée" width="1536" height="1024" fetchpriority="high">
         <div class="season-marker"><small>Été</small><b>26</b></div>
-        <div class="hero-note">
+        <div class="hero-note num">
           <span>4,93</span>
           <div><b>41 avis</b><small>Aix-en-Provence</small></div>
         </div>
@@ -118,26 +118,26 @@
       </div>
       <div class="listing-grid" id="listingGrid"></div>
       <div class="map-view" id="mapView" hidden>
-        <div class="map-canvas" aria-label="Carte illustrée des annonces">
+        <div class="map-canvas num" aria-label="Carte illustrée des annonces">
           <span class="road road-one"></span><span class="road road-two"></span><span class="river"></span>
-          <button class="map-pin pin-one" type="button" data-listing="micocouliers">7 €</button>
-          <button class="map-pin pin-two" type="button" data-listing="collines">34 €</button>
-          <button class="map-pin pin-three" type="button" data-listing="verger">6 €</button>
-          <button class="map-pin pin-four" type="button" data-listing="margelles">12 €</button>
-          <button class="map-pin pin-five" type="button" data-listing="oliviers">25 €</button>
-          <button class="map-pin pin-six" type="button" data-listing="bastide">18 €</button>
+          <button class="map-pin pin-one" type="button" data-listing="micocouliers">7 €</button>
+          <button class="map-pin pin-two" type="button" data-listing="collines">34 €</button>
+          <button class="map-pin pin-three" type="button" data-listing="verger">6 €</button>
+          <button class="map-pin pin-four" type="button" data-listing="margelles">12 €</button>
+          <button class="map-pin pin-five" type="button" data-listing="oliviers">25 €</button>
+          <button class="map-pin pin-six" type="button" data-listing="bastide">18 €</button>
           <div class="map-label label-aix">Aix-en-Provence</div><div class="map-label label-gardanne">Gardanne</div>
         </div>
         <div class="map-results" id="mapResults"></div>
       </div>
     </section>
 
-    <section class="availability-rail" aria-label="Disponibilités proches">
+    <section class="availability-rail num" aria-label="Disponibilités proches">
       <div class="availability-label"><span></span><b>Maintenant</b></div>
-      <button type="button" data-detail="micocouliers"><small>Aix</small><b>17 h</b><span>7 €</span></button>
-      <button type="button" data-detail="verger"><small>Pertuis</small><b>18 h</b><span>6 €</span></button>
-      <button type="button" data-detail="margelles"><small>Lourmarin</small><b>19 h</b><span>12 €</span></button>
-      <button type="button" data-detail="oliviers"><small>Marseille</small><b>20 h</b><span>25 €</span></button>
+      <button type="button" data-detail="micocouliers"><small>Aix</small><b>17 h</b><span>7 €</span></button>
+      <button type="button" data-detail="verger"><small>Pertuis</small><b>18 h</b><span>6 €</span></button>
+      <button type="button" data-detail="margelles"><small>Lourmarin</small><b>19 h</b><span>12 €</span></button>
+      <button type="button" data-detail="oliviers"><small>Marseille</small><b>20 h</b><span>25 €</span></button>
     </section>
 
     <section class="moments" id="ambiances" aria-labelledby="momentTitle">

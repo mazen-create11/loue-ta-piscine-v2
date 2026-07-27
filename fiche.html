@@ -51,17 +51,18 @@
           <div>
             <p class="fiche-loc" id="ficheLoc"></p>
             <h1 id="ficheName"></h1>
-            <p class="fiche-dims" id="ficheDims"></p>
+            <p class="fiche-dims num" id="ficheDims"></p>
           </div>
-          <span class="rating rating-big" id="ficheRating"></span>
+          <span class="rating rating-big num" id="ficheRating"></span>
         </div>
 
-        <div class="fiche-chips" id="ficheChips"></div>
+        <div class="fiche-chips num" id="ficheChips"></div>
         <p class="fiche-desc" id="ficheDesc"></p>
 
         <h2 class="fiche-h2">Équipements</h2>
         <div class="equip-grid" id="ficheEquip"></div>
 
+        <div class="wave-divider wave-soft" aria-hidden="true"></div>
         <h2 class="fiche-h2">La Visite — vérifiée sur place</h2>
         <details class="fiche-details" id="visiteDetails">
           <summary><span id="visiteSummary"></span><i class="v-badge" id="visiteBadge"></i></summary>
@@ -74,9 +75,11 @@
           <ul id="ficheRules"></ul>
         </details>
 
+        <div class="wave-divider wave-soft" aria-hidden="true"></div>
         <h2 class="fiche-h2">Ils y sont allés</h2>
         <div class="fiche-avis" id="ficheAvis"></div>
 
+        <div class="wave-divider wave-soft" aria-hidden="true"></div>
         <h2 class="fiche-h2">Votre hôte</h2>
         <div class="fiche-host" id="ficheHost"></div>
       </article>
@@ -84,23 +87,23 @@
       <aside class="book-panel" id="bookingPanel" aria-label="Réserver">
         <button class="book-close" id="bookClose" type="button" aria-label="Fermer la réservation">×</button>
         <div class="book-head">
-          <span id="bookPrice"></span>
-          <span class="rating" id="bookRating"></span>
+          <span class="num" id="bookPrice"></span>
+          <span class="rating num" id="bookRating"></span>
         </div>
         <div class="journey" id="journey" aria-label="Étapes de réservation">
           <span class="j-step active">Format</span>
-          <span class="j-step">Date &amp; heure</span>
-          <span class="j-step">Groupe &amp; paiement</span>
+          <span class="j-step">Créneau</span>
+          <span class="j-step">Paiement</span>
         </div>
         <div class="format-picks" id="formatPicks"></div>
         <div class="cal-nav">
-          <b id="calRange"></b>
+          <b class="num" id="calRange"></b>
           <span>
             <button type="button" id="weekPrev" aria-label="Semaine précédente">‹</button>
             <button type="button" id="weekNext" aria-label="Semaine suivante">›</button>
           </span>
         </div>
-        <div class="day-strip" id="dayStrip" role="tablist"></div>
+        <div class="day-strip num" id="dayStrip" role="tablist"></div>
         <div class="slot-list" id="slotList"></div>
         <div id="bookConfig"></div>
       </aside>
@@ -109,7 +112,7 @@
 
   <div class="book-overlay" id="bookOverlay" hidden></div>
   <div class="mobile-bookbar" id="mobileBookbar">
-    <div><b id="mobilePrice"></b><small id="mobileRecap">Créneaux et prix visibles immédiatement</small></div>
+    <div class="num"><b id="mobilePrice"></b><small id="mobileRecap">Créneaux et prix visibles immédiatement</small></div>
     <button type="button" id="bookOpen">Voir les disponibilités</button>
   </div>
 

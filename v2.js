@@ -54,7 +54,7 @@ function cardTemplate(item, index, featured){
       <button class="favorite ${favorite ? 'active' : ''}" type="button" data-favorite="${item.id}" aria-pressed="${favorite}" aria-label="Favori">${heartIcon}</button>
       <span class="availability">${item.availability}</span>
     </div>
-    <div class="listing-info">
+    <div class="listing-info num">
       <div class="listing-top"><h3>${item.name}</h3><span class="rating">${item.rating}</span></div>
       <p class="listing-location">${item.location} · ${item.distance}</p>
       <div class="listing-price"><p><b>${item.price}</b> ${item.priceNote}<small>${item.day} · jusqu’à ${item.capacity} pers.</small></p><a href="fiche.html?id=${item.id}" data-stop>Voir</a></div>
@@ -71,7 +71,7 @@ function renderListings(){
     return;
   }
   grid.innerHTML = items.map((item, index) => cardTemplate(item, index, index < 2)).join('');
-  mapResults.innerHTML = items.map(item => `<button class="map-result" type="button" data-goto="${item.id}"><img src="${item.image}" alt=""><span><b>${item.name}</b><small>${item.location} · ★ ${item.rating}</small><strong>${item.price} ${item.priceNote}</strong></span></button>`).join('');
+  mapResults.innerHTML = items.map(item => `<button class="map-result num" type="button" data-goto="${item.id}"><img src="${item.image}" alt=""><span><b>${item.name}</b><small>${item.location} · ★ ${item.rating}</small><strong>${item.price} ${item.priceNote}</strong></span></button>`).join('');
   updateFavoriteCount();
 }
 
@@ -211,7 +211,7 @@ function renderTypes(){
 function openDetail(id){
   const item = listings.find(entry => entry.id === id);
   if(!item) return;
-  detailContent.innerHTML = `<div class="detail-hero"><img src="${item.image}" alt="${item.name}"><div class="detail-title"><p>${item.location} · ★ ${item.rating} (${item.reviews})</p><h2 id="detailTitle">${item.name}</h2></div></div><div class="detail-body"><div><div class="detail-facts">${item.facts.map(fact => `<span>${fact}</span>`).join('')}</div><h3>Le lieu</h3><p>${item.description}</p></div><aside class="detail-booking"><span>Disponible</span><b>${item.price}</b><small>${item.priceNote}</small><small>${item.day} · jusqu’à ${item.capacity} pers.</small><a href="fiche.html?id=${item.id}">Voir les créneaux</a></aside></div>`;
+  detailContent.innerHTML = `<div class="detail-hero"><img src="${item.image}" alt="${item.name}"><div class="detail-title"><p class="num">${item.location} · ★ ${item.rating} (${item.reviews})</p><h2 id="detailTitle">${item.name}</h2></div></div><div class="detail-body"><div><div class="detail-facts num">${item.facts.map(fact => `<span>${fact}</span>`).join('')}</div><h3>Le lieu</h3><p>${item.description}</p></div><aside class="detail-booking num"><span>Disponible</span><b>${item.price}</b><small>${item.priceNote}</small><small>${item.day} · jusqu’à ${item.capacity} pers.</small><a href="fiche.html?id=${item.id}">Voir les créneaux</a></aside></div>`;
   detailLayer.hidden = false;
   lockPage(true);
 }

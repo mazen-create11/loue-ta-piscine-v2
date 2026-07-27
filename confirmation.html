@@ -36,23 +36,24 @@
 
     <section class="confirm-card" aria-label="Récapitulatif">
       <header><span>Votre réservation</span><span id="confirmMode"></span></header>
-      <div class="confirm-rows" id="confirmRows"></div>
+      <div class="confirm-rows num" id="confirmRows"></div>
     </section>
 
     <section class="confirm-card" aria-label="Coordonnées de l’hôte">
       <header><span>Coordonnées débloquées</span></header>
       <div class="reveal">
         <p id="revealNote"></p>
-        <b class="reveal-phone" id="revealPhone"></b>
-        <b class="reveal-addr" id="revealAddr"></b>
+        <b class="reveal-phone num" id="revealPhone"></b>
+        <b class="reveal-addr num" id="revealAddr"></b>
       </div>
     </section>
 
     <section class="confirm-card" aria-label="Circuit du paiement">
       <header><span>Et votre argent ?</span></header>
-      <div class="timeline" id="confirmTimeline"></div>
+      <div class="timeline num" id="confirmTimeline"></div>
     </section>
 
+    <div class="wave-divider wave-soft" aria-hidden="true"></div>
     <div class="confirm-actions">
       <a class="secondary" href="index.html">Retour à l’accueil</a>
       <a class="primary" id="backToFiche" href="fiche.html">Revoir la fiche</a>
@@ -88,7 +89,7 @@
       '<div><span>Date</span><b>' + (q.get('date') || '—') + '</b></div>' +
       '<div><span>Créneau</span><b>' + (q.get('time') || '—') + '</b></div>' +
       '<div><span>' + (mode === 'journée privée' ? 'Participants' : 'Baigneurs') + '</span><b>' + persons + '</b></div>' +
-      '<div><span>Total — tout compris</span><b class="big">' + total + ' €</b></div>';
+      '<div><span>Total — tout compris</span><b class="big">' + total + '\u00A0€</b></div>';
 
     document.getElementById('revealNote').textContent =
       'Avant la réservation, la messagerie masquait les coordonnées. Elles sont maintenant à vous — c’est la règle de la plateforme.';
@@ -106,6 +107,10 @@
       '<div>Un souci ?<small>Versement suspendu tant que le litige n’est pas tranché</small></div>';
 
     document.getElementById('backToFiche').href = 'fiche.html?id=' + listing.id;
+
+    const liftHeader = () => document.body.classList.toggle('header-lift', window.scrollY > 12);
+    window.addEventListener('scroll', liftHeader, { passive:true });
+    liftHeader();
   })();
   </script>
 </body>

@@ -76,7 +76,7 @@ const h = listing.host;
 el('ficheHost').innerHTML =
   '<div class="host-avatar" aria-hidden="true">' + h.initial + '</div>' +
   '<div><b>' + h.name + '</b>' +
-  '<p class="host-meta">' + (h.premium ? 'Hôte Premium · ' : '') + 'note ' + listing.rating + (h.onsite ? ' · paiement sur place débloqué' : '') + ' · répond en ' + h.response + '</p>' +
+  '<p class="host-meta num">' + (h.premium ? 'Hôte Premium · ' : '') + 'note ' + listing.rating + (h.onsite ? ' · paiement sur place débloqué' : '') + ' · répond en ' + h.response + '</p>' +
   '<p>Messagerie intégrée avant réservation — les coordonnées sont communiquées automatiquement après confirmation.</p>' +
   '<button class="host-write" type="button" data-message>Écrire à ' + h.name + ' →</button></div>';
 
@@ -100,23 +100,23 @@ function canHalf(dy){
   });
 }
 function dayFloor(dy){
-  if(state.format === 'day') return canDay(dy) ? p.dayPrice + ' €' : 'réservé';
-  if(state.format === 'half') return canHalf(dy) ? p.halfDay + ' €' : 'réservé';
+  if(state.format === 'day') return canDay(dy) ? p.dayPrice + '\u00A0€' : 'réservé';
+  if(state.format === 'half') return canHalf(dy) ? p.halfDay + '\u00A0€' : 'réservé';
   const prices = dy.slots.filter(s => !s.buffer && s.regime !== 'priv' && (s.regime === 'unit' || s.booked < s.cap)).map(s => s.regime === 'unit' ? s.price : s.priceP);
-  return prices.length ? 'dès ' + Math.min.apply(Math, prices) + '€' : 'complet';
+  return prices.length ? 'dès ' + Math.min.apply(Math, prices) + '\u00A0€' : 'complet';
 }
 
 function renderFormats(){
   const withHalf = isOpen && p.halfDay;
   const slotPick = isOpen
-    ? '<button class="format-pick" type="button" data-format="slot"><span>À la séance</span><b>' + listing.price + (withHalf ? '' : ' / personne') + '</b><small>2 h · ouverte ou privatisée</small></button>'
-    : '<button class="format-pick" type="button" data-format="slot"><span>Au créneau</span><b>' + listing.unitPrice + ' € / ' + listing.unit + '</b><small>' + listing.unitNote + '</small></button>';
+    ? '<button class="format-pick num" type="button" data-format="slot"><span>À la séance</span><b>' + listing.price + (withHalf ? '' : ' / personne') + '</b><small>2 h · ouverte ou privatisée</small></button>'
+    : '<button class="format-pick num" type="button" data-format="slot"><span>Au créneau</span><b>' + listing.unitPrice + '\u00A0€ / ' + listing.unit + '</b><small>' + listing.unitNote + '</small></button>';
   const halfPick = withHalf
-    ? '<button class="format-pick" type="button" data-format="half"><span>Demi-journée</span><b>' + p.halfDay + ' €</b><small>' + HALF_HOURS + ' · privatisée</small></button>'
+    ? '<button class="format-pick num" type="button" data-format="half"><span>Demi-journée</span><b>' + p.halfDay + '\u00A0€</b><small>' + HALF_HOURS + ' · privatisée</small></button>'
     : '';
   el('formatPicks').classList.toggle('three', !!withHalf);
   el('formatPicks').innerHTML = slotPick + halfPick +
-    '<button class="format-pick" type="button" data-format="day"><span>À la journée</span><b>' + p.dayPrice + ' €' + (withHalf ? '' : ' au total') + '</b><small>' + listing.dayHours + ' · jusqu’à ' + listing.dayCap + ' pers.</small></button>';
+    '<button class="format-pick num" type="button" data-format="day"><span>À la journée</span><b>' + p.dayPrice + '\u00A0€' + (withHalf ? '' : ' au total') + '</b><small>' + listing.dayHours + ' · jusqu’à ' + listing.dayCap + ' pers.</small></button>';
   el('formatPicks').querySelectorAll('.format-pick').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.format === state.format);
     btn.addEventListener('click', () => { state.format = btn.dataset.format; state.slot = null; state.privatise = state.format !== 'slot'; render(); });
@@ -144,7 +144,7 @@ function renderDays(){
     const i = start + offset;
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'day' + (state.day === i ? ' active' : '');
+    b.className = 'day num' + (state.day === i ? ' active' : '');
     b.setAttribute('role','tab');
     b.setAttribute('aria-selected', state.day === i);
     b.innerHTML = '<small>' + dy.lbl[0] + '</small><b>' + dy.lbl[1] + '</b><span>' + dayFloor(dy) + '</span>';
@@ -156,7 +156,7 @@ function renderDays(){
 function slotButton(html, selected, disabled){
   const btn = document.createElement('button');
   btn.type = 'button';
-  btn.className = 'slot' + (selected ? ' selected' : '');
+  btn.className = 'slot num' + (selected ? ' selected' : '');
   btn.disabled = !!disabled;
   btn.innerHTML = html;
   return btn;
@@ -168,7 +168,7 @@ function renderSlots(){
   if(state.format === 'day'){
     const ok = canDay(dy);
     const btn = slotButton(ok
-      ? '<span class="s-time">' + listing.dayHours + '</span><span class="s-info">Jusqu’à ' + listing.dayCap + ' personnes — le lieu est à vous</span><span class="s-price">' + p.dayPrice + ' €<small> /jour</small></span><span class="s-tag tag-priv">Privatisé</span>'
+      ? '<span class="s-time">' + listing.dayHours + '</span><span class="s-info">Jusqu’à ' + listing.dayCap + ' personnes — le lieu est à vous</span><span class="s-price">' + p.dayPrice + '\u00A0€<small> /jour</small></span><span class="s-tag tag-priv">Privatisé</span>'
       : '<span class="s-time">' + listing.dayHours + '</span><span class="s-info">Des réservations existent déjà ce jour-là</span><span class="s-tag tag-full">Indisponible</span>',
       state.slot === 'day', !ok);
     if(ok) btn.addEventListener('click', () => { state.slot = 'day'; state.privatise = true; if(state.persons < 2) state.persons = 2; render(); });
@@ -179,7 +179,7 @@ function renderSlots(){
   if(state.format === 'half'){
     const ok = canHalf(dy);
     const btn = slotButton(ok
-      ? '<span class="s-time">' + HALF_HOURS + '</span><span class="s-info">Jusqu’à ' + listing.dayCap + ' personnes — l’après-midi est à vous</span><span class="s-price">' + p.halfDay + ' €</span><span class="s-tag tag-priv">Privatisé</span>'
+      ? '<span class="s-time">' + HALF_HOURS + '</span><span class="s-info">Jusqu’à ' + listing.dayCap + ' personnes — l’après-midi est à vous</span><span class="s-price">' + p.halfDay + '\u00A0€</span><span class="s-tag tag-priv">Privatisé</span>'
       : '<span class="s-time">' + HALF_HOURS + '</span><span class="s-info">L’après-midi est déjà réservé, en partie ou en entier</span><span class="s-tag tag-full">Indisponible</span>',
       state.slot === 'half', !ok);
     if(ok) btn.addEventListener('click', () => { state.slot = 'half'; state.privatise = true; if(state.persons < 2) state.persons = 2; render(); });
@@ -244,7 +244,7 @@ function renderConfig(){
   if(state.slot === null){
     cfg.innerHTML = '<p class="book-empty">Choisissez un créneau — le prix est tout compris, avant de payer.</p>' +
       '<button class="book-msg" type="button" data-message>Poser une question à ' + h.name + ' — messagerie intégrée</button>';
-    el('mobilePrice').textContent = state.format === 'day' ? p.dayPrice + ' € la journée' : listing.price + ' ' + listing.priceNote;
+    el('mobilePrice').textContent = state.format === 'day' ? p.dayPrice + '\u00A0€ la journée' : listing.price + ' ' + listing.priceNote;
     el('mobileRecap').textContent = 'Disponibilités et prix en temps réel';
     bindMessage();
     return;
@@ -273,7 +273,7 @@ function renderConfig(){
   const maxPersons = priv ? s.cap : left;
 
   cfg.innerHTML =
-    '<div class="book-config">' +
+    '<div class="book-config num">' +
     '<p class="book-recap">' + dy.lbl[0] + ' ' + dy.lbl[1] + ' ' + dy.month + ' · ' + s.t + ' · ' + mode + '</p>' +
     '<div class="cap-status"><b>' + (priv ? 'Votre groupe : ' + state.persons + ' / ' + s.cap : occupied + ' / ' + s.cap + ' places après réservation') + '</b><span>' + (s.cap - occupied) + ' restante' + (s.cap - occupied > 1 ? 's' : '') + '</span><span class="cap-track"><i style="width:' + fill + '%"></i></span></div>' +
     '<div class="persons"><span>' + (isDay || isHalf ? 'Participants' : 'Baigneurs') + '</span><div class="stepper">' +
@@ -337,6 +337,10 @@ el('bookOpen').addEventListener('click', () => toggleBooking(true));
 el('bookClose').addEventListener('click', () => toggleBooking(false));
 overlay.addEventListener('click', () => toggleBooking(false));
 document.addEventListener('keydown', ev => { if(ev.key === 'Escape') toggleBooking(false); });
+
+const liftHeader = () => document.body.classList.toggle('header-lift', window.scrollY > 12);
+window.addEventListener('scroll', liftHeader, { passive:true });
+liftHeader();
 
 /* ===== Favori + divers ===== */
 const favKey = 'ltp-v2-favorites';
