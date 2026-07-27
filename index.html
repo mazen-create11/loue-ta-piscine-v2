@@ -80,10 +80,10 @@
           <span>Quand</span><strong id="dateSummary">Ce week-end</strong>
         </button>
         <button class="search-cell" type="button" data-search-step="guests">
-          <span>Baigneurs</span><strong id="guestSummary">4 personnes</strong>
+          <span>Qui vient</span><strong id="guestSummary">4 baigneurs</strong>
         </button>
-        <button class="search-cell type-cell" type="button" data-search-step="type">
-          <span>Type</span><strong id="typeSummary">Tout</strong>
+        <button class="search-cell type-cell" type="button" data-search-step="occasion">
+          <span>Occasion</span><strong id="occasionSummary">Peu importe</strong>
         </button>
         <button class="search-submit" type="submit" aria-label="Rechercher">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
@@ -178,9 +178,60 @@
       <div><strong>7 j/7</strong><span>Assistance</span></div>
     </section>
 
+    <section class="faq" aria-labelledby="faqTitle">
+      <div class="faq-head"><p>Questions</p><h2 id="faqTitle">Avant de plonger</h2></div>
+      <div class="faq-list">
+        <details class="fiche-details">
+          <summary><span>Je serai seul dans la piscine ?</span></summary>
+          <div class="faq-body"><p>À vous de choisir. En <b>séance ouverte</b>, quelques familles se partagent le bassin — c’est ce qui rend le prix aussi bas. En <b>privatisation</b>, le lieu est à vous seul : personne d’autre ne peut réserver le créneau.</p></div>
+        </details>
+        <details class="fiche-details">
+          <summary><span>Le prix affiché est-il le prix final ?</span></summary>
+          <div class="faq-body"><p>Oui. Le montant que vous voyez sur l’annonce est celui que vous payez : commission, frais de service et assurance sont déjà dedans. Aucun supplément n’apparaît à la dernière étape.</p></div>
+        </details>
+        <details class="fiche-details">
+          <summary><span>Et si ça se passe mal ?</span></summary>
+          <div class="faq-body"><p>Votre paiement reste bloqué jusqu’à 24 à 48 h après la séance. En cas de litige, le versement à l’hôte est suspendu le temps qu’on tranche. Un hôte qui annule au dernier moment perd son badge et sa mise en avant.</p></div>
+        </details>
+      </div>
+    </section>
+    <div class="wave-divider wave-coral" aria-hidden="true"></div>
+
     <section class="host-section" id="hotes">
-      <div class="host-visual"><img src="assets/provencale.webp" alt="Piscine provençale privée" width="900" height="600" loading="lazy"><span>Hôte 4,96</span></div>
-      <div class="host-copy"><p>Votre espace</p><h2>Vos horaires.<br>Vos règles.</h2><div class="host-benefits"><span>Inscription gratuite</span><span>Prix libres</span><span>Calendrier complet</span></div><button type="button" data-host>Proposer mon espace</button></div>
+      <div class="host-copy">
+        <p>Votre espace</p>
+        <h2>Vos horaires.<br>Vos règles.</h2>
+        <p class="host-lead">Vous ouvrez les créneaux que vous voulez, au prix que vous fixez. On s’occupe du paiement, de l’assurance et de vos coordonnées — elles restent masquées jusqu’à la réservation.</p>
+        <div class="host-benefits"><span>Inscription gratuite</span><span>Prix libres</span><span>Virement 24-48 h</span></div>
+        <button type="button" data-host>Proposer mon espace</button>
+      </div>
+
+      <div class="simulator" id="simulator">
+        <div class="sim-head">
+          <p>Simulateur</p>
+          <h3>Ce que votre piscine rapporte</h3>
+        </div>
+        <div class="sim-result">
+          <b class="num" id="simTotal">0 €</b>
+          <small>net estimé par mois d’été — commission de 15 % déjà déduite</small>
+        </div>
+        <div class="sim-controls">
+          <label class="sim-row" for="simOpen">
+            <span class="sim-label">Séances ouvertes par semaine<i class="num" id="simOpenVal">5</i></span>
+            <input type="range" id="simOpen" min="0" max="14" value="5" step="1">
+          </label>
+          <label class="sim-row" for="simPriv">
+            <span class="sim-label">Privatisations par mois<i class="num" id="simPrivVal">4</i></span>
+            <input type="range" id="simPriv" min="0" max="12" value="4" step="1">
+          </label>
+          <label class="sim-toggle" for="simBleue">
+            <input type="checkbox" id="simBleue" checked>
+            <span><b>J’ouvre le créneau du soir</b><small>19 h 30 – 21 h 30, le plus demandé de l’été</small></span>
+          </label>
+        </div>
+        <div class="sim-breakdown num" id="simBreakdown"></div>
+        <p class="sim-note">Calcul sur les tarifs réels de la plateforme : séance ouverte à 7,50 € par baigneur en moyenne, 6 baigneurs par séance, privatisation de 2 h à 68 €, soirée à 12 € par baigneur. À titre de comparaison, un hôte gagne en moyenne 1 000 € <b>par an</b> chez le leader du marché.</p>
+      </div>
     </section>
   </main>
 

@@ -4,10 +4,12 @@ const { listings } = window.LTP;
 
 const TODAY = new Date();
 const state = {
-  type:'all', moment:'', place:'Aix-en-Provence', date:'', dateLabel:'Ce week-end', guests:4,
+  type:'all', moment:'', place:'Aix-en-Provence', date:'', dateLabel:'Ce week-end',
+  adults:2, kids:2, babies:0, timeslot:'', occasion:'',
   searchStep:'place', view:'grid', month:new Date(TODAY.getFullYear(), TODAY.getMonth(), 1),
   favorites:new Set(JSON.parse(localStorage.getItem('ltp-v2-favorites') || '[]'))
 };
+const SEARCH_ORDER = ['place','date','guests','occasion'];
 
 const grid = document.getElementById('listingGrid');
 const mapView = document.getElementById('mapView');
@@ -21,7 +23,6 @@ const resultCount = document.getElementById('resultCount');
 const placeSummary = document.getElementById('placeSummary');
 const dateSummary = document.getElementById('dateSummary');
 const guestSummary = document.getElementById('guestSummary');
-const typeSummary = document.getElementById('typeSummary');
 
 const heartIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>';
 const TYPE_ICONS = {
@@ -31,6 +32,8 @@ const TYPE_ICONS = {
   sauna:'<path d="M7 4c1.6 2-1.6 3.2 0 5.2M12 4c1.6 2-1.6 3.2 0 5.2M17 4c1.6 2-1.6 3.2 0 5.2" stroke-linecap="round"/><path d="M4 15c2.7-2.3 5.3-2.3 8 0s5.3 2.3 8 0M4 19.5c2.7-2.3 5.3-2.3 8 0s5.3 2.3 8 0" stroke-linecap="round"/>'
 };
 const pinIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>';
+const boltIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12z"/></svg>';
+const clockIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2" stroke-linecap="round"/></svg>';
 const TYPE_LABELS = { all:'Tout', piscine:'Piscines', jacuzzi:'Jacuzzis', sauna:'Saunas' };
 
 function fillIcons(root){
@@ -57,6 +60,7 @@ function cardTemplate(item, index, featured){
     <div class="listing-info num">
       <div class="listing-top"><h3>${item.name}</h3><span class="rating">${item.rating}</span></div>
       <p class="listing-location">${item.location} · ${item.distance}</p>
+      <p class="listing-instant${item.instant ? '' : ' on-request'}">${item.instant ? boltIcon + 'Réservation immédiate' : clockIcon + 'Sur demande — réponse sous 24 h'}</p>
       <div class="listing-price"><p><b>${item.price}</b> ${item.priceNote}<small>${item.day} · jusqu’à ${item.capacity} pers.</small></p><a href="fiche.html?id=${item.id}" data-stop>Voir</a></div>
     </div>
   </article>`;
@@ -88,15 +92,14 @@ function toggleFavorite(id){
 function selectType(type){
   state.type = type;
   document.querySelectorAll('[data-type]').forEach(button => button.classList.toggle('active', button.dataset.type === type));
-  typeSummary.textContent = TYPE_LABELS[type] || 'Tout';
   renderListings();
 }
 
-function selectMoment(moment){
-  state.moment = state.moment === moment ? '' : moment;
+function selectMoment(moment, silent){
+  state.moment = silent ? moment : (state.moment === moment ? '' : moment);
   document.querySelectorAll('[data-moment]').forEach(button => button.classList.toggle('active', button.dataset.moment === state.moment));
   renderListings();
-  document.getElementById('explorer').scrollIntoView({behavior:'smooth', block:'start'});
+  if(!silent) document.getElementById('explorer').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function setView(view){
@@ -123,9 +126,8 @@ function closeSearch(){
 }
 
 function renderSearchStep(){
-  const titles = {place:'Où', date:'Quand', guests:'Baigneurs', type:'Type'};
-  const order = ['place','date','guests','type'];
-  const current = order.indexOf(state.searchStep);
+  const titles = {place:'Où', date:'Quand', guests:'Qui vient ?', occasion:'L’occasion'};
+  const current = SEARCH_ORDER.indexOf(state.searchStep);
   searchTitle.textContent = titles[state.searchStep];
   const progress = document.getElementById('searchProgress');
   progress.setAttribute('aria-label', `Étape ${current + 1} sur 4`);
@@ -133,7 +135,7 @@ function renderSearchStep(){
   if(state.searchStep === 'place') renderPlace();
   if(state.searchStep === 'date') renderCalendar();
   if(state.searchStep === 'guests') renderGuests();
-  if(state.searchStep === 'type') renderTypes();
+  if(state.searchStep === 'occasion') renderOccasion();
 }
 
 function updateSearchSummary(){
@@ -186,26 +188,58 @@ function renderCalendar(){
     const disabled = date < minDate;
     cells.push(`<button type="button" data-date="${iso}" ${disabled ? 'disabled' : ''} class="${state.date === iso ? 'selected' : ''}">${day}</button>`);
   }
-  searchStage.innerHTML = `<div class="date-shortcuts"><button type="button" data-shortcut="today">Aujourd’hui</button><button type="button" data-shortcut="weekend">Ce week-end</button><button type="button" data-shortcut="flex">Flexible</button></div><div class="calendar-head"><b>${monthName}</b><div><button type="button" data-month="prev" aria-label="Mois précédent">‹</button><button type="button" data-month="next" aria-label="Mois suivant">›</button></div></div><div class="calendar-week"><span>Lu</span><span>Ma</span><span>Me</span><span>Je</span><span>Ve</span><span>Sa</span><span>Di</span></div><div class="calendar-grid">${cells.join('')}</div>`;
+  const slots = [
+    ['', 'Peu importe'], ['matin', 'Le matin'], ['apres-midi', 'L’après-midi'], ['soir', 'En soirée']
+  ];
+  searchStage.innerHTML = `<div class="date-shortcuts"><button type="button" data-shortcut="today">Aujourd’hui</button><button type="button" data-shortcut="weekend">Ce week-end</button><button type="button" data-shortcut="flex">Flexible</button></div><div class="calendar-head"><b>${monthName}</b><div><button type="button" data-month="prev" aria-label="Mois précédent">‹</button><button type="button" data-month="next" aria-label="Mois suivant">›</button></div></div><div class="calendar-week"><span>Lu</span><span>Ma</span><span>Me</span><span>Je</span><span>Ve</span><span>Sa</span><span>Di</span></div><div class="calendar-grid num">${cells.join('')}</div>
+    <div class="time-pref"><span class="time-pref-label">Vers quelle heure ?</span><div class="time-chips">${slots.map(([key, label]) => `<button type="button" data-timeslot="${key}" class="${state.timeslot === key ? 'active' : ''}">${label}</button>`).join('')}</div><small>On vous montre aussi les créneaux à deux heures près.</small></div>`;
 }
 
 function monthOffset(){
   return (state.month.getFullYear() - TODAY.getFullYear()) * 12 + state.month.getMonth() - TODAY.getMonth();
 }
 
-function renderGuests(){
-  searchStage.innerHTML = `<div class="guest-row"><div><b>Baigneurs</b><small>3 ans et plus</small></div><div class="stepper"><button type="button" data-guest="minus">−</button><span id="guestCount">${state.guests}</span><button type="button" data-guest="plus">+</button></div></div><div class="guest-row"><div><b>Bébés</b><small>Moins de 3 ans</small></div><div class="stepper"><button type="button">−</button><span>0</span><button type="button">+</button></div></div>`;
+/* Baigneurs segmentés — seuls adultes et enfants comptent dans la jauge, les bébés sont gratuits. */
+const GUEST_GROUPS = [
+  { key:'adults', label:'Adultes', hint:'13 ans et plus', min:1 },
+  { key:'kids', label:'Enfants', hint:'3 à 12 ans', min:0 },
+  { key:'babies', label:'Bébés', hint:'moins de 3 ans — gratuits, hors jauge', min:0 }
+];
+
+function guestTotal(){ return state.adults + state.kids; }
+
+function guestLabel(){
+  const total = guestTotal();
+  let text = `${total} baigneur${total > 1 ? 's' : ''}`;
+  if(state.babies) text += ` + ${state.babies} bébé${state.babies > 1 ? 's' : ''}`;
+  return text;
 }
 
-function renderTypes(){
-  const options = [
-    ['all','Tout','Piscines, jacuzzis, saunas'],
-    ['piscine','Piscines','Séance ou privatisation'],
-    ['jacuzzi','Jacuzzis','À l’heure ou à la journée'],
-    ['sauna','Saunas','À l’heure ou à la journée']
-  ];
-  searchStage.innerHTML = `<div class="type-options">${options.map(option => `<button class="type-option ${state.type === option[0] ? 'active' : ''}" type="button" data-modal-type="${option[0]}"><span class="tab-icon" data-icon="${option[0]}"></span><div><b>${option[1]}</b><small>${option[2]}</small></div></button>`).join('')}</div>`;
-  fillIcons(searchStage);
+function renderGuests(){
+  searchStage.innerHTML = GUEST_GROUPS.map(group => `<div class="guest-row">
+      <div><b>${group.label}</b><small>${group.hint}</small></div>
+      <div class="stepper num">
+        <button type="button" data-guest="minus" data-group="${group.key}" aria-label="Moins de ${group.label.toLowerCase()}"${state[group.key] <= group.min ? ' disabled' : ''}>−</button>
+        <span id="count-${group.key}">${state[group.key]}</span>
+        <button type="button" data-guest="plus" data-group="${group.key}" aria-label="Plus de ${group.label.toLowerCase()}"${guestTotal() >= 30 && group.key !== 'babies' ? ' disabled' : ''}>+</button>
+      </div>
+    </div>`).join('') +
+    `<p class="guest-note">Les bébés de moins de 3 ans ne comptent pas dans la jauge de la piscine.</p>`;
+}
+
+const OCCASIONS = [
+  { key:'', label:'Juste se baigner', hint:'en famille ou à deux', moment:'' },
+  { key:'anniversaire', label:'Un anniversaire', hint:'plutôt une privatisation', moment:'anniversaire' },
+  { key:'entre-amis', label:'Entre amis', hint:'apéro au bord de l’eau', moment:'soir' },
+  { key:'nage', label:'Nager pour de vrai', hint:'longueurs, au calme', moment:'nage' }
+];
+
+function renderOccasion(){
+  searchStage.innerHTML = `<div class="occasion-options">${OCCASIONS.map(option => `
+    <button class="occasion-option ${state.occasion === option.key ? 'active' : ''}" type="button" data-occasion="${option.key}">
+      <b>${option.label}</b><small>${option.hint}</small>
+    </button>`).join('')}</div>
+    <p class="guest-note">On met en avant les créneaux qui correspondent — vous gardez la main sur le reste.</p>`;
 }
 
 function openDetail(id){
@@ -263,9 +297,30 @@ document.addEventListener('click', event => {
   const shortcut = event.target.closest('[data-shortcut]');
   if(shortcut){ state.dateLabel = shortcut.dataset.shortcut === 'today' ? 'Aujourd’hui' : shortcut.dataset.shortcut === 'weekend' ? 'Ce week-end' : 'Dates flexibles'; dateSummary.textContent = state.dateLabel; updateSearchSummary(); return }
   const guest = event.target.closest('[data-guest]');
-  if(guest){ state.guests = Math.max(1, Math.min(30, state.guests + (guest.dataset.guest === 'plus' ? 1 : -1))); document.getElementById('guestCount').textContent = state.guests; guestSummary.textContent = `${state.guests} ${state.guests > 1 ? 'personnes' : 'personne'}`; return }
-  const modalType = event.target.closest('[data-modal-type]');
-  if(modalType){ selectType(modalType.dataset.modalType); renderTypes(); return }
+  if(guest){
+    const group = GUEST_GROUPS.find(g => g.key === guest.dataset.group);
+    const step = guest.dataset.guest === 'plus' ? 1 : -1;
+    if(step > 0 && group.key !== 'babies' && guestTotal() >= 30) return;
+    state[group.key] = Math.max(group.min, Math.min(30, state[group.key] + step));
+    renderGuests();
+    guestSummary.textContent = guestLabel();
+    return;
+  }
+  const occasion = event.target.closest('[data-occasion]');
+  if(occasion){
+    state.occasion = occasion.dataset.occasion;
+    const picked = OCCASIONS.find(o => o.key === state.occasion);
+    selectMoment(picked.moment || state.moment, true);
+    document.getElementById('occasionSummary').textContent = picked.label;
+    renderOccasion();
+    return;
+  }
+  const timeslot = event.target.closest('[data-timeslot]');
+  if(timeslot){
+    state.timeslot = timeslot.dataset.timeslot;
+    renderCalendar();
+    return;
+  }
   const world = event.target.closest('[data-world]');
   if(world){ selectType(world.dataset.world); document.getElementById('explorer').scrollIntoView({behavior:'smooth'}); return }
   const scroll = event.target.closest('[data-scroll]');
@@ -281,17 +336,16 @@ document.getElementById('searchDock').addEventListener('submit', event => {
 });
 
 document.getElementById('applySearch').addEventListener('click', () => {
-  const order = ['place','date','guests','type'];
-  const current = order.indexOf(state.searchStep);
-  if(current < order.length - 1){ state.searchStep = order[current + 1]; renderSearchStep(); }
+  const current = SEARCH_ORDER.indexOf(state.searchStep);
+  if(current < SEARCH_ORDER.length - 1){ state.searchStep = SEARCH_ORDER[current + 1]; renderSearchStep(); }
   else { closeSearch(); document.getElementById('searchDock').requestSubmit(); }
 });
 
 document.getElementById('clearSearch').addEventListener('click', () => {
   if(state.searchStep === 'place'){ state.place = ''; placeSummary.textContent = 'Destination'; }
-  if(state.searchStep === 'date'){ state.date = ''; state.dateLabel = 'Ce week-end'; dateSummary.textContent = state.dateLabel; }
-  if(state.searchStep === 'guests'){ state.guests = 1; guestSummary.textContent = '1 personne'; }
-  if(state.searchStep === 'type') selectType('all');
+  if(state.searchStep === 'date'){ state.date = ''; state.dateLabel = 'Ce week-end'; state.timeslot = ''; dateSummary.textContent = state.dateLabel; }
+  if(state.searchStep === 'guests'){ state.adults = 1; state.kids = 0; state.babies = 0; guestSummary.textContent = guestLabel(); }
+  if(state.searchStep === 'occasion'){ state.occasion = ''; selectMoment('', true); document.getElementById('occasionSummary').textContent = 'Peu importe'; }
   renderSearchStep();
 });
 
@@ -307,6 +361,51 @@ document.getElementById('favoritesButton').addEventListener('click', () => {
 
 document.getElementById('mobileFavorites').addEventListener('click', () => document.getElementById('favoritesButton').click());
 document.addEventListener('keydown', event => { if(event.key === 'Escape'){ closeSearch(); closeDetail(); } });
+
+/* ===== Simulateur hôte — tarifs réels de la plateforme, commission 15 % à la source ===== */
+(function simulator(){
+  const openRange = document.getElementById('simOpen');
+  if(!openRange) return;
+  const privRange = document.getElementById('simPriv');
+  const bleue = document.getElementById('simBleue');
+  const WEEKS = 4.33, SEATS = 6, OPEN_PRICE = 7.5, PRIV_PRICE = 68, BLEUE_PRICE = 12, COMMISSION = .15;
+
+  const money = n => Math.round(n).toLocaleString('fr-FR').replace(/ | /g, ' ') + ' €';
+
+  function paint(input){
+    const ratio = (input.value - input.min) / (input.max - input.min) * 100;
+    input.style.setProperty('--fill', ratio + '%');
+  }
+
+  function compute(){
+    const open = +openRange.value, priv = +privRange.value;
+    const openGross = open * WEEKS * SEATS * OPEN_PRICE;
+    const privGross = priv * PRIV_PRICE;
+    const bleueGross = bleue.checked ? WEEKS * SEATS * BLEUE_PRICE : 0;
+    const gross = openGross + privGross + bleueGross;
+    const net = gross * (1 - COMMISSION);
+
+    document.getElementById('simOpenVal').textContent = open;
+    document.getElementById('simPrivVal').textContent = priv;
+    document.getElementById('simTotal').textContent = money(net);
+
+    const rows = [
+      [open ? open + ' séances ouvertes/semaine' : 'Séances ouvertes', openGross],
+      [priv ? priv + ' privatisations/mois' : 'Privatisations', privGross]
+    ];
+    if(bleue.checked) rows.push(['Créneau du soir, 1 fois/semaine', bleueGross]);
+    rows.push(['Commission plateforme — 15 %', -(gross * COMMISSION)]);
+    rows.push(['Net sur votre compte', net]);
+    document.getElementById('simBreakdown').innerHTML = rows
+      .map(([label, value]) => `<div><span>${label}</span><span>${value < 0 ? '−' + money(Math.abs(value)) : money(value)}</span></div>`)
+      .join('');
+    [openRange, privRange].forEach(paint);
+  }
+
+  [openRange, privRange].forEach(input => input.addEventListener('input', compute));
+  bleue.addEventListener('change', compute);
+  compute();
+})();
 
 function syncHeader(){ document.body.classList.toggle('header-compact', window.scrollY > 520); }
 window.addEventListener('scroll', syncHeader, {passive:true});

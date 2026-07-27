@@ -22,6 +22,9 @@ const ICONS = {
   robe:'<path d="M9 4 7 20h10L15 4M9 4h6M9 4 12 9l3-5M12 9v11" stroke-linecap="round" stroke-linejoin="round"/>'
 };
 const star = '<svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z"/></svg>';
+const boltIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12z"/></svg>';
+const clockIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2" stroke-linecap="round"/></svg>';
+const shieldIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5.5c0 4.3-2.9 8-7 9.5-4.1-1.5-7-5.2-7-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>';
 const heartIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>';
 
 const el = id => document.getElementById(id);
@@ -84,6 +87,10 @@ el('ficheHost').innerHTML =
 const dayStrip = el('dayStrip'), slotList = el('slotList'), cfg = el('bookConfig');
 
 el('bookPrice').innerHTML = '<b>' + listing.price + '</b> ' + listing.priceNote;
+el('bookInstant').className = 'instant-line' + (listing.instant ? '' : ' on-request');
+el('bookInstant').innerHTML = listing.instant
+  ? boltIcon + 'Réservation immédiate — pas d’attente'
+  : clockIcon + 'Sur demande — ' + h.name + ' répond sous 24 h';
 el('bookRating').textContent = listing.rating;
 
 const HALF_HOURS = '14 h – 18 h';
@@ -292,8 +299,9 @@ function renderConfig(){
     '<div class="book-total">' +
       '<div class="t-row"><span>' + (isDay ? 'Journée privée · jusqu’à ' + s.cap + ' pers.' : isHalf ? 'Demi-journée privée · jusqu’à ' + s.cap + ' pers.' : unit ? 'Créneau privatisé · ' + listing.unit : state.privatise ? 'Privatisation' : state.persons + ' × ' + euro(s.priceP)) + '</span><span>' + euro(base) + '</span></div>' +
       (extrasTotal ? '<div class="t-row"><span>Extras</span><span>' + euro(extrasTotal) + '</span></div>' : '') +
-      '<div class="t-row"><span>Frais de service</span><span>inclus</span></div>' +
+      '<div class="t-row"><span>Frais de service et assurance</span><span>inclus</span></div>' +
       '<div class="t-row grand"><span>Total — tout compris</span><span>' + euro(total) + '</span></div>' +
+      '<p class="price-promise">' + shieldIcon + '<span><b>Ce prix est le prix payé.</b> Rien ne s’ajoute à l’étape suivante — ni frais de dossier, ni commission cachée.</span></p>' +
       '<a class="book-cta" href="' + confirmURL(dy, s, mode, total) + '">' + (state.payment === 'onsite' ? 'Confirmer — paiement sur place' : 'Réserver et payer') + ' →</a>' +
       '<p class="t-small">Annulation gratuite jusqu’à 48 h avant. Les coordonnées de ' + h.name + ' vous sont envoyées à la confirmation.</p>' +
     '</div></div>';
