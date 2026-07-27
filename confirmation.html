@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#F6F2E8">
+  <meta name="robots" content="noindex">
+  <title>Réservation confirmée — Loue ta piscine</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%23F6F2E8'/%3E%3Cpath d='M9 26c4-4 8-4 12 0s8 4 12 0 8-4 12 0' fill='none' stroke='%2308323A' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M10 34c4-4 8-4 12 0s8 4 12 0' fill='none' stroke='%2308323A' stroke-width='2.6' stroke-linecap='round'/%3E%3Ccircle cx='35' cy='13' r='5' fill='%23F5D463'/%3E%3C/svg%3E">
+  <link rel="preload" href="fonts/generalsans-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="v2.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Accueil Loue ta piscine">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M9 26c4-4 8-4 12 0s8 4 12 0 8-4 12 0"/>
+        <path d="M10 34c4-4 8-4 12 0s8 4 12 0"/>
+        <circle cx="35" cy="13" r="4"/>
+      </svg>
+      <span>loue ta piscine</span>
+    </a>
+    <nav class="desktop-nav" aria-label="Navigation principale">
+      <a class="back-link" href="index.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6l-6 6 6 6"/></svg>
+        Explorer
+      </a>
+    </nav>
+    <div class="header-actions"></div>
+  </header>
+
+  <main class="confirm-main">
+    <div class="confirm-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 12.5 10 18 19.5 6.5"/></svg></div>
+    <h1>C’est réservé.</h1>
+    <p class="confirm-sub" id="confirmSub"></p>
+
+    <section class="confirm-card" aria-label="Récapitulatif">
+      <header><span>Votre réservation</span><span id="confirmMode"></span></header>
+      <div class="confirm-rows" id="confirmRows"></div>
+    </section>
+
+    <section class="confirm-card" aria-label="Coordonnées de l’hôte">
+      <header><span>Coordonnées débloquées</span></header>
+      <div class="reveal">
+        <p id="revealNote"></p>
+        <b class="reveal-phone" id="revealPhone"></b>
+        <b class="reveal-addr" id="revealAddr"></b>
+      </div>
+    </section>
+
+    <section class="confirm-card" aria-label="Circuit du paiement">
+      <header><span>Et votre argent ?</span></header>
+      <div class="timeline" id="confirmTimeline"></div>
+    </section>
+
+    <div class="confirm-actions">
+      <a class="secondary" href="index.html">Retour à l’accueil</a>
+      <a class="primary" id="backToFiche" href="fiche.html">Revoir la fiche</a>
+    </div>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="index.html"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 26c4-4 8-4 12 0s8 4 12 0 8-4 12 0"/><path d="M10 34c4-4 8-4 12 0s8 4 12 0"/><circle cx="35" cy="13" r="4"/></svg><span>loue ta piscine</span></a>
+    <div><b>Explorer</b><a href="index.html">Piscines</a><a href="index.html">Jacuzzis</a><a href="index.html">Saunas</a></div>
+    <div><b>Plateforme</b><a href="index.html#hotes">Hôtes</a><a href="#">Aide</a><a href="#">Sécurité</a></div>
+    <small>Prototype local V2 — annonces, avis et disponibilités fictifs</small>
+  </footer>
+
+  <script src="data.js"></script>
+  <script>
+  (function(){
+    'use strict';
+    const q = new URLSearchParams(location.search);
+    const listing = window.LTP.listings.find(l => l.id === q.get('id')) || window.LTP.listings[0];
+    const host = listing.host;
+    const onsite = q.get('paiement') === 'place';
+    const total = q.get('total') || '—';
+    const persons = q.get('persons') || '2';
+    const mode = q.get('mode') || 'séance ouverte';
+
+    document.getElementById('confirmSub').textContent =
+      listing.name + ' vous attend. ' + host.name + ' vient de recevoir votre réservation' +
+      (onsite ? ' — vous réglerez sur place, rien n’est débité.' : ' — votre paiement est sécurisé sous séquestre.');
+    document.getElementById('confirmMode').textContent = mode;
+    document.getElementById('confirmRows').innerHTML =
+      '<div><span>Lieu</span><b>' + listing.name + '</b></div>' +
+      '<div><span>Adresse</span><b>' + listing.location + '</b></div>' +
+      '<div><span>Date</span><b>' + (q.get('date') || '—') + '</b></div>' +
+      '<div><span>Créneau</span><b>' + (q.get('time') || '—') + '</b></div>' +
+      '<div><span>' + (mode === 'journée privée' ? 'Participants' : 'Baigneurs') + '</span><b>' + persons + '</b></div>' +
+      '<div><span>Total — tout compris</span><b class="big">' + total + ' €</b></div>';
+
+    document.getElementById('revealNote').textContent =
+      'Avant la réservation, la messagerie masquait les coordonnées. Elles sont maintenant à vous — c’est la règle de la plateforme.';
+    document.getElementById('revealPhone').textContent = host.phone || '06 ·· ·· ·· ··';
+    document.getElementById('revealAddr').textContent = host.address || listing.location + ' — adresse exacte dans votre messagerie';
+
+    const step1 = onsite
+      ? '<div>Aucun débit aujourd’hui<small>Vous réglez ' + host.name + ' sur place — hôte noté au-dessus de 4,5</small></div>'
+      : '<div>Paiement encaissé sous séquestre<small>Votre argent est bloqué, ' + host.name + ' ne touche rien avant votre venue</small></div>';
+    document.getElementById('confirmTimeline').innerHTML = step1 +
+      '<div>Le jour J<small>Accès au lieu, séance selon le règlement de l’hôte</small></div>' +
+      (onsite
+        ? '<div>Après la séance<small>La commission plateforme est facturée à l’hôte automatiquement</small></div>'
+        : '<div>24 à 48 h après la séance<small>' + host.name + ' reçoit son virement, commission déduite à la source</small></div>') +
+      '<div>Un souci ?<small>Versement suspendu tant que le litige n’est pas tranché</small></div>';
+
+    document.getElementById('backToFiche').href = 'fiche.html?id=' + listing.id;
+  })();
+  </script>
+</body>
+</html>

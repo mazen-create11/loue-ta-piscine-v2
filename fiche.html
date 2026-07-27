@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#F6F2E8">
+  <meta name="robots" content="noindex">
+  <title>Fiche — Loue ta piscine</title>
+  <meta name="description" content="Réservez une séance, une privatisation ou une journée — prix tout compris.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%23F6F2E8'/%3E%3Cpath d='M9 26c4-4 8-4 12 0s8 4 12 0 8-4 12 0' fill='none' stroke='%2308323A' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M10 34c4-4 8-4 12 0s8 4 12 0' fill='none' stroke='%2308323A' stroke-width='2.6' stroke-linecap='round'/%3E%3Ccircle cx='35' cy='13' r='5' fill='%23F5D463'/%3E%3C/svg%3E">
+  <link rel="preload" href="fonts/generalsans-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/generalsans-600.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="v2.css">
+</head>
+<body class="fiche-page">
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Accueil Loue ta piscine">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M9 26c4-4 8-4 12 0s8 4 12 0 8-4 12 0"/>
+        <path d="M10 34c4-4 8-4 12 0s8 4 12 0"/>
+        <circle cx="35" cy="13" r="4"/>
+      </svg>
+      <span>loue ta piscine</span>
+    </a>
+    <nav class="desktop-nav" aria-label="Navigation principale">
+      <a class="back-link" href="index.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6l-6 6 6 6"/></svg>
+        Explorer
+      </a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-action" id="ficheFavorite" type="button" aria-label="Ajouter aux favoris" aria-pressed="false">
+        <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
+      </button>
+      <button class="host-button" type="button" data-host>Proposer mon espace</button>
+    </div>
+  </header>
+
+  <main class="fiche-main">
+    <section class="fiche-gallery" aria-label="Photos">
+      <figure class="gallery-main">
+        <img id="galleryMain" src="" alt="" width="1536" height="1024" fetchpriority="high">
+        <div class="listing-badges" id="ficheBadges"></div>
+      </figure>
+      <div class="gallery-thumbs" id="galleryThumbs" role="tablist" aria-label="Choisir une photo"></div>
+    </section>
+
+    <div class="fiche-grid">
+      <article class="fiche-content">
+        <div class="fiche-title">
+          <div>
+            <p class="fiche-loc" id="ficheLoc"></p>
+            <h1 id="ficheName"></h1>
+            <p class="fiche-dims" id="ficheDims"></p>
+          </div>
+          <span class="rating rating-big" id="ficheRating"></span>
+        </div>
+
+        <div class="fiche-chips" id="ficheChips"></div>
+        <p class="fiche-desc" id="ficheDesc"></p>
+
+        <h2 class="fiche-h2">Équipements</h2>
+        <div class="equip-grid" id="ficheEquip"></div>
+
+        <h2 class="fiche-h2">La Visite — vérifiée sur place</h2>
+        <details class="fiche-details" id="visiteDetails">
+          <summary><span id="visiteSummary"></span><i class="v-badge" id="visiteBadge"></i></summary>
+          <ul id="visitePoints"></ul>
+        </details>
+
+        <h2 class="fiche-h2">Le règlement</h2>
+        <details class="fiche-details">
+          <summary><span>À accepter avant de réserver</span></summary>
+          <ul id="ficheRules"></ul>
+        </details>
+
+        <h2 class="fiche-h2">Ils y sont allés</h2>
+        <div class="fiche-avis" id="ficheAvis"></div>
+
+        <h2 class="fiche-h2">Votre hôte</h2>
+        <div class="fiche-host" id="ficheHost"></div>
+      </article>
+
+      <aside class="book-panel" id="bookingPanel" aria-label="Réserver">
+        <button class="book-close" id="bookClose" type="button" aria-label="Fermer la réservation">×</button>
+        <div class="book-head">
+          <span id="bookPrice"></span>
+          <span class="rating" id="bookRating"></span>
+        </div>
+        <div class="journey" id="journey" aria-label="Étapes de réservation">
+          <span class="j-step active">Format</span>
+          <span class="j-step">Date &amp; heure</span>
+          <span class="j-step">Groupe &amp; paiement</span>
+        </div>
+        <div class="format-picks" id="formatPicks"></div>
+        <div class="cal-nav">
+          <b id="calRange"></b>
+          <span>
+            <button type="button" id="weekPrev" aria-label="Semaine précédente">‹</button>
+            <button type="button" id="weekNext" aria-label="Semaine suivante">›</button>
+          </span>
+        </div>
+        <div class="day-strip" id="dayStrip" role="tablist"></div>
+        <div class="slot-list" id="slotList"></div>
+        <div id="bookConfig"></div>
+      </aside>
+    </div>
+  </main>
+
+  <div class="book-overlay" id="bookOverlay" hidden></div>
+  <div class="mobile-bookbar" id="mobileBookbar">
+    <div><b id="mobilePrice"></b><small id="mobileRecap">Créneaux et prix visibles immédiatement</small></div>
+    <button type="button" id="bookOpen">Voir les disponibilités</button>
+  </div>
+
+  <footer>
+    <a class="brand footer-brand" href="index.html"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 26c4-4 8-4 12 0s8 4 12 0 8-4 12 0"/><path d="M10 34c4-4 8-4 12 0s8 4 12 0"/><circle cx="35" cy="13" r="4"/></svg><span>loue ta piscine</span></a>
+    <div><b>Explorer</b><a href="index.html">Piscines</a><a href="index.html">Jacuzzis</a><a href="index.html">Saunas</a></div>
+    <div><b>Plateforme</b><a href="index.html#hotes">Hôtes</a><a href="#">Aide</a><a href="#">Sécurité</a></div>
+    <small>Prototype local V2 — annonces, avis et disponibilités fictifs</small>
+  </footer>
+
+  <div class="host-toast" id="hostToast" role="status"></div>
+  <script src="data.js"></script>
+  <script src="fiche.js"></script>
+</body>
+</html>

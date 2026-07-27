@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#F6F2E8">
+  <title>Loue ta piscine — piscines, jacuzzis et saunas de particuliers</title>
+  <meta name="description" content="Réservez la piscine d’à côté — séance ouverte dès 6 €, privatisation ou journée entière. Prix tout compris, hôtes vérifiés.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%23F6F2E8'/%3E%3Cpath d='M9 26c4-4 8-4 12 0s8 4 12 0 8-4 12 0' fill='none' stroke='%2308323A' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M10 34c4-4 8-4 12 0s8 4 12 0' fill='none' stroke='%2308323A' stroke-width='2.6' stroke-linecap='round'/%3E%3Ccircle cx='35' cy='13' r='5' fill='%23F5D463'/%3E%3C/svg%3E">
+  <link rel="preload" href="fonts/generalsans-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/generalsans-600.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/famille-hero-v2.webp" as="image">
+  <link rel="stylesheet" href="v2.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Accueil Loue ta piscine">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M9 26c4-4 8-4 12 0s8 4 12 0 8-4 12 0"/>
+        <path d="M10 34c4-4 8-4 12 0s8 4 12 0"/>
+        <circle cx="35" cy="13" r="4"/>
+      </svg>
+      <span>loue ta piscine</span>
+    </a>
+    <nav class="desktop-nav" aria-label="Navigation principale">
+      <button type="button" data-scroll="explorer">Explorer</button>
+      <button type="button" data-scroll="ambiances">Ambiances</button>
+      <button type="button" data-scroll="hotes">Hôtes</button>
+    </nav>
+    <button class="header-search" type="button" data-search-step="place">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
+      <span><small>Recherche</small><b id="headerSearchSummary">Aix-en-Provence · Ce week-end</b></span>
+    </button>
+    <div class="header-actions">
+      <button class="icon-action" id="favoritesButton" type="button" aria-label="Favoris">
+        <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
+        <i id="favoriteCount">0</i>
+      </button>
+      <button class="icon-action" type="button" aria-label="Messages">
+        <svg viewBox="0 0 24 24"><path d="M4 5h16v12H9l-5 3V5Z"/><path d="M8 10h8M8 13h5"/></svg>
+        <i>2</i>
+      </button>
+      <button class="host-button" type="button" data-host>Proposer mon espace</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-color">
+        <div class="hero-copy">
+          <p>Piscines privées</p>
+          <h1 id="heroTitle">L’eau<br>à côté.</h1>
+          <div class="hero-modes" aria-label="Modes de réservation">
+            <span>Séance ouverte</span>
+            <span>Privatisation</span>
+            <span>Journée</span>
+          </div>
+        </div>
+        <svg class="doodle doodle-one" viewBox="0 0 110 110" aria-hidden="true">
+          <path d="M15 62c15-27 29-37 42-29 15 9-5 32 11 41 11 6 20-3 27-15"/>
+          <circle cx="23" cy="28" r="7"/><path d="M82 21l9 8m-13 2 17-2"/>
+        </svg>
+      </div>
+      <div class="hero-photo">
+        <img src="assets/famille-hero-v2.webp" alt="Enfants et adultes profitant d’une piscine privée" width="1536" height="1024" fetchpriority="high">
+        <div class="season-marker"><small>Été</small><b>26</b></div>
+        <div class="hero-note">
+          <span>4,93</span>
+          <div><b>41 avis</b><small>Aix-en-Provence</small></div>
+        </div>
+        <svg class="doodle doodle-two" viewBox="0 0 150 80" aria-hidden="true"><path d="M5 46c18-20 36-20 54 0s36 20 54 0 24-19 34-8"/><path d="M33 18l4 10m8-13-1 11m11-3-7 8"/></svg>
+      </div>
+
+      <form class="search-dock" id="searchDock">
+        <button class="search-cell" type="button" data-search-step="place">
+          <span>Où</span><strong id="placeSummary">Aix-en-Provence</strong>
+        </button>
+        <button class="search-cell" type="button" data-search-step="date">
+          <span>Quand</span><strong id="dateSummary">Ce week-end</strong>
+        </button>
+        <button class="search-cell" type="button" data-search-step="guests">
+          <span>Baigneurs</span><strong id="guestSummary">4 personnes</strong>
+        </button>
+        <button class="search-cell type-cell" type="button" data-search-step="type">
+          <span>Type</span><strong id="typeSummary">Tout</strong>
+        </button>
+        <button class="search-submit" type="submit" aria-label="Rechercher">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
+          <span>Rechercher</span>
+        </button>
+      </form>
+    </section>
+
+    <section class="quick-discovery" id="explorer" aria-label="Filtres rapides">
+      <div class="type-tabs" id="typeTabs">
+        <button class="active" type="button" data-type="all"><span class="tab-icon" data-icon="all"></span>Tout</button>
+        <button type="button" data-type="piscine"><span class="tab-icon" data-icon="piscine"></span>Piscines</button>
+        <button type="button" data-type="jacuzzi"><span class="tab-icon" data-icon="jacuzzi"></span>Jacuzzis</button>
+        <button type="button" data-type="sauna"><span class="tab-icon" data-icon="sauna"></span>Saunas</button>
+      </div>
+      <div class="moment-tabs" id="momentTabs">
+        <button type="button" data-moment="nage">Nage</button>
+        <button type="button" data-moment="apres-midi">Après-midi</button>
+        <button type="button" data-moment="anniversaire">Anniversaire</button>
+        <button type="button" data-moment="soir">Soirée</button>
+      </div>
+    </section>
+    <div class="wave-divider" aria-hidden="true"></div>
+
+    <section class="listings-section" aria-labelledby="listingTitle">
+      <div class="section-head">
+        <div><p id="resultCount">6 adresses</p><h2 id="listingTitle">Autour d’Aix</h2></div>
+        <div class="view-switch" aria-label="Mode d’affichage">
+          <button class="active" type="button" data-view="grid">Liste</button>
+          <button type="button" data-view="map">Carte</button>
+        </div>
+      </div>
+      <div class="listing-grid" id="listingGrid"></div>
+      <div class="map-view" id="mapView" hidden>
+        <div class="map-canvas" aria-label="Carte illustrée des annonces">
+          <span class="road road-one"></span><span class="road road-two"></span><span class="river"></span>
+          <button class="map-pin pin-one" type="button" data-listing="micocouliers">7 €</button>
+          <button class="map-pin pin-two" type="button" data-listing="collines">34 €</button>
+          <button class="map-pin pin-three" type="button" data-listing="verger">6 €</button>
+          <button class="map-pin pin-four" type="button" data-listing="margelles">12 €</button>
+          <button class="map-pin pin-five" type="button" data-listing="oliviers">25 €</button>
+          <button class="map-pin pin-six" type="button" data-listing="bastide">18 €</button>
+          <div class="map-label label-aix">Aix-en-Provence</div><div class="map-label label-gardanne">Gardanne</div>
+        </div>
+        <div class="map-results" id="mapResults"></div>
+      </div>
+    </section>
+
+    <section class="availability-rail" aria-label="Disponibilités proches">
+      <div class="availability-label"><span></span><b>Maintenant</b></div>
+      <button type="button" data-detail="micocouliers"><small>Aix</small><b>17 h</b><span>7 €</span></button>
+      <button type="button" data-detail="verger"><small>Pertuis</small><b>18 h</b><span>6 €</span></button>
+      <button type="button" data-detail="margelles"><small>Lourmarin</small><b>19 h</b><span>12 €</span></button>
+      <button type="button" data-detail="oliviers"><small>Marseille</small><b>20 h</b><span>25 €</span></button>
+    </section>
+
+    <section class="moments" id="ambiances" aria-labelledby="momentTitle">
+      <div class="section-head moments-head"><div><p>Moments</p><h2 id="momentTitle">Une envie</h2></div></div>
+      <div class="moment-grid">
+        <button class="moment-card moment-large" type="button" data-apply-moment="apres-midi">
+          <img src="assets/famille-jeux-v2.webp" alt="Jeux dans une piscine" width="1536" height="1024" loading="lazy">
+          <span>Après-midi</span>
+        </button>
+        <button class="moment-card" type="button" data-apply-moment="anniversaire">
+          <img src="assets/familiale.webp" alt="Moment convivial autour d’une piscine" width="1600" height="1067" loading="lazy">
+          <span>Anniversaire</span>
+        </button>
+        <button class="moment-card" type="button" data-apply-moment="nage">
+          <img src="assets/famille-bleue-v2.webp" alt="Nage à l’heure bleue" width="1536" height="1024" loading="lazy">
+          <span>Nage</span>
+        </button>
+      </div>
+    </section>
+    <div class="wave-divider wave-coral" aria-hidden="true"></div>
+
+    <section class="worlds" aria-labelledby="worldTitle">
+      <div class="world-intro"><p>Univers</p><h2 id="worldTitle">Toute l’année</h2></div>
+      <button class="world-card jacuzzi-world" type="button" data-world="jacuzzi">
+        <img src="assets/jacuzzi-convivial-v3.webp" alt="Jacuzzi privé dans un jardin" width="1935" height="813" loading="lazy">
+        <span><small>38 °C</small><b>Jacuzzis</b></span>
+      </button>
+      <button class="world-card sauna-world" type="button" data-world="sauna">
+        <img src="assets/sauna-jardin-v3.webp" alt="Sauna en cèdre dans un jardin" width="1774" height="887" loading="lazy">
+        <span><small>70 à 90 °C</small><b>Saunas</b></span>
+      </button>
+    </section>
+
+    <section class="proof" aria-label="Confiance">
+      <div><strong>4,9</strong><span>Note moyenne</span></div>
+      <div><strong>30 min</strong><span>Rotation</span></div>
+      <div><strong>100 %</strong><span>Prix affiché</span></div>
+      <div><strong>7 j/7</strong><span>Assistance</span></div>
+    </section>
+
+    <section class="host-section" id="hotes">
+      <div class="host-visual"><img src="assets/provencale.webp" alt="Piscine provençale privée" width="900" height="600" loading="lazy"><span>Hôte 4,96</span></div>
+      <div class="host-copy"><p>Votre espace</p><h2>Vos horaires.<br>Vos règles.</h2><div class="host-benefits"><span>Inscription gratuite</span><span>Prix libres</span><span>Calendrier complet</span></div><button type="button" data-host>Proposer mon espace</button></div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="#top"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 26c4-4 8-4 12 0s8 4 12 0 8-4 12 0"/><path d="M10 34c4-4 8-4 12 0s8 4 12 0"/><circle cx="35" cy="13" r="4"/></svg><span>loue ta piscine</span></a>
+    <div><b>Explorer</b><a href="#explorer">Piscines</a><a href="#explorer">Jacuzzis</a><a href="#explorer">Saunas</a></div>
+    <div><b>Plateforme</b><a href="#hotes">Hôtes</a><a href="#">Aide</a><a href="#">Sécurité</a></div>
+    <small>Prototype local V2</small>
+  </footer>
+
+  <nav class="mobile-nav" aria-label="Navigation mobile">
+    <button class="active" type="button" data-scroll="top"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg><span>Explorer</span></button>
+    <button type="button" id="mobileFavorites"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg><span>Favoris</span></button>
+    <button type="button"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H9l-5 3V5Z"/><path d="M8 10h8M8 13h5"/></svg><span>Messages</span></button>
+    <button type="button" data-host><svg viewBox="0 0 24 24"><path d="M4 20h16M6 20V9l6-5 6 5v11M9 13h6"/></svg><span>Hôte</span></button>
+  </nav>
+
+  <div class="modal-layer" id="searchLayer" hidden>
+    <button class="modal-backdrop" type="button" data-close-search aria-label="Fermer"></button>
+    <section class="search-panel" role="dialog" aria-modal="true" aria-labelledby="searchPanelTitle">
+      <header><div><p>Recherche</p><h2 id="searchPanelTitle">Où</h2><div class="search-progress" id="searchProgress" aria-label="Étape 1 sur 4"><i class="active"></i><i></i><i></i><i></i></div></div><button type="button" data-close-search aria-label="Fermer">×</button></header>
+      <div class="search-stage" id="searchStage"></div>
+      <footer><button class="clear-search" id="clearSearch" type="button">Effacer</button><button class="apply-search" id="applySearch" type="button">Continuer</button></footer>
+    </section>
+  </div>
+
+  <div class="modal-layer" id="detailLayer" hidden>
+    <button class="modal-backdrop" type="button" data-close-detail aria-label="Fermer"></button>
+    <section class="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+      <button class="detail-close" type="button" data-close-detail aria-label="Fermer">×</button>
+      <div id="detailContent"></div>
+    </section>
+  </div>
+
+  <div class="host-toast" id="hostToast" role="status"></div>
+  <script src="data.js"></script>
+  <script src="v2.js"></script>
+</body>
+</html>
