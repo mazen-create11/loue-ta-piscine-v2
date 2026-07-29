@@ -23,6 +23,7 @@ const resultCount = document.getElementById('resultCount');
 const placeSummary = document.getElementById('placeSummary');
 const dateSummary = document.getElementById('dateSummary');
 const guestSummary = document.getElementById('guestSummary');
+const mobileSearchHint = document.getElementById('mobileSearchHint');
 
 const heartIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>';
 const TYPE_ICONS = {
@@ -44,12 +45,22 @@ function fillIcons(root){
 fillIcons();
 
 function filteredListings(){
-  return listings.filter(item => (state.type === 'all' || item.type === state.type) && (!state.moment || item.moments.includes(state.moment)));
+  return listings.filter(item => (state.type === 'all' || item.type === state.type) && (!state.moment || item.moments.includes(state.moment)))
+    .sort((a, b) => Number(isFeaturedPaid(b)) - Number(isFeaturedPaid(a)));
+}
+
+function isHostPaid(item){ return item.host.premium || (item.id === 'micocouliers' && window.LTPPremium?.isHostPremium()); }
+function isFeaturedPaid(item){ return item.badges.includes('À la une') || (item.id === 'micocouliers' && window.LTPPremium?.isBoosted()); }
+function visibleBadges(item){
+  const badges = [...item.badges];
+  if(isFeaturedPaid(item) && !badges.includes('À la une')) badges.unshift('À la une');
+  if(isHostPaid(item) && !badges.includes('Hôte Premium')) badges.push('Hôte Premium');
+  return badges;
 }
 
 function cardTemplate(item, index, featured){
   const favorite = state.favorites.has(item.id);
-  const badges = item.badges.map((badge, i) => `<span class="${i === 0 && badge === 'À la une' ? 'premium' : ''}">${badge}</span>`).join('');
+  const badges = visibleBadges(item).map(badge => `<span class="${badge === 'À la une' ? 'premium' : badge === 'Hôte Premium' ? 'host-paid' : ''}">${badge}${badge === 'À la une' ? '<small>sponsorisé</small>' : ''}</span>`).join('');
   return `<article class="listing-card ${featured ? 'featured' : ''}" style="animation-delay:${index * 45}ms" data-goto="${item.id}">
     <div class="listing-photo">
       <img src="${item.image}" alt="${item.name}" loading="lazy">
@@ -65,6 +76,8 @@ function cardTemplate(item, index, featured){
     </div>
   </article>`;
 }
+
+window.addEventListener('ltp:premium-change', renderListings);
 
 function renderListings(){
   const items = filteredListings();
@@ -140,6 +153,7 @@ function renderSearchStep(){
 
 function updateSearchSummary(){
   document.getElementById('headerSearchSummary').textContent = `${state.place || 'Destination'} · ${state.dateLabel}`;
+  mobileSearchHint.textContent = `${state.dateLabel} · ${guestLabel()}`;
 }
 
 function renderPlace(){
@@ -304,6 +318,7 @@ document.addEventListener('click', event => {
     state[group.key] = Math.max(group.min, Math.min(30, state[group.key] + step));
     renderGuests();
     guestSummary.textContent = guestLabel();
+    updateSearchSummary();
     return;
   }
   const occasion = event.target.closest('[data-occasion]');
@@ -325,7 +340,7 @@ document.addEventListener('click', event => {
   if(world){ selectType(world.dataset.world); document.getElementById('explorer').scrollIntoView({behavior:'smooth'}); return }
   const scroll = event.target.closest('[data-scroll]');
   if(scroll){ document.getElementById(scroll.dataset.scroll)?.scrollIntoView({behavior:'smooth'}); return }
-  if(event.target.closest('[data-host]')){ showToast('Le parcours hôte arrive dans la V2 — disponible dans la démo V1'); return }
+  if(event.target.closest('[data-host]')){ location.href = 'hote.html'; return }
 });
 
 document.getElementById('searchDock').addEventListener('submit', event => {
@@ -344,22 +359,11 @@ document.getElementById('applySearch').addEventListener('click', () => {
 document.getElementById('clearSearch').addEventListener('click', () => {
   if(state.searchStep === 'place'){ state.place = ''; placeSummary.textContent = 'Destination'; }
   if(state.searchStep === 'date'){ state.date = ''; state.dateLabel = 'Ce week-end'; state.timeslot = ''; dateSummary.textContent = state.dateLabel; }
-  if(state.searchStep === 'guests'){ state.adults = 1; state.kids = 0; state.babies = 0; guestSummary.textContent = guestLabel(); }
+  if(state.searchStep === 'guests'){ state.adults = 1; state.kids = 0; state.babies = 0; guestSummary.textContent = guestLabel(); updateSearchSummary(); }
   if(state.searchStep === 'occasion'){ state.occasion = ''; selectMoment('', true); document.getElementById('occasionSummary').textContent = 'Peu importe'; }
   renderSearchStep();
 });
 
-document.getElementById('favoritesButton').addEventListener('click', () => {
-  const favorites = listings.filter(item => state.favorites.has(item.id));
-  if(!favorites.length){ showToast('Aucun favori pour l’instant'); return }
-  state.type = 'all'; state.moment = '';
-  setView('grid');
-  grid.innerHTML = favorites.map((item, index) => cardTemplate(item, index, true)).join('');
-  resultCount.textContent = `${favorites.length} favori${favorites.length > 1 ? 's' : ''}`;
-  document.querySelector('.listings-section').scrollIntoView({behavior:'smooth'});
-});
-
-document.getElementById('mobileFavorites').addEventListener('click', () => document.getElementById('favoritesButton').click());
 document.addEventListener('keydown', event => { if(event.key === 'Escape'){ closeSearch(); closeDetail(); } });
 
 /* ===== Simulateur hôte — tarifs réels de la plateforme, commission 15 % à la source ===== */
@@ -367,8 +371,10 @@ document.addEventListener('keydown', event => { if(event.key === 'Escape'){ clos
   const openRange = document.getElementById('simOpen');
   if(!openRange) return;
   const privRange = document.getElementById('simPriv');
+  const priceRange = document.getElementById('simPrice');
+  const seatsRange = document.getElementById('simSeats');
   const bleue = document.getElementById('simBleue');
-  const WEEKS = 4.33, SEATS = 6, OPEN_PRICE = 7.5, PRIV_PRICE = 68, BLEUE_PRICE = 12, COMMISSION = .15;
+  const WEEKS = 4.33, PRIV_PRICE = 68, COMMISSION = .15;
 
   const money = n => Math.round(n).toLocaleString('fr-FR').replace(/ | /g, ' ') + ' €';
 
@@ -379,32 +385,104 @@ document.addEventListener('keydown', event => { if(event.key === 'Escape'){ clos
 
   function compute(){
     const open = +openRange.value, priv = +privRange.value;
-    const openGross = open * WEEKS * SEATS * OPEN_PRICE;
+    const price = +priceRange.value, seats = +seatsRange.value;
+    const openGross = open * WEEKS * seats * price;
     const privGross = priv * PRIV_PRICE;
-    const bleueGross = bleue.checked ? WEEKS * SEATS * BLEUE_PRICE : 0;
+    const eveningPrice = Math.max(15, price + 7.5);
+    const bleueGross = bleue.checked ? WEEKS * seats * eveningPrice : 0;
     const gross = openGross + privGross + bleueGross;
     const net = gross * (1 - COMMISSION);
 
     document.getElementById('simOpenVal').textContent = open;
     document.getElementById('simPrivVal').textContent = priv;
+    document.getElementById('simPriceVal').textContent = price.toLocaleString('fr-FR', {minimumFractionDigits:price % 1 ? 2 : 0}) + ' €';
+    document.getElementById('simSeatsVal').textContent = seats;
     document.getElementById('simTotal').textContent = money(net);
 
     const rows = [
       [open ? open + ' séances ouvertes/semaine' : 'Séances ouvertes', openGross],
       [priv ? priv + ' privatisations/mois' : 'Privatisations', privGross]
     ];
-    if(bleue.checked) rows.push(['Créneau du soir, 1 fois/semaine', bleueGross]);
+    if(bleue.checked) rows.push(['Créneau de nuit 22 h – 1 h, 1 fois/semaine', bleueGross]);
     rows.push(['Commission plateforme — 15 %', -(gross * COMMISSION)]);
     rows.push(['Net sur votre compte', net]);
     document.getElementById('simBreakdown').innerHTML = rows
       .map(([label, value]) => `<div><span>${label}</span><span>${value < 0 ? '−' + money(Math.abs(value)) : money(value)}</span></div>`)
       .join('');
-    [openRange, privRange].forEach(paint);
+    const tip = open < 3
+      ? 'Deux créneaux supplémentaires par semaine peuvent améliorer la visibilité sans bloquer votre calendrier.'
+      : seats < 5
+        ? 'Votre capacité reste volontairement intime : c’est un bon argument pour les familles avec de jeunes enfants.'
+        : 'Votre équilibre prix, capacité et disponibilités est cohérent pour une annonce familiale.';
+    document.getElementById('simMiaTip').textContent = tip;
+    [openRange, privRange, priceRange, seatsRange].forEach(paint);
   }
 
-  [openRange, privRange].forEach(input => input.addEventListener('input', compute));
+  [openRange, privRange, priceRange, seatsRange].forEach(input => input.addEventListener('input', compute));
   bleue.addEventListener('change', compute);
   compute();
+})();
+
+/* ===== Maz — concierge contextuel du prototype ===== */
+(function miaAssistant(){
+  const panel = document.getElementById('miaPanel');
+  if(!panel) return;
+  const thread = document.getElementById('miaThread');
+  const input = document.getElementById('miaInput');
+  const launchers = document.querySelectorAll('[data-open-mia]');
+  const reply = (text, action) => {
+    const bubble = document.createElement('p');
+    bubble.className = 'maz-reply';
+    bubble.textContent = text;
+    if(action){
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'maz-reply-action';
+      button.textContent = action.label;
+      button.addEventListener('click', action.run);
+      bubble.appendChild(button);
+    }
+    thread.appendChild(bubble);
+    thread.scrollTop = thread.scrollHeight;
+  };
+  const answerFor = value => {
+    const query = value.toLocaleLowerCase('fr');
+    if(/bonjour|salut|hello|aide|aider/.test(query)) return ['Bien sûr. Dites-moi simplement qui vient, quand, et l’ambiance souhaitée. Je vous guide sans choisir à votre place.'];
+    if(/aujourd|maintenant|ce soir|disponib|créneau|creneau/.test(query)) return ['Quatre créneaux sont encore visibles aujourd’hui autour d’Aix, dès 6 €. Je peux ouvrir la recherche directement sur les disponibilités.', {label:'Voir les créneaux', run:() => { close(); document.querySelector('.availability-rail')?.scrollIntoView({behavior:'smooth', block:'center'}); }}];
+    if(/famille|enfant|bébé|bebe|petit/.test(query)) return ['Pour une famille, je regarde d’abord la profondeur, l’ombre, les règles enfants et les avis. Vous pourrez ensuite ajuster la date et le nombre de baigneurs.', {label:'Lancer la recherche famille', run:() => { close(); openSearch('place'); }}];
+    if(/prix|cher|budget|euro|€/.test(query)) return ['Les séances ouvertes commencent à 6 € par personne. Le prix affiché inclut déjà les frais de service : aucun supplément n’est ajouté à la dernière étape.', {label:'Voir les petits prix', run:() => { close(); document.querySelector('[data-detail="verger"]')?.scrollIntoView({behavior:'smooth', block:'center'}); }}];
+    if(/favori|compare|compar/.test(query)) return ['Je peux comparer deux favoris sur le prix total, la durée, la distance, l’accueil des enfants et les équipements. Le choix final reste le vôtre.', {label:'Comparer mes favoris', run:() => { location.href='espace.html?view=favoris'; }}];
+    if(/louer|hôte|hote|annonce|piscine à moi|ma piscine/.test(query)) return ['Je peux préparer votre description, améliorer vos photos et proposer des réglages. Rien n’est publié ni envoyé à un voyageur sans votre validation.', {label:'Ouvrir l’espace hôte', run:() => { location.href='hote.html?view=listing'; }}];
+    if(/annul|rembours|problème|litige/.test(query)) return ['Si l’hôte annule, la réservation est remboursée. En cas de problème, le versement est suspendu pendant l’examen de la situation.'];
+    return ['Je veux vous répondre précisément. Cherchez-vous une baignade, souhaitez-vous comparer deux lieux, ou voulez-vous publier votre espace ?'];
+  };
+  const open = () => {
+    panel.hidden = false;
+    launchers.forEach(button => button.setAttribute('aria-expanded', 'true'));
+    setTimeout(() => input.focus(), 80);
+  };
+  const close = () => {
+    panel.hidden = true;
+    launchers.forEach(button => button.setAttribute('aria-expanded', 'false'));
+  };
+  launchers.forEach(button => button.addEventListener('click', open));
+  document.querySelector('[data-close-mia]').addEventListener('click', close);
+  document.querySelector('[data-mia-action="family"]').addEventListener('click', () => {
+    reply('Pour une famille, je privilégie l’ombre, la profondeur renseignée, les règles enfants et les avis.', {label:'Lancer la recherche famille', run:() => { close(); openSearch('place'); }});
+  });
+  document.getElementById('miaForm').addEventListener('submit', event => {
+    event.preventDefault();
+    const value = input.value.trim();
+    if(!value){ input.focus(); return; }
+    const bubble = document.createElement('p');
+    bubble.className = 'user';
+    bubble.textContent = value;
+    thread.appendChild(bubble);
+    input.value = '';
+    const [text, action] = answerFor(value);
+    window.setTimeout(() => reply(text, action), 180);
+  });
+  document.addEventListener('keydown', event => { if(event.key === 'Escape' && !panel.hidden) close(); });
 })();
 
 function syncHeader(){ document.body.classList.toggle('header-compact', window.scrollY > 520); }
@@ -413,4 +491,33 @@ syncHeader();
 updateSearchSummary();
 
 renderListings();
+
+const startupSearch = new URLSearchParams(location.search).get('search');
+if(SEARCH_ORDER.includes(startupSearch)){
+  history.replaceState(null, '', location.pathname);
+  requestAnimationFrame(() => openSearch(startupSearch));
+}
+
+(function experienceDetails(){
+  const details = [...document.querySelectorAll('.faq details')];
+  details.forEach(item => item.addEventListener('toggle', () => {
+    if(!item.open) return;
+    details.forEach(other => { if(other !== item) other.open = false; });
+  }));
+})();
+
+(function experienceMotion(){
+  if(!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const items = document.querySelectorAll('.moments-head,.moment-card,.world-intro,.world-card,.proof-intro,.proof-card,.faq-head,.faq details,.host-copy,.simulator');
+  if(!items.length) return;
+  document.body.classList.add('motion-ready');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      observer.unobserve(entry.target);
+    });
+  }, {rootMargin:'0px 0px -7% 0px', threshold:.08});
+  items.forEach(item => { item.classList.add('experience-reveal'); observer.observe(item); });
+})();
 })();

@@ -7,8 +7,10 @@
   <meta name="robots" content="noindex">
   <title>Réservation confirmée — Loue ta piscine</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%23F6F2E8'/%3E%3Cpath d='M9 26c4-4 8-4 12 0s8 4 12 0 8-4 12 0' fill='none' stroke='%2308323A' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M10 34c4-4 8-4 12 0s8 4 12 0' fill='none' stroke='%2308323A' stroke-width='2.6' stroke-linecap='round'/%3E%3Ccircle cx='35' cy='13' r='5' fill='%23F5D463'/%3E%3C/svg%3E">
-  <link rel="preload" href="fonts/generalsans-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="v2.css?v=33">
+  <link rel="preload" href="./assets/generalsans-400-BeAhF2WT.woff2" as="font" type="font/woff2" crossorigin>
+  <script type="module" crossorigin src="./assets/confirmation-TaX_7vuZ.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/backend-CusNSpTl.js">
+  <link rel="stylesheet" crossorigin href="./assets/backend-B2jCPKSZ.css">
 </head>
 <body>
   <header class="site-header">
@@ -67,54 +69,5 @@
     <small>Prototype local V2 — réservation et disponibilités synchronisées</small>
   </footer>
 
-  <script type="module" src="src/backend.js"></script>
-  <script type="module" src="data.js?v=2"></script>
-  <script type="module">
-  (function(){
-    'use strict';
-    const q = new URLSearchParams(location.search);
-    const listing = window.LTP.listings.find(l => l.id === q.get('id')) || window.LTP.listings[0];
-    const host = listing.host;
-    const onsite = q.get('paiement') === 'place';
-    const total = q.get('total') || '28';
-    const persons = q.get('persons') || '2';
-    const mode = q.get('mode') || 'séance ouverte';
-    const date = q.get('date') || 'Dimanche 2 août';
-    const time = q.get('time') || '16 h – 18 h';
-
-    document.getElementById('confirmSub').textContent =
-      listing.name + ' vous attend. ' + host.name + ' vient de recevoir votre réservation' +
-      (onsite ? ' — vous réglerez sur place, rien n’est débité.' : ' — votre paiement est sécurisé sous séquestre.');
-    document.getElementById('confirmMode').textContent = mode;
-    document.getElementById('confirmRows').innerHTML =
-      '<div><span>Lieu</span><b>' + listing.name + '</b></div>' +
-      '<div><span>Adresse</span><b>' + listing.location + '</b></div>' +
-      '<div><span>Date</span><b>' + date + '</b></div>' +
-      '<div><span>Créneau</span><b>' + time + '</b></div>' +
-      '<div><span>' + (mode === 'journée privée' ? 'Participants' : 'Baigneurs') + '</span><b>' + persons + '</b></div>' +
-      '<div><span>Total — tout compris</span><b class="big">' + total + '\u00A0€</b></div>';
-
-    document.getElementById('revealNote').textContent =
-      'Avant la réservation, la messagerie masquait les coordonnées. Elles sont maintenant à vous — c’est la règle de la plateforme.';
-    document.getElementById('revealPhone').textContent = host.phone || '06 ·· ·· ·· ··';
-    document.getElementById('revealAddr').textContent = host.address || listing.location + ' — adresse exacte dans votre messagerie';
-
-    const step1 = onsite
-      ? '<div>Aucun débit aujourd’hui<small>Vous réglez ' + host.name + ' sur place — hôte noté au-dessus de 4,5</small></div>'
-      : '<div>Paiement encaissé sous séquestre<small>Votre argent est bloqué, ' + host.name + ' ne touche rien avant votre venue</small></div>';
-    document.getElementById('confirmTimeline').innerHTML = step1 +
-      '<div>Le jour J<small>Accès au lieu, séance selon le règlement de l’hôte</small></div>' +
-      (onsite
-        ? '<div>Après la séance<small>La commission plateforme est facturée à l’hôte automatiquement</small></div>'
-        : '<div>24 à 48 h après la séance<small>' + host.name + ' reçoit son virement, commission déduite à la source</small></div>') +
-      '<div>Un souci ?<small>Versement suspendu tant que le litige n’est pas tranché</small></div>';
-
-    document.getElementById('backToFiche').href = 'fiche.html?id=' + listing.id;
-
-    const liftHeader = () => document.body.classList.toggle('header-lift', window.scrollY > 12);
-    window.addEventListener('scroll', liftHeader, { passive:true });
-    liftHeader();
-  })();
-  </script>
 </body>
 </html>

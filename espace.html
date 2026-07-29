@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#F8F5ED">
+  <title>Mon espace — Loue ta piscine</title>
+<link rel="stylesheet" href="v2.css?v=33">
+</head>
+<body class="space-app">
+  <header class="space-topbar">
+    <a class="brand" href="index.html" aria-label="Retour à Loue ta piscine">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 26c4-4 8-4 12 0s8 4 12 0 8-4 12 0"/><path d="M10 34c4-4 8-4 12 0s8 4 12 0"/><circle cx="35" cy="13" r="4"/></svg>
+      <span>loue ta piscine</span>
+    </a>
+    <span class="space-mode">Mon espace</span>
+    <div class="space-top-actions"><a href="hote.html">Passer en mode hôte</a><button class="space-profile" type="button" data-space-view="account" aria-label="Ouvrir mon compte"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21c.7-4 3-6 7-6s6.3 2 7 6"/></svg></button></div>
+  </header>
+
+  <main class="space-shell">
+    <aside class="space-sidebar" aria-label="Navigation de mon espace">
+      <div class="space-person"><span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21c.7-4 3-6 7-6s6.3 2 7 6"/></svg></span><div><small>Bonjour</small><b data-account-name>Mazen</b></div></div>
+      <nav>
+        <a href="index.html"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>Explorer</a>
+        <button type="button" data-space-view="messages"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H9l-5 3zM8 10h8M8 13h5"/></svg>Messages <i>2</i></button>
+        <button type="button" data-space-view="favoris"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>Favoris <i>3</i></button>
+        <button type="button" data-space-view="reservations"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>Réservations</button>
+        <button type="button" data-space-view="account"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c.7-4 3-6 7-6s6.3 2 7 6"/></svg>Compte</button>
+      </nav>
+      <a class="space-host-switch" href="hote.html"><span><svg viewBox="0 0 24 24"><path d="M4 20h16M6 20V9l6-5 6 5v11M9 13h6"/></svg></span><div><b>Vous avez une piscine&nbsp;?</b><small>Voir l’espace hôte</small></div></a>
+    </aside>
+
+    <section class="space-workspace">
+      <section class="space-view favorite-view" data-space-panel="favoris">
+        <header class="space-view-head"><div><p>Votre collection</p><h1>Les ploufs<br>mis de côté.</h1><span data-favorite-count>Trois lieux qui donnent déjà envie de préparer le sac.</span></div><a href="index.html?search=place">Trouver une autre piscine <svg viewBox="0 0 24 24"><path d="M5 12h13M14 7l5 5-5 5"/></svg></a></header>
+
+        <section class="mia-compare" aria-labelledby="compareTitle">
+          <header><span class="maz-mark" aria-hidden="true"></span><div><small>Maz, votre assistant</small><h2 id="compareTitle">Comparez deux favoris.</h2><p>Vous choisissez les adresses et ce qui compte vraiment.</p></div></header>
+          <div class="compare-builder">
+            <div class="compare-step"><b>1 · Vos deux choix</b><div class="compare-pools" role="group" aria-label="Piscines à comparer"><button class="active" type="button" data-compare-pool="micocouliers" aria-pressed="true">Micocouliers</button><button class="active" type="button" data-compare-pool="verger" aria-pressed="true">Verger</button><button type="button" data-compare-pool="bastide" aria-pressed="false">Bastide</button></div></div>
+            <div class="compare-step"><b>2 · Votre priorité</b><div class="compare-priorities" role="group" aria-label="Critère de comparaison"><button class="active" type="button" data-compare-priority="family" aria-pressed="true">Avec enfants</button><button type="button" data-compare-priority="price" aria-pressed="false">Prix</button><button type="button" data-compare-priority="near" aria-pressed="false">Proximité</button><button type="button" data-compare-priority="calm" aria-pressed="false">Calme</button></div></div>
+            <button class="compare-run" id="runCompare" type="button">Comparer avec Maz+</button>
+          </div>
+          <div class="compare-result" id="compareResult" hidden aria-live="polite"></div>
+        </section>
+
+        <div class="favorite-grid">
+          <article class="favorite-place" data-favorite-card="micocouliers">
+            <div class="favorite-place-photo"><img src="assets/famille-hero-v2.webp" alt="Piscine familiale sous les arbres" width="1536" height="1024"><button type="button" data-remove-favorite aria-label="Retirer des favoris" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg></button><span>À 12 min</span><div class="favorite-badges"><b data-premium-badge hidden>Hôte Premium</b><b>Enfants +</b></div></div>
+            <div class="favorite-place-copy"><small>Aix-en-Provence</small><h2>La piscine des micocouliers</h2><p>Ombre · jeux d’eau · enfants bienvenus</p><div><b class="num">7 € <small>/ personne</small></b><a href="fiche.html?id=micocouliers">Voir les créneaux</a></div></div>
+          </article>
+          <article class="favorite-place" data-favorite-card="bastide">
+            <div class="favorite-place-photo"><img src="assets/provencale.webp" alt="Piscine provençale entourée de verdure" width="768" height="512"><button type="button" data-remove-favorite aria-label="Retirer des favoris" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg></button><span>Au calme</span><div class="favorite-badges"><b>Privatisé</b></div></div>
+            <div class="favorite-place-copy"><small>Éguilles</small><h2>Le bassin de la bastide</h2><p>Grand jardin · parasol · hôte sur place</p><div><b class="num">18 € <small>/ personne</small></b><a href="fiche.html?id=bastide">Voir les créneaux</a></div></div>
+          </article>
+          <article class="favorite-place" data-favorite-card="verger">
+            <div class="favorite-place-photo"><img src="assets/familiale.webp" alt="Piscine accueillante dans un jardin familial" width="768" height="512"><button type="button" data-remove-favorite aria-label="Retirer des favoris" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg></button><span>Petit prix</span><div class="favorite-badges"><b>Hôte Premium</b><b>Jeux inclus</b></div></div>
+            <div class="favorite-place-copy"><small>Pertuis</small><h2>La piscine du verger</h2><p>Pelouse · goûter autorisé · bouées incluses</p><div><b class="num">6 € <small>/ personne</small></b><a href="fiche.html?id=verger">Voir les créneaux</a></div></div>
+          </article>
+        </div>
+
+      </section>
+
+      <section class="space-view message-view" data-space-panel="messages" hidden>
+        <header class="inbox-head"><div><h1>Messages</h1><span>2 non lus</span></div></header>
+        <section class="message-shell">
+          <aside class="message-list" aria-label="Conversations">
+            <button class="active" type="button" data-conversation="claire"><span class="message-avatar">CL<i></i></span><div><b>Claire · Micocouliers</b><p>Le portillon sera ouvert à 15 h 50.</p><small>Aujourd’hui · 11:42</small></div><em>1</em></button>
+            <button type="button" data-conversation="lucas"><span class="message-avatar photo"><img src="assets/jacuzzi-convivial-v3.webp" alt=""></span><div><b>Lucas · Jacuzzi du patio</b><p>Les serviettes sont bien comprises.</p><small>Hier · 18:06</small></div></button>
+            <button type="button" data-conversation="support"><span class="message-avatar support">L</span><div><b>Équipe Loue ta piscine</b><p>Bienvenue, nous restons là si nécessaire.</p><small>24 juillet</small></div></button>
+            <button type="button" data-conversation="mia"><span class="message-avatar mia maz-mark" aria-hidden="true"></span><div><b>Maz</b><p>Je peux résumer ou préparer une réponse.</p><small>Disponible 24 h/24</small></div></button>
+          </aside>
+        </section>
+        <button class="inbox-maz" type="button" data-open-premium="guest" aria-label="Découvrir Maz plus"><span class="maz-mark" aria-hidden="true"></span><div><b>Maz+</b><small>Voir les avantages</small></div><i></i></button>
+
+        <div class="message-modal" id="messageModal" hidden>
+          <button class="message-modal-backdrop" type="button" data-close-conversation aria-label="Fermer la conversation"></button>
+          <article class="conversation" aria-label="Conversation" role="dialog" aria-modal="true">
+            <header><div class="conversation-person"><span id="conversationInitial">CL<i></i></span><div><b id="conversationName">Claire</b><small id="conversationMeta">Hôte vérifiée · répond en 8 min</small></div></div><div class="conversation-head-actions"><a id="conversationListing" href="fiche.html?id=micocouliers">Voir la piscine</a><button type="button" data-close-conversation aria-label="Fermer">×</button></div></header>
+            <div class="booking-context" id="bookingContext"><img src="assets/famille-hero-v2.webp" alt="Piscine des micocouliers"><div><small>Prochaine baignade</small><b>Dimanche 2 août · 16 h</b><span>4 baigneurs · Privatisation</span></div><em>Confirmée</em></div>
+            <div class="message-thread" id="messageThread">
+              <time>Aujourd’hui</time>
+              <div class="bubble incoming"><p>Bonjour Mazen, tout est prêt pour dimanche. Vous pourrez vous garer juste devant le portail vert.</p><small>11:36</small></div>
+              <div class="bubble outgoing"><p>Super merci ! Les enfants peuvent apporter leurs brassards&nbsp;?</p><small>11:39 · Lu</small></div>
+              <div class="bubble incoming"><p>Oui bien sûr. Le portillon sera ouvert à 15 h 50 et j’ai aussi quelques jeux d’eau sur place.</p><small>11:42</small></div>
+            </div>
+            <div class="conversation-maz-compose" id="conversationMazCompose"><span class="maz-mark" aria-hidden="true"></span><p><b>La bonne réponse, dans votre ton.</b><small>Maz relit le contexte et prépare un brouillon que vous validez.</small></p><button type="button" data-maz-compose>Préparer avec Maz</button></div>
+            <form class="message-composer" id="messageComposer"><button type="button" id="messageAttach" aria-label="Ajouter des photos, vidéos ou fichiers">+</button><input class="sr-only" id="messageFile" type="file" accept="image/*,video/*,.pdf,.doc,.docx" multiple><label><span class="sr-only">Votre message</span><input id="messageInput" type="text" placeholder="Écrire à Claire…" autocomplete="off"></label><button type="submit">Envoyer</button></form>
+          </article>
+        </div>
+      </section>
+
+      <section class="space-view reservation-view" data-space-panel="reservations" hidden>
+        <header class="space-view-head"><div><p>Vos baignades</p><h1>Tout est prêt.</h1><span>Retrouvez les informations utiles avant de partir.</span></div></header>
+        <article class="reservation-ticket"><div><small>CONFIRMÉE · DIM. 2 AOÛT</small><h2>La piscine des micocouliers</h2><p>16 h – 18 h · 4 baigneurs · Aix-en-Provence</p></div><img src="assets/famille-hero-v2.webp" alt="Piscine des micocouliers"><a href="fiche.html?id=micocouliers">Voir ma réservation</a></article>
+      </section>
+
+      <section class="space-view account-view" data-space-panel="account" hidden>
+        <header class="account-head"><div><p>Mon compte</p><h1>Vos préférences,<br>bien rangées.</h1><span>Identité, famille, alertes et sécurité réunies au même endroit.</span></div><span class="account-security"><i></i>Compte protégé</span></header>
+        <form class="account-layout" id="travelerAccountForm">
+          <section class="account-card account-identity"><header><span>01</span><div><h2>Identité et contact</h2><p>Utilisés pour vos réservations et confirmations.</p></div></header><div class="account-fields"><label><span>Nom complet</span><input name="full_name" autocomplete="name" value="Mazen Chaban" required></label><label><span>E-mail <i>Vérifié</i></span><input name="email" type="email" autocomplete="email" value="mazen@example.com" required></label><label><span>Téléphone <i>Vérifié</i></span><input name="phone" type="tel" autocomplete="tel" value="+33 6 12 34 56 78" required></label></div></section>
+          <section class="account-card"><header><span>02</span><div><h2>Votre famille</h2><p>Maz peut préremplir la recherche sans réserver à votre place.</p></div></header><div class="account-counter-grid"><label><span>Adultes</span><input name="adults" type="number" min="0" max="30" value="2"></label><label><span>Enfants</span><input name="children" type="number" min="0" max="30" value="2"></label><label><span>Bébés</span><input name="babies" type="number" min="0" max="10" value="0"></label></div><div class="account-checks"><label><input name="quiet_preference" type="checkbox"><span>Je privilégie les lieux calmes</span></label><label><input name="accessible" type="checkbox"><span>Afficher d’abord les accès faciles</span></label></div></section>
+          <section class="account-card"><header><span>03</span><div><h2>Notifications</h2><p>Choisissez uniquement les alertes qui vous sont utiles.</p></div></header><div class="account-switches"><label><span><b>Réservations</b><small>Confirmations et changements importants</small></span><input name="booking_notifications" type="checkbox" checked></label><label><span><b>Messages</b><small>Nouveau message d’un hôte</small></span><input name="message_notifications" type="checkbox" checked></label><label><span><b>Idées près de chez vous</b><small>Nouveaux lieux et créneaux pertinents</small></span><input name="marketing_notifications" type="checkbox"></label></div></section>
+          <section class="account-card"><header><span>04</span><div><h2>Sécurité et confidentialité</h2><p>Vos accès et vos données, au même endroit.</p></div></header><div class="account-actions"><button type="button" data-account-action="password"><span><b>Renouveler le mot de passe</b><small>Un lien sécurisé est envoyé à l’adresse vérifiée.</small></span><i>Envoyer le lien</i></button><div class="account-auth-status"><span><b>Double vérification</b><small>Protection renforcée lors d’une connexion à votre compte.</small></span><i>À configurer en ligne</i></div><button type="button" data-account-action="export"><span><b>Exporter mes données</b><small>Profil et préférences enregistrés</small></span><i>Télécharger</i></button></div></section>
+          <footer class="account-save"><button type="submit">Enregistrer les modifications</button></footer>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <nav class="space-mobile-nav" aria-label="Navigation de mon espace mobile">
+    <a href="index.html"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg><span>Explorer</span></a>
+    <button type="button" data-space-view="messages"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H9l-5 3z"/></svg><span>Messages</span></button>
+    <button type="button" data-space-view="favoris"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg><span>Favoris</span></button>
+    <button type="button" data-space-view="reservations"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Réservations</span></button>
+    <a href="hote.html"><svg viewBox="0 0 24 24"><path d="M4 20h16M6 20V9l6-5 6 5v11"/></svg><span>Hôte</span></a>
+  </nav>
+  <div class="space-toast" id="spaceToast" role="status"></div>
+<script type="module" src="src/backend.js"></script>
+<script type="module" src="demo-store.js?v=1"></script>
+<script type="module" src="data.js?v=3"></script>
+<script type="module" src="premium.js?v=2"></script>
+<script type="module" src="espace.js?v=11"></script>
+</body>
+</html>

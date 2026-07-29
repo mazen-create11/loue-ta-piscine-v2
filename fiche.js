@@ -4,11 +4,24 @@ const { listings, makeSchedule, euro } = window.LTP;
 
 const params = new URLSearchParams(location.search);
 const listing = listings.find(l => l.id === params.get('id')) || listings[0];
+
+/* Ce que l'hôte enregistre dans son espace (clé ltp-listing-override) s'applique ici :
+   sans ça, l'éditeur promettait une synchronisation qui n'arrivait jamais. */
+try {
+  const override = JSON.parse(localStorage.getItem('ltp-listing-override') || 'null');
+  if(override && override.id === listing.id){
+    ['name','location','description'].forEach(field => {
+      if(override[field]) listing[field] = override[field];
+    });
+  }
+} catch { /* réglage illisible : on garde l'annonce d'origine */ }
 const DAYS = makeSchedule(listing);
 const isOpen = listing.model === 'open';
 const p = listing.pricing;
+const dynamicPremium = () => listing.host.premium || (listing.id === 'micocouliers' && window.LTPPremium?.isHostPremium());
+const dynamicBoost = () => listing.badges.includes('À la une') || (listing.id === 'micocouliers' && window.LTPPremium?.isBoosted());
 
-const state = { format:'slot', week:0, day:0, slot:null, persons:2, privatise:false, payment:'online', extras:{} };
+const state = { step:'format', format:'slot', week:0, day:0, slot:null, persons:2, privatise:false, payment:'online', extras:{} };
 
 const ICONS = {
   shower:'<path d="M7 19V6a3 3 0 0 1 6 0M17 19V6M3 19h18" stroke-linecap="round"/>',
@@ -40,14 +53,18 @@ el('ficheDesc').textContent = listing.description;
 const chips = [];
 if(isOpen){ chips.push(['open','Séances ouvertes']); chips.push(['neutral','Privatisable']); }
 else chips.push(['open','Toujours privatisé']);
-if(listing.host.premium) chips.push(['premium','★ Hôte Premium']);
+if(dynamicPremium()) chips.push(['premium','★ Hôte Premium · abonné']);
 if(listing.facts[0].includes('°C')) chips.push(['neutral', (listing.type === 'sauna' ? '' : 'Chauffée · ') + listing.facts[0]]);
-if(listing.host.onsite) chips.push(['onsite','Paiement sur place disponible']);
+if(listing.host.onsite) chips.push(['onsite','Paiement sur place · débloqué']);
 el('ficheChips').innerHTML = chips.map(c => '<span class="chip chip-' + c[0] + '">' + c[1] + '</span>').join('');
 
-el('ficheBadges').innerHTML = listing.badges.map((b, i) => '<span class="' + (i === 0 && b === 'À la une' ? 'premium' : '') + '">' + b + '</span>').join('');
+const publicBadges = [...listing.badges];
+if(dynamicBoost() && !publicBadges.includes('À la une')) publicBadges.unshift('À la une');
+el('ficheBadges').innerHTML = publicBadges.map(b => '<span class="' + (b === 'À la une' ? 'premium' : '') + '">' + b + (b === 'À la une' ? '<small>sponsorisé</small>' : '') + '</span>').join('');
 
 const mainImg = el('galleryMain');
+let galleryIndex = 0;
+let lightboxZoom = 1;
 mainImg.src = listing.gallery[0];
 mainImg.alt = listing.name + ' — photo 1';
 el('galleryThumbs').innerHTML = listing.gallery.map((src, i) =>
@@ -56,30 +73,115 @@ el('galleryThumbs').innerHTML = listing.gallery.map((src, i) =>
 el('galleryThumbs').addEventListener('click', ev => {
   const b = ev.target.closest('[data-photo]');
   if(!b) return;
-  const i = +b.dataset.photo;
-  mainImg.src = listing.gallery[i];
-  mainImg.alt = listing.name + ' — photo ' + (i + 1);
-  document.querySelectorAll('#galleryThumbs [role="tab"]').forEach(t => t.setAttribute('aria-selected', t === b));
+  selectPhoto(+b.dataset.photo);
+});
+
+function selectPhoto(index){
+  galleryIndex = (index + listing.gallery.length) % listing.gallery.length;
+  mainImg.src = listing.gallery[galleryIndex];
+  mainImg.alt = listing.name + ' — photo ' + (galleryIndex + 1);
+  document.querySelectorAll('#galleryThumbs [role="tab"]').forEach((tab, i) => tab.setAttribute('aria-selected', String(i === galleryIndex)));
+  if(!el('galleryLightbox').hidden){
+    setLightboxZoom(1);
+    el('lightboxImage').src = listing.gallery[galleryIndex];
+    el('lightboxImage').alt = mainImg.alt;
+    el('lightboxCaption').textContent = (galleryIndex + 1) + ' / ' + listing.gallery.length + ' · ' + listing.name;
+  }
+}
+
+function setLightboxZoom(value){
+  lightboxZoom = Math.max(1, Math.min(3, value));
+  el('lightboxImage').style.transform = 'scale(' + lightboxZoom + ')';
+  el('lightboxImage').classList.toggle('zoomed', lightboxZoom > 1);
+  el('lightboxZoom').textContent = Math.round(lightboxZoom * 100) + ' %';
+}
+
+function openLightbox(){
+  el('galleryLightbox').hidden = false;
+  document.body.classList.add('lightbox-open');
+  selectPhoto(galleryIndex);
+  document.querySelector('[data-lightbox-close]').focus();
+}
+
+function closeLightbox(){
+  el('galleryLightbox').hidden = true;
+  document.body.classList.remove('lightbox-open');
+}
+
+document.querySelector('.gallery-main').addEventListener('click', openLightbox);
+document.querySelector('.gallery-main').addEventListener('keydown', event => { if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openLightbox(); } });
+document.querySelector('[data-lightbox-close]').addEventListener('click', closeLightbox);
+document.querySelector('[data-lightbox-prev]').addEventListener('click', () => selectPhoto(galleryIndex - 1));
+document.querySelector('[data-lightbox-next]').addEventListener('click', () => selectPhoto(galleryIndex + 1));
+document.querySelector('[data-lightbox-zoom-out]').addEventListener('click', () => setLightboxZoom(lightboxZoom - .5));
+document.querySelector('[data-lightbox-zoom-in]').addEventListener('click', () => setLightboxZoom(lightboxZoom + .5));
+document.querySelector('.lightbox-stage').addEventListener('click', () => setLightboxZoom(lightboxZoom > 1 ? 1 : 2));
+let lightboxTouchX = 0;
+el('galleryLightbox').addEventListener('touchstart', event => { lightboxTouchX = event.changedTouches[0].clientX; }, {passive:true});
+el('galleryLightbox').addEventListener('touchend', event => {
+  if(lightboxZoom > 1) return;
+  const distance = event.changedTouches[0].clientX - lightboxTouchX;
+  if(Math.abs(distance) > 52) selectPhoto(galleryIndex + (distance < 0 ? 1 : -1));
+}, {passive:true});
+document.querySelector('[data-fiche-back]').addEventListener('click', () => {
+  if(history.length > 1) history.back();
+  else location.href = 'index.html#explorer';
 });
 
 el('ficheEquip').innerHTML = listing.equipment.map(e =>
   '<div class="equip-item"><svg viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[e[0]] || ICONS.deck) + '</svg>' + e[1] + '</div>'
 ).join('');
 
-el('visiteSummary').textContent = 'Vérifié par l’équipe le ' + listing.visit.date;
-el('visiteBadge').textContent = 'conforme ' + listing.visit.points.length + '/' + listing.visit.points.length;
+el('visiteSummary').textContent = 'Renseigné par ' + listing.host.name + ' · mis à jour le ' + listing.visit.date;
+el('visiteBadge').textContent = listing.visit.points.length + ' infos utiles';
 el('visitePoints').innerHTML = listing.visit.points.map(pt => '<li>' + pt + '</li>').join('');
 el('ficheRules').innerHTML = listing.rules.map(r => '<li>' + r + '</li>').join('');
 
-el('ficheAvis').innerHTML = listing.reviewsList.map(r =>
-  '<figure><div class="stars" aria-label="5 étoiles">' + star.repeat(5) + '</div><p>« ' + r.text + ' »</p><figcaption>' + r.author + '</figcaption></figure>'
+const reviewPagesData = [];
+for(let index = 0; index < listing.reviewsList.length; index += 2) reviewPagesData.push(listing.reviewsList.slice(index,index + 2));
+el('ficheAvis').innerHTML = reviewPagesData.map((page,pageIndex) =>
+  '<div class="review-page" data-review-page-panel="' + pageIndex + '">' + page.map(r =>
+    '<figure><div class="stars" aria-label="5 étoiles">' + star.repeat(5) + '</div><p>« ' + r.text + ' »</p><figcaption>' + r.author + '</figcaption></figure>'
+  ).join('') + '</div>'
 ).join('');
+const reviewTrack = el('ficheAvis');
+const reviewCards = [...reviewTrack.querySelectorAll('.review-page')];
+let currentReview = 0;
+el('reviewPages').innerHTML = reviewCards.map((_, index) => '<button type="button" data-review-page="' + index + '" aria-label="Afficher la page d’avis ' + (index + 1) + '">' + (index + 1) + '</button>').join('');
+function goToReview(index, smooth){
+  currentReview = Math.max(0, Math.min(reviewCards.length - 1, index));
+  reviewTrack.scrollTo({left:reviewCards[currentReview].offsetLeft - reviewTrack.offsetLeft, behavior:smooth ? 'smooth' : 'auto'});
+  const first = currentReview * 2 + 1;
+  const last = Math.min(first + 1, listing.reviewsList.length);
+  el('reviewCount').textContent = first === last ? 'Avis ' + first + ' sur ' + listing.reviewsList.length : 'Avis ' + first + '–' + last + ' sur ' + listing.reviewsList.length;
+  el('reviewPrev').disabled = currentReview === 0;
+  el('reviewNext').disabled = currentReview === reviewCards.length - 1;
+  el('reviewPages').querySelectorAll('button').forEach((button, i) => {
+    button.classList.toggle('active', i === currentReview);
+    button.setAttribute('aria-current', i === currentReview ? 'true' : 'false');
+  });
+}
+el('reviewPrev').addEventListener('click', () => goToReview(currentReview - 1, true));
+el('reviewNext').addEventListener('click', () => goToReview(currentReview + 1, true));
+el('reviewPages').addEventListener('click', event => {
+  const page = event.target.closest('[data-review-page]');
+  if(page) goToReview(+page.dataset.reviewPage, true);
+});
+let reviewScrollTimer;
+reviewTrack.addEventListener('scroll', () => {
+  clearTimeout(reviewScrollTimer);
+  reviewScrollTimer = setTimeout(() => {
+    const nearest = reviewCards.reduce((best, card, index) => Math.abs(card.offsetLeft - reviewTrack.offsetLeft - reviewTrack.scrollLeft) < best.distance ? {index, distance:Math.abs(card.offsetLeft - reviewTrack.offsetLeft - reviewTrack.scrollLeft)} : best, {index:0, distance:Infinity});
+    if(nearest.index !== currentReview) goToReview(nearest.index, false);
+  }, 80);
+}, {passive:true});
+goToReview(0, false);
 
 const h = listing.host;
 el('ficheHost').innerHTML =
   '<div class="host-avatar" aria-hidden="true">' + h.initial + '</div>' +
   '<div><b>' + h.name + '</b>' +
-  '<p class="host-meta num">' + (h.premium ? 'Hôte Premium · ' : '') + 'note ' + listing.rating + (h.onsite ? ' · paiement sur place débloqué' : '') + ' · répond en ' + h.response + '</p>' +
+  '<p class="host-meta num">' + (h.premium ? 'Hôte Premium abonné · visibilité renforcée · ' : '') + 'note ' + listing.rating + (h.onsite ? ' · paiement sur place débloqué grâce à sa note' : '') + ' · répond en ' + h.response + '</p>' +
   '<p>Messagerie intégrée avant réservation — les coordonnées sont communiquées automatiquement après confirmation.</p>' +
   '<button class="host-write" type="button" data-message>Écrire à ' + h.name + ' →</button></div>';
 
@@ -126,15 +228,19 @@ function renderFormats(){
     '<button class="format-pick num" type="button" data-format="day"><span>À la journée</span><b>' + p.dayPrice + '\u00A0€' + (withHalf ? '' : ' au total') + '</b><small>' + listing.dayHours + ' · jusqu’à ' + listing.dayCap + ' pers.</small></button>';
   el('formatPicks').querySelectorAll('.format-pick').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.format === state.format);
-    btn.addEventListener('click', () => { state.format = btn.dataset.format; state.slot = null; state.privatise = state.format !== 'slot'; render(); });
+    btn.addEventListener('click', () => { state.format = btn.dataset.format; state.slot = null; state.privatise = state.format !== 'slot'; state.step = 'slot'; render(); });
   });
 }
 
 function syncJourney(){
+  const order = ['format','slot','payment'];
+  const current = order.indexOf(state.step);
   document.querySelectorAll('#journey .j-step').forEach((step, i) => {
-    step.classList.toggle('active', state.slot === null ? i === 1 : i === 2);
-    step.classList.toggle('done', i === 0 || (state.slot !== null && i === 1));
+    step.classList.toggle('active', i === current);
+    step.classList.toggle('done', i < current);
+    step.disabled = i > current || (step.dataset.bookStep === 'payment' && state.slot === null);
   });
+  document.querySelectorAll('[data-book-stage]').forEach(stage => { stage.hidden = stage.dataset.bookStage !== state.step; });
 }
 
 function renderDays(){
@@ -178,7 +284,7 @@ function renderSlots(){
       ? '<span class="s-time">' + listing.dayHours + '</span><span class="s-info">Jusqu’à ' + listing.dayCap + ' personnes — le lieu est à vous</span><span class="s-price">' + p.dayPrice + '\u00A0€<small> /jour</small></span><span class="s-tag tag-priv">Privatisé</span>'
       : '<span class="s-time">' + listing.dayHours + '</span><span class="s-info">Des réservations existent déjà ce jour-là</span><span class="s-tag tag-full">Indisponible</span>',
       state.slot === 'day', !ok);
-    if(ok) btn.addEventListener('click', () => { state.slot = 'day'; state.privatise = true; if(state.persons < 2) state.persons = 2; render(); });
+    if(ok) btn.addEventListener('click', () => { state.slot = 'day'; state.privatise = true; state.step = 'payment'; if(state.persons < 2) state.persons = 2; render(); });
     slotList.appendChild(btn);
     addCustomRequest();
     return;
@@ -189,7 +295,7 @@ function renderSlots(){
       ? '<span class="s-time">' + HALF_HOURS + '</span><span class="s-info">Jusqu’à ' + listing.dayCap + ' personnes — l’après-midi est à vous</span><span class="s-price">' + p.halfDay + '\u00A0€</span><span class="s-tag tag-priv">Privatisé</span>'
       : '<span class="s-time">' + HALF_HOURS + '</span><span class="s-info">L’après-midi est déjà réservé, en partie ou en entier</span><span class="s-tag tag-full">Indisponible</span>',
       state.slot === 'half', !ok);
-    if(ok) btn.addEventListener('click', () => { state.slot = 'half'; state.privatise = true; if(state.persons < 2) state.persons = 2; render(); });
+    if(ok) btn.addEventListener('click', () => { state.slot = 'half'; state.privatise = true; state.step = 'payment'; if(state.persons < 2) state.persons = 2; render(); });
     slotList.appendChild(btn);
     addCustomRequest();
     return;
@@ -208,19 +314,19 @@ function renderSlots(){
     }
     if(s.regime === 'unit'){
       const btn = slotButton('<span class="s-time">' + s.t + '</span><span class="s-info">Jusqu’à ' + s.cap + ' personnes</span><span class="s-price">' + euro(s.price) + '</span><span class="s-tag tag-priv">Privatisé</span>', state.slot === i);
-      btn.addEventListener('click', () => { state.slot = i; state.privatise = true; if(state.persons > s.cap) state.persons = s.cap; render(); });
+      btn.addEventListener('click', () => { state.slot = i; state.privatise = true; state.step = 'payment'; if(state.persons > s.cap) state.persons = s.cap; render(); });
       slotList.appendChild(btn);
       return;
     }
     const left = s.cap - s.booked;
     const fill = Math.round(s.booked / s.cap * 100);
-    const tag = s.bleue ? '<span class="s-tag tag-bleue">Heure bleue</span>' : '<span class="s-tag tag-open">Ouverte</span>';
+    const tag = s.night ? '<span class="s-tag tag-night">Jusqu’à 1 h</span>' : s.bleue ? '<span class="s-tag tag-bleue">Heure bleue</span>' : '<span class="s-tag tag-open">Ouverte</span>';
     if(left <= 0){
       slotList.appendChild(slotButton('<span class="s-time">' + s.t + '</span><span class="s-info"><i class="gauge"><b style="width:100%"></b></i>' + s.cap + ' baigneurs</span><span class="s-tag tag-full">Complet</span>', false, true));
     } else {
       const btn = slotButton('<span class="s-time">' + s.t + '</span><span class="s-info"><i class="gauge"><b style="width:' + fill + '%"></b></i>' + left + ' place' + (left > 1 ? 's' : '') + '</span><span class="s-price">' + euro(s.priceP) + '<small>/pers</small></span>' + tag, state.slot === i);
       btn.addEventListener('click', () => {
-        state.slot = i; state.privatise = false;
+        state.slot = i; state.privatise = false; state.step = 'payment';
         if(state.persons > left) state.persons = left;
         render();
       });
@@ -235,7 +341,7 @@ function addCustomRequest(){
   b.type = 'button';
   b.className = 'custom-request';
   b.textContent = 'Un autre horaire ? Demander à ' + h.name;
-  b.addEventListener('click', () => showToast('La messagerie arrive dans la V2 — disponible dans la démo V1'));
+  b.addEventListener('click', () => { window.location.href = 'espace.html?view=messages'; });
   slotList.appendChild(b);
 }
 
@@ -299,7 +405,7 @@ function renderConfig(){
     '<div class="book-total">' +
       '<div class="t-row"><span>' + (isDay ? 'Journée privée · jusqu’à ' + s.cap + ' pers.' : isHalf ? 'Demi-journée privée · jusqu’à ' + s.cap + ' pers.' : unit ? 'Créneau privatisé · ' + listing.unit : state.privatise ? 'Privatisation' : state.persons + ' × ' + euro(s.priceP)) + '</span><span>' + euro(base) + '</span></div>' +
       (extrasTotal ? '<div class="t-row"><span>Extras</span><span>' + euro(extrasTotal) + '</span></div>' : '') +
-      '<div class="t-row"><span>Frais de service et assurance</span><span>inclus</span></div>' +
+      '<div class="t-row"><span>Frais de service</span><span>inclus</span></div>' +
       '<div class="t-row grand"><span>Total — tout compris</span><span>' + euro(total) + '</span></div>' +
       '<p class="price-promise">' + shieldIcon + '<span><b>Ce prix est le prix payé.</b> Rien ne s’ajoute à l’étape suivante — ni frais de dossier, ni commission cachée.</span></p>' +
       '<a class="book-cta" href="' + confirmURL(dy, s, mode, total) + '">' + (state.payment === 'onsite' ? 'Confirmer — paiement sur place' : 'Réserver et payer') + ' →</a>' +
@@ -330,6 +436,12 @@ function confirmURL(dy, s, mode, total){
 }
 
 function render(){ renderFormats(); renderDays(); renderSlots(); renderConfig(); syncJourney(); }
+document.querySelectorAll('#journey [data-book-step]').forEach(button => button.addEventListener('click', () => {
+  const target = button.dataset.bookStep;
+  if(target === 'payment' && state.slot === null) return;
+  state.step = target;
+  syncJourney();
+}));
 el('weekPrev').addEventListener('click', () => { if(state.week > 0){ state.week--; state.day = state.week * 7; state.slot = null; render(); } });
 el('weekNext').addEventListener('click', () => { if((state.week + 1) * 7 < DAYS.length){ state.week++; state.day = state.week * 7; state.slot = null; render(); } });
 render();
@@ -344,7 +456,11 @@ function toggleBooking(open){
 el('bookOpen').addEventListener('click', () => toggleBooking(true));
 el('bookClose').addEventListener('click', () => toggleBooking(false));
 overlay.addEventListener('click', () => toggleBooking(false));
-document.addEventListener('keydown', ev => { if(ev.key === 'Escape') toggleBooking(false); });
+document.addEventListener('keydown', ev => {
+  if(ev.key === 'Escape'){ toggleBooking(false); closeLightbox(); }
+  if(!el('galleryLightbox').hidden && ev.key === 'ArrowLeft') selectPhoto(galleryIndex - 1);
+  if(!el('galleryLightbox').hidden && ev.key === 'ArrowRight') selectPhoto(galleryIndex + 1);
+});
 
 const liftHeader = () => document.body.classList.toggle('header-lift', window.scrollY > 12);
 window.addEventListener('scroll', liftHeader, { passive:true });
@@ -376,13 +492,11 @@ function bindMessage(){
   document.querySelectorAll('[data-message]').forEach(b => {
     if(b.dataset.bound) return;
     b.dataset.bound = '1';
-    b.addEventListener('click', () => showToast('La messagerie arrive dans la V2 — disponible dans la démo V1'));
+    b.addEventListener('click', () => { window.location.href = 'espace.html?view=messages'; });
   });
 }
 bindMessage();
 document.addEventListener('click', ev => {
-  if(ev.target.closest('[data-host]')) showToast('Le parcours hôte arrive dans la V2 — disponible dans la démo V1');
-  const dead = ev.target.closest('a[href="#"]');
-  if(dead) ev.preventDefault();
+  if(ev.target.closest('[data-host]')) window.location.href = 'hote.html';
 });
 })();

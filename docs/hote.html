@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#062F37">
+  <title>Espace hôte — Loue ta piscine</title>
+  <script type="module" crossorigin src="./assets/host-RyWYsefR.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/backend-CusNSpTl.js">
+  <link rel="modulepreload" crossorigin href="./assets/demo-store-DLM0aRPQ.js">
+  <link rel="modulepreload" crossorigin href="./assets/premium-Bx9lh5G0.js">
+  <link rel="stylesheet" crossorigin href="./assets/backend-B2jCPKSZ.css">
+</head>
+<body class="host-app">
+  <header class="host-topbar">
+    <a class="brand" href="index.html" aria-label="Retour à Loue ta piscine">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 26c4-4 8-4 12 0s8 4 12 0 8-4 12 0"/><path d="M10 34c4-4 8-4 12 0s8 4 12 0"/><circle cx="35" cy="13" r="4"/></svg>
+      <span>loue ta piscine</span>
+    </a>
+    <span class="host-mode">Espace hôte</span>
+    <div class="host-top-actions">
+      <a href="index.html">Voir le site</a>
+      <button class="host-notification" id="hostNotifications" type="button" aria-label="Ouvrir les notifications" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><i>2</i></button>
+      <aside class="host-notification-panel" id="hostNotificationPanel" hidden aria-label="Notifications"><header><b>Notifications</b><button type="button" data-close-notifications aria-label="Fermer">×</button></header><button type="button" data-host-view-jump="reservations"><i class="booking"></i><span><b>Nouvelle réservation</b><small>Famille Martin · aujourd’hui 16 h</small></span><time>Il y a 4 min</time></button><button type="button" data-host-view-jump="listing"><i class="tip"></i><span><b>Votre annonce peut gagner en clarté</b><small>Maz a préparé un nouvel ordre photo.</small></span><time>Ce matin</time></button><button type="button" data-host-view-jump="messages"><i class="message"></i><span><b>Nouveau message</b><small>“Le portillon sera-t-il ouvert ?”</small></span><time>Hier</time></button></aside>
+      <button class="host-profile" type="button" data-host-view="account" aria-label="Ouvrir le compte de Claire"><span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21c.7-4 3-6 7-6s6.3 2 7 6"/></svg></span><b>Claire</b></button>
+    </div>
+  </header>
+
+  <main class="host-shell">
+    <aside class="host-sidebar" aria-label="Navigation hôte">
+      <div class="host-listing-mini">
+        <img src="assets/provencale.webp" alt="Piscine provençale de Claire" width="768" height="512">
+        <div><small>Mon espace</small><b>Chez Claire</b><span><i></i>Annonce en ligne</span><em class="host-paid-badge" data-premium-badge hidden>Hôte Premium</em></div>
+      </div>
+      <nav>
+        <button class="active" type="button" data-host-view="dashboard"><svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v9H4z"/><path d="M9 20v-6h6v6"/></svg>Tableau de bord</button>
+        <button type="button" data-host-view="listing"><svg viewBox="0 0 24 24"><path d="M4 20h16M6 20V9l6-5 6 5v11M9 13h6"/></svg>Mon annonce</button>
+        <button type="button" data-host-view="calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg>Calendrier</button>
+        <button type="button" data-host-view="reservations"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h5M8 16h4"/></svg>Réservations <i>2</i></button>
+        <button type="button" data-host-view="bookings"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>Revenus <i>3</i></button>
+        <button type="button" data-host-view="messages"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H9l-5 3zM8 10h8M8 13h5"/></svg>Messages <i>2</i></button>
+        <button type="button" data-host-view="account"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21c.7-4 3-6 7-6s6.3 2 7 6"/></svg>Compte</button>
+      </nav>
+      <button class="host-sidebar-help" type="button" data-open-premium="host"><span class="maz-mark" aria-hidden="true"></span><div><b>Demander à Maz</b><small>Voir ce qu’il peut faire</small></div><i>→</i></button>
+    </aside>
+
+    <section class="host-workspace" id="hostWorkspace">
+      <section class="host-panel active" data-host-panel="dashboard">
+      <header class="host-welcome">
+        <div><h1>Bonjour Claire.</h1><span id="hostNextArrivalLabel">Calcul de la prochaine arrivée…</span></div>
+        <button class="host-primary-action" type="button" data-host-view-jump="calendar">Ajouter une disponibilité <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      </header>
+
+      <div class="host-status-line"><i></i><span><b>Annonce publiée · 88 % complète.</b> Six jours ouverts cette semaine, réservation instantanée active.</span><button type="button" id="listingToggle" aria-pressed="true"><span></span>En ligne</button></div>
+
+      <section class="host-overview" aria-label="Résumé de l’activité">
+        <article class="host-earning">
+          <div class="host-card-label"><span>Ce mois-ci</span><b>+18 %</b></div>
+          <strong class="num">1&nbsp;324&nbsp;€</strong>
+          <p>net après commission</p>
+          <div class="earning-chart" aria-label="Progression des revenus sur quatre semaines"><i style="--h:35%"><small>S1</small></i><i style="--h:52%"><small>S2</small></i><i style="--h:68%"><small>S3</small></i><i class="active" style="--h:88%"><small>S4</small></i></div>
+          <div class="host-payout"><span>Prochain virement</span><b class="num">486 € · mercredi</b></div>
+        </article>
+
+        <article class="host-next">
+          <div class="host-card-label"><span>Prochaine baignade</span><b id="hostNextDay">Aujourd’hui</b></div>
+          <time><strong class="num" id="hostNextStart">16:00</strong><small id="hostNextEnd">jusqu’à 18:00</small></time>
+          <div class="guest-family"><span id="hostNextInitials">FM</span><div><b id="hostNextName">Famille Martin</b><small id="hostNextGuests">2 adultes · 2 enfants</small></div><em id="hostNextHistory">Déjà venue</em></div>
+          <ul><li><span>Format</span><b id="hostNextFormat">Privatisation</b></li><li><span>À préparer</span><b id="hostNextPrepare">Portillon + parasol</b></li></ul>
+          <div class="host-next-actions"><button type="button" data-next-message>Envoyer un message</button><button type="button" data-next-ready>Tout est prêt</button></div>
+        </article>
+      </section>
+
+      <section class="host-calendar-card" id="hostCalendar" aria-labelledby="hostCalendarTitle">
+        <header><div><p>Disponibilités</p><h2 id="hostCalendarTitle">La semaine en un coup d’œil</h2></div><div class="calendar-legend"><span><i></i>Ouvert</span><span><i></i>Réservé</span></div></header>
+        <div class="host-week" role="list">
+          <button type="button" class="past" aria-label="Lundi 27, terminé"><small>Lun.</small><b class="num">27</b><span>Terminé</span></button>
+          <button type="button" class="booked" aria-label="Mardi 28, deux réservations"><small>Mar.</small><b class="num">28</b><span>2 réservations</span><em>16 h · 19 h</em></button>
+          <button type="button" class="available" aria-pressed="true"><small>Mer.</small><b class="num">29</b><span>Ouvert</span><em>14 h – 20 h</em></button>
+          <button type="button" aria-pressed="false"><small>Jeu.</small><b class="num">30</b><span>Fermé</span><em>Appuyer pour ouvrir</em></button>
+          <button type="button" class="available" aria-pressed="true"><small>Ven.</small><b class="num">31</b><span>Ouvert</span><em>17 h – 21 h</em></button>
+          <button type="button" class="booked" aria-label="Samedi 1er août, complet"><small>Sam.</small><b class="num">01</b><span>Complet</span><em>3 réservations</em></button>
+          <button type="button" class="available" aria-pressed="true"><small>Dim.</small><b class="num">02</b><span>Ouvert</span><em>10 h – 18 h</em></button>
+        </div>
+      </section>
+
+      <section class="host-lower-grid">
+        <article class="host-experience-card">
+          <header><div><p>Expérience voyageur</p><h2>Ce qui fait revenir les familles</h2></div><strong class="num">4,9<small>/5</small></strong></header>
+          <blockquote>“Tout était simple, Claire avait même laissé des jeux d’eau pour les enfants.”<cite>— Léa, venue samedi</cite></blockquote>
+          <div class="experience-bars"><span><b>Accueil</b><i><em style="--w:98%"></em></i><small>4,9</small></span><span><b>Propreté</b><i><em style="--w:96%"></em></i><small>4,8</small></span><span><b>Confort famille</b><i><em style="--w:94%"></em></i><small>4,7</small></span></div>
+        </article>
+        <article class="host-opportunity">
+          <p>Maz vous conseille</p>
+          <span class="opportunity-icon maz-mark" aria-hidden="true"></span>
+          <h2>Montrez le coin d’ombre.</h2>
+          <p>Les parents cherchent cette information avant la profondeur du bassin. Une photo du parasol peut améliorer la confiance dans votre annonce.</p>
+          <button type="button" data-host-photo>Ajouter une photo</button>
+        </article>
+      </section>
+
+      <section class="host-ai-studio" id="miaStudio" aria-labelledby="hostAiTitle">
+        <header><div><p>Hello, moi c’est Maz</p><h2 id="hostAiTitle">Je prépare. Vous décidez.</h2></div><span><i class="maz-mark" aria-hidden="true"></i>Votre assistant</span></header>
+        <div class="host-ai-grid">
+          <article><span>01</span><h3>Vos meilleures photos d’abord</h3><p>Maz analyse netteté, lumière et intérêt famille, puis propose un ordre modifiable.</p><button type="button" data-host-ai="order">Proposer un ordre</button></article>
+          <article><span>02</span><h3>Des photos téléphone plus propres</h3><p>Recadrage, lumière et couleurs améliorés sans inventer d’équipement.</p><button type="button" data-host-photo>Importer mes photos</button></article>
+          <article><span>03</span><h3>Une annonce prête à publier</h3><p>Description courte, équipements et règles préparés depuis vos réponses.</p><button type="button" data-host-ai="copy">Préparer l’annonce</button></article>
+        </div>
+        <aside class="host-premium-card"><div><small>Maz Hôte</small><h3>Publiez mieux, sans perdre la main.</h3><p>Assistant complet et badge d’abonné. La mise en avant « À la une » reste une option séparée et clairement signalée.</p></div><button type="button" data-open-premium="host">Découvrir · 14,90 €/mois</button></aside>
+        <input class="sr-only" id="hostPhotoInput" type="file" accept="image/*" multiple>
+      </section>
+      </section>
+
+      <section class="host-panel" data-host-panel="listing" hidden>
+        <header class="cockpit-head listing-head"><div><p>Mon annonce <em class="host-paid-badge" data-premium-badge hidden>Hôte Premium</em><em class="host-boost-badge" data-boost-badge hidden>À la une · sponsorisé</em></p><h1>Votre piscine.<br>Vos choix.</h1></div><div><a href="fiche.html?id=micocouliers">Aperçu public</a><button type="button" data-host-save>Enregistrer</button></div></header>
+
+        <section class="listing-journey" aria-labelledby="listingJourneyTitle">
+          <div class="listing-journey-copy"><span>ANNONCE EN LIGNE · 88 %</span><h2 id="listingJourneyTitle">Un chemin clair, sans décider à votre place.</h2><p>Avancez dans l’ordre ou ouvrez directement la partie que vous voulez modifier.</p><div class="listing-progress" aria-label="Annonce complétée à 88 %"><i></i></div></div>
+          <nav aria-label="Étapes de création de l’annonce">
+            <button class="done" type="button" data-listing-step="listingIdentity"><span>01</span><b>Le lieu</b><small>Complet</small></button>
+            <button class="done" type="button" data-listing-step="listingPhotos"><span>02</span><b>Les photos</b><small>5 publiées</small></button>
+            <button class="active" type="button" data-listing-step="listingOffer"><span>03</span><b>Votre offre</b><small>À vérifier</small></button>
+            <button type="button" data-listing-step="listingAvailability"><span>04</span><b>Les horaires</b><small>4 formats</small></button>
+            <button type="button" data-listing-step="listingAmenities"><span>05</span><b>Équipements</b><small>8 choix</small></button>
+            <button type="button" data-listing-step="listingRules"><span>06</span><b>Vos règles</b><small>6 choix</small></button>
+          </nav>
+          <aside><span class="maz-mark" aria-hidden="true"></span><div><b>Maz peut proposer.</b><p>Ordre photo, texte et réglages préparés avec Maz Hôte.</p></div><button type="button" data-open-premium="host">Continuer avec Maz</button></aside>
+        </section>
+
+        <section class="listing-builder">
+          <article class="listing-copy-editor listing-section-card" id="listingIdentity">
+            <header><div><small>01 · LE LIEU</small><h2>Les bases de votre annonce.</h2><p>Ces informations aident les familles à comprendre où elles arrivent.</p></div><span class="listing-health"><i></i> Complet</span></header>
+            <fieldset class="place-type"><legend>Quel espace proposez-vous&nbsp;?</legend><label><input type="radio" name="placeType" checked><span><i data-place-icon="pool" aria-hidden="true"></i><b>Piscine</b><small>Bassin extérieur ou intérieur</small><em>✓</em></span></label><label><input type="radio" name="placeType"><span><i data-place-icon="spa" aria-hidden="true"></i><b>Jacuzzi</b><small>Espace chaud et privatif</small><em>✓</em></span></label><label><input type="radio" name="placeType"><span><i data-place-icon="sauna" aria-hidden="true"></i><b>Sauna</b><small>Cabine sèche ou vapeur</small><em>✓</em></span></label></fieldset>
+            <label><span>Titre de l’annonce</span><input type="text" data-listing-field="name" value="La piscine des Micocouliers"></label>
+            <div class="editor-duo"><label><span>Ville</span><input type="text" data-listing-field="location" value="Aix-en-Provence"></label><label><span>Adresse exacte</span><input type="text" value="Visible après réservation"></label></div>
+            <div class="editor-trio"><label><span>Capacité</span><select><option>12 baigneurs</option><option>10 baigneurs</option><option>8 baigneurs</option></select></label><label><span>Profondeur</span><input type="text" value="1,20 à 2 m"></label><label><span>Taille</span><input type="text" value="10 × 5 m"></label></div>
+            <label><span>Description courte</span><textarea rows="4" data-listing-field="description">Piscine de pierre chauffée d’avril à octobre, dans un jardin de lavandes, avec accès indépendant.</textarea></label>
+            <button class="maz-inline-action" type="button" data-host-ai="copy"><span class="maz-mark" aria-hidden="true"></span><b>Raccourcir avec Maz</b><small>Une proposition, jamais une publication automatique.</small></button>
+          </article>
+
+          <article class="listing-photo-studio listing-section-card" id="listingPhotos">
+            <header><div><small>02 · PHOTOS · 5 PUBLIÉES</small><h2>Montrez le lieu sans le déformer.</h2><p>Choisissez vous-même la couverture et l’ordre d’apparition.</p></div><button type="button" data-host-photo>+ Importer</button></header>
+            <div class="host-photo-grid" id="hostPhotoGrid">
+              <button class="cover active" type="button" data-host-cover><img src="assets/famille-bleue-v2.webp" alt="Vue principale de la piscine"><span>Couverture</span><i>1</i></button>
+              <button type="button" data-host-cover><img src="assets/bassin-2.webp" alt="Vue du bassin"><span>Définir en couverture</span><i>2</i></button>
+              <button type="button" data-host-cover><img src="assets/famille-jeux-v2.webp" alt="Jeux d’eau pour enfants"><span>Définir en couverture</span><i>3</i></button>
+              <button type="button" data-host-cover><img src="assets/portillon.webp" alt="Portillon sécurisé"><span>Définir en couverture</span><i>4</i></button>
+              <button type="button" data-host-cover><img src="assets/provencale.webp" alt="Coin ombragé"><span>Définir en couverture</span><i>5</i></button>
+            </div>
+            <footer class="photo-studio-footer"><div class="photo-quality"><span class="maz-mark" aria-hidden="true"></span><p><b>Studio photo Maz</b><small>Corrige lumière, cadrage et netteté sans inventer votre lieu.</small></p></div><div class="photo-actions"><button type="button" data-host-ai="regenerate">Améliorer mes photos</button><button class="photo-order" type="button" data-host-ai="order">Optimiser l’ordre</button></div></footer>
+          </article>
+
+          <section class="listing-offer listing-section-card" id="listingOffer">
+            <header><div><small>03 · VOTRE OFFRE</small><h2>Décidez comment vous accueillez.</h2><p>Activez un ou plusieurs formats. Chaque tarif, jauge, durée et horaire reste modifiable.</p></div><span>4 formats actifs</span></header>
+            <div class="offer-choice-grid">
+              <article class="offer-choice active"><header><label><input type="checkbox" checked data-format-toggle data-sync="format-open"><i></i></label><div><small>PAR PERSONNE</small><h3>Séance ouverte</h3></div><em>Actif</em></header><p>Plusieurs familles peuvent partager le même créneau, dans la limite fixée.</p><div class="offer-controls"><div class="offer-field"><span>Prix par personne</span><div class="field-stepper"><button type="button" data-number-step="-1" aria-label="Baisser le prix">−</button><input class="num" type="number" value="7" min="4" aria-label="Prix par personne"><button type="button" data-number-step="1" aria-label="Augmenter le prix">+</button><small>€</small></div></div><div class="offer-field"><span>Jauge maximale</span><div class="field-stepper"><button type="button" data-number-step="-1" aria-label="Retirer une place">−</button><input class="num" type="number" value="12" min="1" aria-label="Places maximum"><button type="button" data-number-step="1" aria-label="Ajouter une place">+</button><small>pers.</small></div></div></div></article>
+              <article class="offer-choice active"><header><label><input type="checkbox" checked data-format-toggle data-sync="format-private"><i></i></label><div><small>LE BASSIN POUR SOI</small><h3>Privatisation</h3></div><em>Actif</em></header><p>Une seule réservation profite de tout l’espace pendant la durée choisie.</p><div class="offer-controls"><div class="offer-field"><span>Prix du créneau</span><div class="field-stepper"><button type="button" data-number-step="-5" aria-label="Baisser le prix">−</button><input class="num" type="number" value="68" min="20" aria-label="Prix du créneau"><button type="button" data-number-step="5" aria-label="Augmenter le prix">+</button><small>€</small></div></div><label class="offer-field"><span>Durée</span><select aria-label="Durée de privatisation"><option>1 h 30</option><option selected>2 h</option><option>3 h</option><option>Demi-journée</option></select></label></div></article>
+              <article class="offer-choice active blue"><header><label><input type="checkbox" checked data-format-toggle data-sync="format-blue"><i></i></label><div><small>FIN DE JOURNÉE</small><h3>Heure bleue</h3></div><em>Actif</em></header><p>Un rendez-vous du soir avec son propre prix, sa jauge et ses horaires.</p><div class="offer-controls"><div class="offer-field"><span>Prix par personne</span><div class="field-stepper"><button type="button" data-number-step="-1" aria-label="Baisser le prix">−</button><input class="num" type="number" value="12" min="4" aria-label="Prix heure bleue"><button type="button" data-number-step="1" aria-label="Augmenter le prix">+</button><small>€</small></div></div><label class="offer-field"><span>Horaire habituel</span><input type="text" value="19:30 – 21:30" aria-label="Horaire heure bleue"></label></div></article>
+              <article class="offer-choice night active"><header><label><input type="checkbox" checked data-format-toggle data-sync="format-night"><i></i></label><div><small>JUSQU’À 1 H</small><h3>Créneau de nuit</h3></div><em>Actif</em></header><p>Vous choisissez les jours, le prix et les consignes de voisinage.</p><div class="offer-controls"><div class="offer-field"><span>Prix par personne</span><div class="field-stepper"><button type="button" data-number-step="-1" aria-label="Baisser le prix">−</button><input class="num" type="number" value="15" min="4" aria-label="Prix créneau de nuit"><button type="button" data-number-step="1" aria-label="Augmenter le prix">+</button><small>€</small></div></div><label class="offer-field"><span>Horaire habituel</span><input type="text" value="22:00 – 01:00" aria-label="Horaire créneau de nuit"></label></div></article>
+            </div>
+            <p class="choice-note"><b>Votre liberté reste entière.</b> Désactiver un format ne supprime pas vos réglages : vous pourrez le rouvrir plus tard.</p>
+          </section>
+
+          <section class="listing-availability listing-section-card" id="listingAvailability">
+            <header><div><small>04 · DISPONIBILITÉS HABITUELLES</small><h2>Votre rythme, avant les exceptions.</h2><p>Définissez ici votre semaine type. Les réservations et fermetures ponctuelles restent dans le calendrier.</p></div><button type="button" data-host-view-jump="calendar">Ouvrir le calendrier</button></header>
+            <div class="availability-builder">
+              <div class="weekday-choice" aria-label="Jours habituellement ouverts"><button class="active" type="button" data-weekday aria-pressed="true"><small>Lun.</small><b>Ouvert</b></button><button class="active" type="button" data-weekday aria-pressed="true"><small>Mar.</small><b>Ouvert</b></button><button type="button" data-weekday aria-pressed="false"><small>Mer.</small><b>Fermé</b></button><button class="active" type="button" data-weekday aria-pressed="true"><small>Jeu.</small><b>Ouvert</b></button><button class="active" type="button" data-weekday aria-pressed="true"><small>Ven.</small><b>Ouvert</b></button><button class="active" type="button" data-weekday aria-pressed="true"><small>Sam.</small><b>Ouvert</b></button><button class="active" type="button" data-weekday aria-pressed="true"><small>Dim.</small><b>Ouvert</b></button></div>
+              <div class="availability-defaults"><label><span><b>Plage habituelle</b><small>Modifiable jour par jour</small></span><input type="text" value="09:00 – 21:30"></label><label><span><b>Rotation</b><small>Entre deux groupes</small></span><select data-sync="rotation"><option>30 minutes</option><option>45 minutes</option><option>1 heure</option></select></label><label><span><b>Préavis minimum</b><small>Avant une réservation</small></span><select data-sync="notice"><option>2 heures</option><option>4 heures</option><option>24 heures</option></select></label><label><span><b>Réservation instantanée</b><small>Sans validation manuelle</small></span><input type="checkbox" checked data-sync="instant"></label></div>
+            </div>
+            <aside><span>SEMAINE TYPE</span><b>6 jours ouverts</b><p>Les dates réellement réservables sont toujours visibles dans Calendrier.</p></aside>
+          </section>
+
+          <section class="listing-amenities listing-section-card" id="listingAmenities">
+            <header><div><small>05 · CONFORT & ÉQUIPEMENTS</small><h2>Dites exactement ce qui est sur place.</h2><p>Aucun équipement n’est supposé. Activez uniquement ce que vous fournissez.</p></div><span>7 sélectionnés</span></header>
+            <div class="amenity-categories" aria-label="Catégories d’équipements"><span class="active">Essentiels</span><span>Famille</span><span>Confort</span><span>Accès</span></div>
+            <div class="amenity-grid"><label><input type="checkbox" checked><i data-amenity="shower" aria-hidden="true"></i><span><b>Douche</b><small>Extérieure</small></span></label><label><input type="checkbox" checked><i data-amenity="wc" aria-hidden="true"></i><span><b>Toilettes</b><small>Accès privé</small></span></label><label><input type="checkbox" checked><i data-amenity="shade" aria-hidden="true"></i><span><b>Coin d’ombre</b><small>Parasol</small></span></label><label><input type="checkbox" checked><i data-amenity="games" aria-hidden="true"></i><span><b>Jeux d’eau</b><small>Pour enfants</small></span></label><label><input type="checkbox" checked><i data-amenity="parking" aria-hidden="true"></i><span><b>Parking</b><small>2 véhicules</small></span></label><label><input type="checkbox" checked><i data-amenity="seat" aria-hidden="true"></i><span><b>Transats</b><small>4 disponibles</small></span></label><label><input type="checkbox" checked><i data-amenity="heat" aria-hidden="true"></i><span><b>Piscine chauffée</b><small>27 °C</small></span></label><label><input type="checkbox"><i data-amenity="meal" aria-hidden="true"></i><span><b>Barbecue</b><small>Non fourni</small></span></label></div>
+          </section>
+
+        <section class="host-rulebook listing-section-card" id="listingRules">
+          <header><div><p>06 · ACCUEIL & RÈGLES</p><h2>Clair avant l’arrivée.</h2><span>Un cahier simple, visible avant la réservation. Vous choisissez chaque règle.</span></div><button type="button" data-host-save>Enregistrer les règles</button></header>
+          <div class="rulebook-grid">
+            <label><span><b>Musique autorisée</b><small>Volume raisonnable, puis doux après 22 h.</small></span><input type="checkbox" checked></label>
+            <label><span><b>Créneau de nuit</b><small>22 h – 1 h · départ silencieux.</small></span><input type="checkbox" checked data-sync="format-night"></label>
+            <label><span><b>Animaux admis</b><small>Choix de l’hôte, visible avant paiement.</small></span><input type="checkbox"></label>
+            <label><span><b>Maillot obligatoire</b><small>Douche demandée avant la baignade.</small></span><input type="checkbox" checked></label>
+            <label><span><b>Enfants accompagnés</b><small>Adulte dans l’eau avant 10 ans.</small></span><input type="checkbox" checked></label>
+            <label><span><b>Repas autorisé</b><small>Sans verre autour du bassin.</small></span><input type="checkbox" checked></label>
+          </div>
+          <label class="rule-custom"><span>Ajouter une consigne personnelle</span><div><input id="customRule" type="text" placeholder="Ex. Le portillon reste fermé"><button type="button" id="addHostRule">Ajouter</button></div></label>
+          <div class="custom-rules" id="customRules"><span>Le portillon reste fermé <button type="button" aria-label="Retirer cette règle">×</button></span></div>
+        </section>
+        </section>
+
+        <footer class="listing-publish-bar"><div><span><i></i></span><p><b>Votre annonce est en ligne.</b><small>Les modifications ne sont publiées qu’après votre validation.</small></p></div><a href="fiche.html?id=micocouliers">Aperçu</a><button type="button" data-host-save>Enregistrer mes choix</button></footer>
+      </section>
+
+      <section class="host-panel" data-host-panel="calendar" hidden>
+        <header class="cockpit-head"><div><p>Calendrier</p><h1>Ouvrez, fermez,<br>respirez.</h1><span>Une semaine lisible, chaque créneau sous contrôle.</span></div><div><button type="button" data-save-calendar>Enregistrer</button></div></header>
+        <section class="calendar-cockpit">
+          <header><button type="button" aria-label="Semaine précédente">←</button><div><small>27 JUILLET – 2 AOÛT</small><h2>Cette semaine</h2></div><button type="button" aria-label="Semaine suivante">→</button></header>
+          <div class="calendar-days"><button class="active" type="button"><small>Lun.</small><b>27</b></button><button type="button"><small>Mar.</small><b>28</b></button><button type="button"><small>Mer.</small><b>29</b></button><button type="button"><small>Jeu.</small><b>30</b></button><button type="button"><small>Ven.</small><b>31</b></button><button type="button"><small>Sam.</small><b>01</b></button><button type="button"><small>Dim.</small><b>02</b></button></div>
+          <div class="slot-planner">
+            <header><div><b>Lundi 27 juillet</b><small id="slotPlannerSummary">3 créneaux ouverts · 1 réservation</small></div><button type="button" data-add-slot>+ Ajouter un créneau</button></header>
+            <div class="slot-planner-list" id="hostSlotRows">
+              <label><time>09:00 — 11:00</time><span><b>Séance ouverte</b><small>7 € / personne · 12 places</small></span><input type="checkbox" checked data-sync="format-open"></label>
+              <label><time>14:00 — 16:00</time><span><b>Privatisation</b><small>68 € · confirmé par la famille Martin</small></span><em>Réservé</em></label>
+              <label><time>19:30 — 21:30</time><span><b>Heure bleue</b><small>12 € / personne · 8 places</small></span><input type="checkbox" checked data-sync="format-blue"></label>
+              <label class="night"><time>22:00 — 01:00</time><span><b>Créneau de nuit</b><small>15 € / personne · musique douce après 22 h</small></span><input type="checkbox" checked data-sync="format-night"></label>
+            </div>
+          </div>
+          <aside class="calendar-settings"><h2>Réglages rapides</h2><label><span><b>Rotation</b><small>Temps entre deux groupes</small></span><select data-sync="rotation"><option>30 minutes</option><option>45 minutes</option><option>1 heure</option></select></label><label><span><b>Réservation instantanée</b><small>Confirmer sans validation manuelle</small></span><input type="checkbox" checked data-sync="instant"></label><label><span><b>Préavis minimum</b><small>Temps avant une réservation</small></span><select data-sync="notice"><option>2 heures</option><option>4 heures</option><option>24 heures</option></select></label></aside>
+        </section>
+      </section>
+
+      <section class="host-panel" data-host-panel="reservations" hidden>
+        <header class="cockpit-head reservations-head"><div><p>Réservations</p><h1>Chaque arrivée,<br>sans angle mort.</h1><span>Voyageurs, horaires, paiement et préparation réunis au même endroit.</span></div><div><button type="button" data-export-reservations>Exporter la semaine</button></div></header>
+        <section class="reservation-command">
+          <div class="reservation-command-kpis"><article><span>Aujourd’hui</span><b class="num">2</b><small>prochaine à 16 h</small></article><article><span>À venir</span><b class="num">8</b><small>7 prochains jours</small></article><article><span>À préparer</span><b class="num">1</b><small>action nécessaire</small></article><article><span>Revenus confirmés</span><b class="num">486 €</b><small>après commission</small></article></div>
+          <div class="reservation-toolbar"><div role="tablist" aria-label="Filtrer les réservations"><button class="active" type="button" data-reservation-filter="upcoming">À venir <i>8</i></button><button type="button" data-reservation-filter="today">Aujourd’hui <i>2</i></button><button type="button" data-reservation-filter="past">Terminées</button></div><label><span class="sr-only">Rechercher une réservation</span><input type="search" placeholder="Nom, date ou format…" data-reservation-search></label></div>
+          <div class="reservation-layout">
+            <div class="reservation-list" id="hostReservationList" aria-live="polite"></div>
+            <aside class="reservation-detail" id="hostReservationDetail" aria-live="polite">
+              <header><div><span data-reservation-date>AUJOURD’HUI · 16:00</span><h2>Famille Martin</h2><p data-reservation-ref>Réservation #LTP-2741</p></div><i data-reservation-state>Confirmée</i><button class="reservation-detail-close" type="button" data-close-reservation aria-label="Fermer la réservation">×</button></header>
+              <div class="reservation-guests"><span>FM</span><div><b data-reservation-guests>2 adultes · 2 enfants</b><small data-reservation-history>Déjà venus une fois · note voyageur 5/5</small></div></div>
+              <dl><div><dt>Format</dt><dd data-reservation-field="format">Privatisation · 2 h</dd></div><div><dt>Paiement</dt><dd data-reservation-field="payment">68 € payé · 57,80 € net</dd></div><div><dt>Arrivée</dt><dd data-reservation-field="arrival">Portillon côté jardin</dd></div><div><dt>À préparer</dt><dd data-reservation-field="prepare">Parasol + 4 serviettes</dd></div></dl>
+              <div class="reservation-detail-actions"><button type="button" data-host-view-jump="messages">Écrire à la famille</button><button type="button" data-reservation-ready>Marquer comme prêt</button></div>
+            </aside>
+          </div>
+        </section>
+      </section>
+
+      <section class="host-panel" data-host-panel="bookings" hidden>
+        <header class="cockpit-head"><div><p>Revenus</p><h1>Ce que votre bassin<br>vous rapporte.</h1><span>Montants nets, paiements et prochains virements.</span></div><div><button type="button" data-export-revenue>Exporter</button></div></header>
+        <div class="revenue-kpis"><article><small>CE MOIS</small><b class="num">1 324 €</b><span>+18 % vs juin</span></article><article><small>À VERSER</small><b class="num">486 €</b><span>Mercredi 29 juillet</span></article><article><small>TAUX D’OCCUPATION</small><b class="num">74 %</b><span>22 créneaux réservés</span></article></div>
+        <section class="revenue-detail"><article><header><div><small>6 DERNIERS MOIS</small><h2>Une saison qui monte.</h2></div><b class="num">5 842 €</b></header><div class="revenue-bars" aria-label="Revenus mensuels"><i style="--h:32%"><span>Fév.</span></i><i style="--h:40%"><span>Mars</span></i><i style="--h:53%"><span>Avr.</span></i><i style="--h:66%"><span>Mai</span></i><i style="--h:80%"><span>Juin</span></i><i class="active" style="--h:100%"><span>Juil.</span></i></div></article><aside><h2>Derniers paiements</h2><div><span>Famille Martin<small>Privatisation · 27 juil.</small></span><b>+ 57,80 €</b></div><div><span>Sarah L.<small>4 places · 26 juil.</small></span><b>+ 23,80 €</b></div><div><span>Karim B.<small>Heure bleue · 24 juil.</small></span><b>+ 81,60 €</b></div></aside></section>
+      </section>
+
+      <section class="host-panel" data-host-panel="messages" hidden>
+        <header class="cockpit-head message-head"><div><p>Messagerie hôte</p><h1>Vos échanges,<br>ici et nulle part ailleurs.</h1><span>Les conversations hôte restent séparées de votre compte voyageur.</span></div><div><button class="message-maz-action" type="button" data-open-premium="host"><span class="maz-mark" aria-hidden="true"></span><b>Maz</b><small>Résumer et préparer</small></button></div></header>
+        <section class="host-message-center">
+          <aside class="host-conversation-list"><header><b>Messages</b><i>2 non lus</i></header><label><span class="sr-only">Rechercher une conversation</span><input type="search" placeholder="Rechercher…"></label><div>
+            <button class="active" type="button" data-host-conversation="martin"><span>FM<i></i></span><div><b>Famille Martin</b><p>Le portillon sera-t-il déjà ouvert ?</p><small>Aujourd’hui · 11:42</small></div><em>1</em></button>
+            <button type="button" data-host-conversation="sarah"><span>SL</span><div><b>Sarah L.</b><p>Merci, les enfants ont adoré.</p><small>Hier · 19:08</small></div></button>
+            <button type="button" data-host-conversation="karim"><span>KB</span><div><b>Karim B.</b><p>Peut-on arriver dix minutes avant ?</p><small>Lun. · 17:26</small></div></button>
+          </div></aside>
+          <article class="host-thread" id="hostThread">
+            <header><button class="host-thread-back" type="button" data-close-host-thread aria-label="Revenir aux conversations">←</button><span>FM<i></i></span><div><b>Famille Martin</b><small>Réservation aujourd’hui · 16:00</small></div><button type="button" aria-label="Informations de réservation" data-host-view-jump="reservations">···</button></header>
+            <div class="host-thread-booking"><span>AUJOURD’HUI</span><b>Privatisation · 16:00 – 18:00</b><small>4 voyageurs · confirmée</small></div>
+            <div class="host-thread-body" id="hostThreadBody"><div class="host-bubble incoming"><p>Bonjour Claire, le portillon sera-t-il déjà ouvert à notre arrivée ?</p><small>11:38</small></div><div class="host-bubble outgoing"><p>Bonjour, oui, il sera ouvert à partir de 15 h 50. Vous pourrez entrer par le côté jardin.</p><small>11:42 · Lu</small></div></div>
+            <div class="host-maz-draft"><span class="maz-mark" aria-hidden="true"></span><p><b>Maz peut préparer la prochaine réponse.</b><small>Résumé et ton adapté avec Maz Hôte.</small></p><button type="button" data-open-premium="host">Essayer</button></div>
+            <form class="host-message-composer" id="hostMessageComposer"><button type="button" data-host-attach aria-label="Ajouter une photo, vidéo ou un fichier">+</button><input class="sr-only" id="hostMessageFile" type="file" accept="image/*,video/*,.pdf,.doc,.docx" multiple><label><span class="sr-only">Votre message</span><input id="hostMessageInput" type="text" placeholder="Écrire à la famille Martin…" autocomplete="off"></label><button type="submit">Envoyer</button></form>
+          </article>
+        </section>
+      </section>
+
+      <section class="host-panel account-view" data-host-panel="account" hidden>
+        <header class="account-head"><div><p>Compte hôte</p><h1>Votre activité,<br>bien protégée.</h1><span>Identité publique, versements, alertes et sécurité au même endroit.</span></div><span class="account-security"><i></i>Identité vérifiée</span></header>
+        <form class="account-layout" id="hostAccountForm">
+          <section class="account-card account-identity"><header><span>01</span><div><h2>Profil public</h2><p>Ce que les familles voient avant de réserver.</p></div></header><div class="account-fields"><label><span>Nom affiché</span><input name="public_name" value="Claire" autocomplete="name" required></label><label><span>Ville</span><input name="city" value="Aix-en-Provence" autocomplete="address-level2" required></label><label class="wide"><span>Présentation courte</span><textarea name="bio" rows="3" maxlength="220" required>J’accueille les familles dans un jardin calme et ombragé.</textarea></label></div></section>
+          <section class="account-card"><header><span>02</span><div><h2>Contact et vérification</h2><p>Obligatoire avant de pouvoir accueillir une réservation.</p></div></header><div class="account-fields"><label><span>E-mail <i>Vérifié</i></span><input name="email" type="email" value="claire@example.com" required></label><label><span>Téléphone <i>Vérifié</i></span><input name="phone" type="tel" value="+33 6 45 67 89 10" required></label></div><div class="account-proof"><i></i><span><b>Identité et coordonnées contrôlées</b><small>Votre annonce reste publiable tant que ces vérifications sont valides.</small></span></div></section>
+          <section class="account-card"><header><span>03</span><div><h2>Versements et calendrier</h2><p>Suivez vos paiements et évitez les doubles réservations.</p></div></header><div class="account-actions"><button type="button" data-account-action="payout"><span><b>Compte de versement</b><small>Se termine par •• 4821</small></span><i>Gérer</i></button><button type="button" data-account-action="calendar"><span><b>Synchronisation calendrier</b><small>Importer ou exporter un calendrier iCal</small></span><i>Connecter</i></button></div></section>
+          <section class="account-card"><header><span>04</span><div><h2>Alertes hôte</h2><p>Les informations importantes, au bon moment.</p></div></header><div class="account-switches"><label><span><b>Nouvelle réservation</b><small>E-mail, SMS et notification</small></span><input name="booking_notifications" type="checkbox" checked></label><label><span><b>Nouveau message</b><small>Notification immédiate</small></span><input name="message_notifications" type="checkbox" checked></label><label><span><b>Conseils Maz</b><small>Seulement les optimisations utiles</small></span><input name="maz_notifications" type="checkbox"></label></div></section>
+          <section class="account-card"><header><span>05</span><div><h2>Sécurité</h2><p>Des accès séparés des options commerciales.</p></div></header><div class="account-actions"><button type="button" data-account-action="password"><span><b>Renouveler le mot de passe</b><small>Un lien sécurisé est envoyé à l’adresse vérifiée.</small></span><i>Envoyer le lien</i></button><div class="account-auth-status"><span><b>Double vérification</b><small>Protection renforcée lors d’une connexion à votre compte.</small></span><i>À configurer en ligne</i></div><button type="button" data-open-premium="host"><span><b>Maz Hôte</b><small>Assistant, badge et outils de publication.</small></span><i>Voir l’abonnement</i></button></div></section>
+          <footer class="account-save"><button type="submit">Enregistrer les modifications</button></footer>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <div class="slot-editor" id="slotEditor" hidden>
+    <button class="slot-editor-backdrop" type="button" data-close-slot aria-label="Fermer l’éditeur"></button>
+    <section role="dialog" aria-modal="true" aria-labelledby="slotEditorTitle">
+      <header><div><small>NOUVELLE DISPONIBILITÉ</small><h2 id="slotEditorTitle">Ouvrir un créneau</h2><p>Vous décidez du format, du tarif et de la jauge.</p></div><button type="button" data-close-slot aria-label="Fermer">×</button></header>
+      <form id="slotForm" novalidate>
+        <div class="slot-editor-grid">
+          <label class="wide"><span>Date</span><input id="slotDate" name="date" type="date" required></label>
+          <label><span>Début</span><input id="slotStart" name="start" type="time" value="16:30" required></label>
+          <label><span>Fin</span><input id="slotEnd" name="end" type="time" value="18:30" required></label>
+        </div>
+        <fieldset><legend>Format proposé</legend><div class="slot-format-choices">
+          <label><input type="radio" name="format" value="open" checked><span><b>Séance ouverte</b><small>Prix par personne</small></span></label>
+          <label><input type="radio" name="format" value="private"><span><b>Privatisation</b><small>Prix pour le bassin</small></span></label>
+          <label><input type="radio" name="format" value="blue_hour"><span><b>Heure bleue</b><small>Fin de journée</small></span></label>
+          <label><input type="radio" name="format" value="night"><span><b>Créneau de nuit</b><small>Jusqu’à 1 h</small></span></label>
+        </div></fieldset>
+        <div class="slot-editor-grid">
+          <label><span>Tarif</span><div class="field-unit"><input id="slotPrice" name="price" type="number" min="1" max="999" step="0.5" value="7" required><i>€</i></div></label>
+          <label><span>Facturation</span><select id="slotPriceUnit" name="priceUnit"><option value="person">Par personne</option><option value="slot">Pour le créneau</option></select></label>
+          <label><span>Places disponibles</span><input id="slotCapacity" name="capacity" type="number" min="1" max="100" value="12" required></label>
+        </div>
+        <div class="slot-editor-summary" id="slotEditorSummary" aria-live="polite"></div>
+        <p class="slot-editor-error" id="slotEditorError" role="alert" hidden></p>
+        <footer><button type="button" data-close-slot>Annuler</button><button type="submit">Publier ce créneau</button></footer>
+      </form>
+    </section>
+  </div>
+
+  <nav class="host-mobile-nav" aria-label="Navigation hôte mobile">
+    <button class="active" type="button" data-host-view="dashboard"><svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v9H4z"/></svg><span>Tableau</span></button>
+    <button type="button" data-host-view="listing"><svg viewBox="0 0 24 24"><path d="M4 20h16M6 20V9l6-5 6 5v11"/></svg><span>Annonce</span></button>
+    <button type="button" data-host-view="calendar"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg><span>Calendrier</span></button>
+    <button type="button" data-host-view="reservations"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 9h8M8 13h5"/></svg><span>Arrivées</span></button>
+    <button type="button" data-host-view="messages"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H9l-5 3z"/></svg><span>Messages</span></button>
+  </nav>
+  <div class="host-app-toast" id="hostAppToast" role="status"></div>
+</body>
+</html>

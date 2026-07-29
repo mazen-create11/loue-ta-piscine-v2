@@ -8,18 +8,18 @@ const listings = [
     image:'assets/famille-bleue-v2.webp',
     gallery:['assets/famille-bleue-v2.webp','assets/bassin-2.webp','assets/famille-jeux-v2.webp','assets/portillon.webp','assets/provencale.webp'],
     rating:'4,93', reviews:41, price:'dès 7\u00A0€', priceNote:'/pers · séance 2 h', day:'290\u00A0€ la journée', capacity:12, dayCap:15, dayHours:'9 h – 19 h',
-    badges:['À la une','Séance ouverte'], instant:true, availability:'Aujourd’hui 17 h', moments:['nage','apres-midi','anniversaire','soir'],
+    badges:['Séance ouverte'], instant:true, availability:'Aujourd’hui 17 h', moments:['nage','apres-midi','anniversaire','soir'],
     facts:['27 °C','10 × 5 m','Douche','Jardin'],
     description:'Piscine de pierre chauffée d’avril à octobre, dans un jardin de lavandes, avec accès indépendant.',
     dims:'10 × 5 m · profondeur 1,20 – 2 m',
     model:'open',
-    pricing:{ openWeek:7, openWE:8, openBleue:12, priv:68, privBleue:105, halfDay:139, dayPrice:290 },
+    pricing:{ openWeek:7, openWE:8, openBleue:12, openNight:15, priv:68, privBleue:105, privNight:128, halfDay:139, dayPrice:290 },
     equipment:[['shower','Douche extérieure'],['deck','4 transats + parasol'],['heat','Chauffée avril – octobre'],['wc','Vestiaire & WC dédiés'],['gate','Accès sans passer par la maison'],['fence','Barrière de sécurité normée']],
     extras:[{id:'bbq',lbl:'Barbecue à disposition',sub:'charbon fourni',price:15},{id:'serv',lbl:'Serviettes — lot de 4',sub:'lavées entre chaque séance',price:6},{id:'gouter',lbl:'Goûter maison',sub:'préparé par Claire, 6 pers.',price:18}],
-    host:{name:'Claire', initial:'C', response:'~1 h', premium:true, onsite:true, phone:'06 44 71 28 93', address:'12 traverse des Micocouliers, 13100 Aix-en-Provence'},
+    host:{name:'Claire', initial:'C', response:'~1 h', premium:false, onsite:true, phone:'06 44 71 28 93', address:'12 traverse des Micocouliers, 13100 Aix-en-Provence'},
     visit:{date:'12 mai 2026', points:['Dispositif de sécurité normé (barrière NF P90-306)','Analyse d’eau du mois consultée','Profondeurs affichées au bord de la piscine','Margelles et abords en bon état, non glissants','Douche et rinçage en état de marche','Sanitaires accessibles aux baigneurs','Accès indépendant, sans traversée du logement','Photos conformes à la réalité','Jauge cohérente avec la taille de la piscine','Trousse de premiers secours à proximité','Perche et bouée de sauvetage visibles','Identité de l’hôte vérifiée']},
-    rules:['Enfants de moins de 10 ans accompagnés d’un adulte dans l’eau','Musique autorisée jusqu’à 20 h, volume raisonnable','Pas d’animaux dans la piscine','Pas de verre autour de la piscine — gobelets fournis','Maillot de bain obligatoire, douche avant baignade','Le portillon reste fermé — jardin partagé avec personne'],
-    reviewsList:[{text:'Eau à 27°, accès simple et lieu conforme aux photos.',author:'Mélanie — juillet 2026 · séance ouverte'},{text:'Privatisation fluide, et le créneau de l’heure bleue vaut chaque euro.',author:'Karim — juin 2026 · privatisation'}]
+    rules:['Enfants de moins de 10 ans accompagnés d’un adulte dans l’eau','Musique autorisée à volume raisonnable · volume doux après 22 h','Animaux non admis dans l’espace piscine · règle choisie par l’hôte','Pas de verre autour de la piscine — gobelets fournis','Maillot de bain obligatoire et douche avant baignade · règle choisie par l’hôte','Le portillon reste fermé — jardin partagé avec personne','Créneaux du soir possibles jusqu’à 1 h · départ silencieux demandé'],
+    reviewsList:[{text:'Eau à 27°, accès simple et lieu conforme aux photos.',author:'Mélanie — juillet 2026 · séance ouverte'},{text:'Privatisation fluide, et le créneau de l’heure bleue vaut chaque euro.',author:'Karim — juin 2026 · privatisation'},{text:'Les enfants ont adoré les jeux et nous avons vraiment apprécié le coin ombragé.',author:'Sarah — juin 2026 · séance ouverte'},{text:'Très calme le soir. Les consignes après 22 h sont simples et respectueuses du voisinage.',author:'Nassim — mai 2026 · créneau de nuit'},{text:'Claire répond vite et tout était prêt à notre arrivée.',author:'Élodie — mai 2026 · privatisation'}]
   },
   {
     id:'collines', type:'piscine', name:'Le miroir des collines', location:'Cassis', distance:'25 min',
@@ -67,7 +67,7 @@ const listings = [
     description:'Margelles en travertin, eau sombre et éclairage doux au crépuscule. Le créneau du soir est le plus demandé.',
     dims:'9 × 4 m · profondeur 1,30 – 1,80 m',
     model:'open',
-    pricing:{ openWeek:8, openWE:9, openBleue:12, priv:72, privBleue:98, halfDay:120, dayPrice:220 },
+    pricing:{ openWeek:8, openWE:9, openBleue:12, openNight:15, priv:72, privBleue:98, privNight:120, halfDay:120, dayPrice:220 },
     equipment:[['light','Éclairage du bassin'],['deck','4 transats'],['shower','Douche extérieure'],['gate','Accès par le jardin']],
     extras:[{id:'serv',lbl:'Serviettes — lot de 4',sub:'fournies pliées',price:6},{id:'lanterne',lbl:'Lanternes & plaids',sub:'pour prolonger la soirée',price:9}],
     host:{name:'Paul', initial:'P', response:'~3 h', premium:false, onsite:false},
@@ -153,6 +153,7 @@ function openSlots(listing, seed, i, we){
   const afternoon = i < 7 && mix(21) === 2 ? { t:'13 h 30 – 16 h 30 · demi-journée', regime:'priv' } : s('14 h – 16 h', 3, cap, pp, p.priv);
   const out = [ s('9 h – 11 h', 1, cap, pp, p.priv), s('11 h – 13 h', 2, cap, pp, p.priv), BUF, afternoon, BUF, s('17 h – 19 h', 4, cap, pp, p.priv) ];
   if(p.openBleue) out.push(BUF, { ...s('19 h 30 – 21 h 30', 5, Math.max(4, cap - 2), p.openBleue, p.privBleue), bleue:true });
+  if(p.openNight) out.push(BUF, { ...s('22 h – 1 h', 6, Math.max(4, cap - 4), p.openNight, p.privNight), night:true });
   return out;
 }
 
