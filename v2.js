@@ -44,8 +44,24 @@ function fillIcons(root){
 }
 fillIcons();
 
+/* Départements réellement desservis. Sans ce garde-fou, une recherche « Lille » affichait
+   six piscines provençales sous le titre « Autour de Lille ». */
+const DEPARTEMENTS_DESSERVIS = ['13','83','84','04','05','06','30'];
+
+function zoneCouverte(){
+  if(!state.place) return true;
+  if(listings.some(item => item.location.toLowerCase() === state.place.toLowerCase())) return true;
+  if(!state.postal) return true; // commune saisie à la main : on ne bloque pas sur une supposition
+  return DEPARTEMENTS_DESSERVIS.includes(String(state.postal).slice(0, 2));
+}
+
 function filteredListings(){
-  return listings.filter(item => (state.type === 'all' || item.type === state.type) && (!state.moment || item.moments.includes(state.moment)))
+  if(!zoneCouverte()) return [];
+  const capacite = guestTotal();
+  return listings
+    .filter(item => (state.type === 'all' || item.type === state.type))
+    .filter(item => (!state.moment || item.moments.includes(state.moment)))
+    .filter(item => !capacite || (item.dayCap || item.capacity || 0) >= capacite)
     .sort((a, b) => Number(isFeaturedPaid(b)) - Number(isFeaturedPaid(a)));
 }
 
@@ -82,8 +98,19 @@ window.addEventListener('ltp:premium-change', renderListings);
 function renderListings(){
   const items = filteredListings();
   resultCount.textContent = `${items.length} ${items.length > 1 ? 'adresses' : 'adresse'}`;
+  // le titre suit toujours la recherche en cours, quel que soit ce qui a déclenché le rendu
+  const titre = document.getElementById('listingTitle');
+  if(titre) titre.textContent = !state.place
+    ? 'Toutes nos adresses'
+    : (state.place === 'Aix-en-Provence' ? 'Autour d’Aix' : `Autour de ${state.place}`);
   if(!items.length){
-    grid.innerHTML = '<div class="listing-empty"><div><b>Aucune adresse</b><br><small>Essayez un autre filtre</small></div></div>';
+    // dire honnêtement pourquoi c'est vide plutôt que « essayez un autre filtre »
+    const horsZone = !zoneCouverte();
+    const titre = horsZone ? `Nous ne couvrons pas encore ${state.place}` : 'Aucune adresse pour ces critères';
+    const detail = horsZone
+      ? 'Nos six adresses sont en Provence. Ouvrez la carte pour les voir toutes.'
+      : `Aucune piscine n’accueille ${guestTotal()} baigneurs sur ce filtre. Réduisez le groupe ou changez de moment.`;
+    grid.innerHTML = `<div class="listing-empty"><div><b>${titre}</b><br><small>${detail}</small><br><button class="listing-empty-reset" type="button" data-reset-search>Voir toutes les adresses</button></div></div>`;
     mapResults.innerHTML = '';
     return;
   }
@@ -184,7 +211,7 @@ function renderSuggestions(cities){
   target.innerHTML = cities.map(city => {
     const department = city.departement?.code || city.codeDepartement || '';
     const postal = city.codesPostaux?.[0] || '';
-    return `<button class="suggestion" type="button" data-city="${city.nom}"><span>${pinIcon}</span><div><b>${city.nom}</b><small>${postal || (department ? `Département ${department}` : 'France')}</small></div></button>`;
+    return `<button class="suggestion" type="button" data-city="${city.nom}" data-postal="${postal}"><span>${pinIcon}</span><div><b>${city.nom}</b><small>${postal || (department ? `Département ${department}` : 'France')}</small></div></button>`;
   }).join('');
 }
 
@@ -297,8 +324,17 @@ document.addEventListener('click', event => {
   if(step){ openSearch(step.dataset.searchStep); return }
   if(event.target.closest('[data-close-search]')){ closeSearch(); return }
   if(event.target.closest('[data-close-detail]')){ closeDetail(); return }
+  if(event.target.closest('[data-reset-search]')){
+    state.place = ''; state.postal = ''; state.moment = ''; state.type = 'all';
+    document.querySelectorAll('[data-moment]').forEach(button => button.classList.remove('active'));
+    document.querySelectorAll('[data-type]').forEach(button => button.classList.toggle('active', button.dataset.type === 'all'));
+    if(placeSummary) placeSummary.textContent = 'Destination';
+    updateSearchSummary();
+    renderListings();
+    return;
+  }
   const city = event.target.closest('[data-city]');
-  if(city){ state.place = city.dataset.city; document.getElementById('placeInput').value = state.place; placeSummary.textContent = state.place; updateSearchSummary(); return }
+  if(city){ state.place = city.dataset.city; state.postal = city.dataset.postal || ''; document.getElementById('placeInput').value = state.place; placeSummary.textContent = state.place; updateSearchSummary(); renderListings(); return }
   const month = event.target.closest('[data-month]');
   if(month){
     const next = month.dataset.month === 'next' ? 1 : -1;
@@ -346,7 +382,6 @@ document.addEventListener('click', event => {
 document.getElementById('searchDock').addEventListener('submit', event => {
   event.preventDefault();
   renderListings();
-  document.getElementById('listingTitle').textContent = state.place === 'Aix-en-Provence' ? 'Autour d’Aix' : `Autour de ${state.place}`;
   document.querySelector('.listings-section').scrollIntoView({behavior:'smooth'});
 });
 
@@ -415,6 +450,13 @@ document.addEventListener('keydown', event => { if(event.key === 'Escape'){ clos
         ? 'Votre capacité reste volontairement intime : c’est un bon argument pour les familles avec de jeunes enfants.'
         : 'Votre équilibre prix, capacité et disponibilités est cohérent pour une annonce familiale.';
     document.getElementById('simMiaTip').textContent = tip;
+    // la pastille de l'option soirée était figée en dur et contredisait le détail juste en dessous
+    const gainBadge = document.getElementById('simBleueGain');
+    if(gainBadge){
+      // même base que la ligne du détail (brut) : la commission a déjà sa propre ligne en dessous
+      gainBadge.textContent = bleue.checked ? '+' + money(bleueGross) : '';
+      gainBadge.hidden = !bleue.checked;
+    }
     [openRange, privRange, priceRange, seatsRange].forEach(paint);
   }
 

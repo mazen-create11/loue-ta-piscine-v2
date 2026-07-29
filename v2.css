@@ -92,9 +92,9 @@ main{max-width:1440px;margin:0 auto;background:var(--paper);box-shadow:0 0 0 1px
 .hero-modes{display:flex;flex-wrap:wrap;gap:8px;margin-top:27px}
 .hero-modes span{border:1px solid rgba(255,255,255,.33);border-radius:99px;background:rgba(255,255,255,.09);padding:7px 11px;color:rgba(255,255,255,.83);font-size:10px;font-weight:600;backdrop-filter:blur(7px)}
 .hero-photo{position:relative;overflow:hidden;margin:16px 16px 16px 0;border-radius:34px 34px 72px 34px;background:#1B5662;box-shadow:0 28px 70px -32px rgba(6,57,66,.68)}
-.hero-photo::before{content:"";position:absolute;z-index:0;inset:-24px;background:url("media/bouees-paillettes.webp") center/cover;filter:blur(22px) saturate(1.16);opacity:.7;transform:scale(1.08);animation:photo-breathe 18s ease-in-out 12 alternate both}
+/* la photo couvre désormais tout le cadre : plus besoin d'un fond flouté de secours */
 @keyframes photo-breathe{to{transform:scale(1.14) translate3d(-1.5%,1%,0);filter:blur(26px) saturate(1.24)}}
-.hero-photo>img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;object-position:center;filter:saturate(1.06) contrast(1.02) drop-shadow(0 20px 34px rgba(8,50,58,.18))}
+.hero-photo>img{position:relative;z-index:1;width:100%;height:100%;object-fit:cover;object-position:center 42%;filter:saturate(1.06) contrast(1.02)}
 .hero-photo::after{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(90deg,rgba(14,168,204,.1),transparent 35%),linear-gradient(0deg,rgba(6,57,66,.2),transparent 44%);pointer-events:none}
 .season-marker,.hero-note{position:absolute;z-index:2;border:1px solid rgba(255,255,255,.7);background:rgba(255,253,248,.87);color:var(--ink);box-shadow:var(--shadow-2);backdrop-filter:blur(12px)}
 .season-marker{right:28px;top:28px;display:grid;width:84px;height:84px;place-content:center;border:0;border-radius:50%;background:var(--coral);color:#fff;text-align:center;transform:rotate(7deg);box-shadow:0 18px 34px -19px rgba(6,57,66,.8)}
@@ -1363,7 +1363,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .inbox-head>div{align-items:center}
 .inbox-head>div>span{display:inline-flex;min-height:28px;align-items:center;margin-left:0;border-radius:99px;background:var(--water-pale);padding:0 10px;color:var(--primary);font-size:10px;font-weight:650}
 
-.space-profile,.host-profile{border-color:var(--border-subtle);background:var(--surface-elevated);box-shadow:var(--shadow-1)}
+.space-profile,.host-profile{border-color:var(--border-subtle);background:var(--surface-elevated);box-shadow:var(--shadow-1);color:var(--ink)}
 .host-profile span,.space-profile span{display:grid;place-items:center;border:1px solid rgba(43,119,134,.22)!important;background:var(--water-pale)!important;color:var(--primary)!important;box-shadow:none!important}
 .host-profile::before,.host-profile::after,.space-profile::before,.space-profile::after{display:none!important}
 
@@ -1444,3 +1444,17 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media (prefers-reduced-motion:reduce){
   .bubble.masked-hit,.host-bubble.masked-hit{animation:none}
 }
+
+/* L'attribut hidden doit gagner sur les display: des composants (grid/flex posés plus haut). */
+[hidden]{display:none!important}
+
+/* Cible d'ancre : ne pas se glisser sous l'en-tête collant. */
+#explorer,.quick-discovery{scroll-margin-top:96px}
+.favorite-empty{grid-column:1/-1;margin:0;padding:28px 24px;border:1px dashed var(--rule,rgba(6,57,66,.22));border-radius:20px;color:var(--muted,#57696D);text-align:center}
+.listing-empty-reset{margin-top:12px;min-height:44px;padding:0 18px;border:1px solid currentColor;border-radius:99px;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.listing-empty-reset:hover{background:rgba(6,57,66,.06)}
+
+/* Le bouton de recherche épouse le coin du bandeau au lieu d'y être collé en rectangle. */
+.search-dock .search-submit{margin:8px;border-radius:calc(var(--r-panel) - 12px);padding-inline:22px}
+/* Le lanceur Maz flotte en bas à droite : réserver sa place pour qu'il ne recouvre plus le pied de page. */
+@media(min-width:901px){ body>footer{padding-bottom:104px} }

@@ -5,8 +5,8 @@ const demoKey = 'ltp-v4-demo-state';
 
 const demoState = {
   profile: {
-    full_name: 'Mazen Chaban',
-    email: 'mazen@example.com',
+    full_name: 'Julie Fabre',
+    email: 'julie.fabre@gmail.com',
     phone: '+33 6 12 34 56 78',
     phone_verified: true,
     role: 'traveler'

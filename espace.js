@@ -40,7 +40,7 @@ function fillAccountForm(data){
     if(field.type === 'checkbox') field.checked = Boolean(value);
     else if(value !== null && value !== undefined) field.value = value;
   });
-  const displayName = String(data.profile?.full_name || 'Mazen').trim().split(/\s+/)[0];
+  const displayName = String(data.profile?.full_name || 'Julie').trim().split(/\s+/)[0];
   document.querySelectorAll('[data-account-name]').forEach(item => { item.textContent = displayName; });
 }
 
@@ -50,28 +50,89 @@ async function loadAccount(){
   catch(error){ showToast(error.message || 'Compte momentanément indisponible'); }
 }
 
-/* Les favoris posés depuis l'accueil (clé ltp-v2-favorites) remplacent la sélection de démonstration.
-   Sans favori enregistré, on laisse les trois cartes d'exemple : une grille vide ne montre rien. */
-function renderFavorites(){
-  const grid = document.querySelector('.favorite-grid');
-  const listings = window.LTP?.listings;
-  if(!grid || !listings) return;
+/* Les favoris et le comparateur sont TOUJOURS rendus depuis data.js : une seule source de vérité,
+   sinon une carte peut annoncer une piscine et ouvrir un sauna. Sans favori enregistré, on part
+   d'une sélection par défaut plutôt que d'une grille vide. */
+const FAVORIS_PAR_DEFAUT = ['micocouliers','verger','margelles'];
+
+function favorisChoisis(){
+  const listings = window.LTP?.listings || [];
   let ids = [];
   try { ids = JSON.parse(localStorage.getItem('ltp-v2-favorites') || '[]'); }
   catch { ids = []; }
   const chosen = ids.map(id => listings.find(item => item.id === id)).filter(Boolean);
-  if(!chosen.length) return;
+  return chosen.length ? chosen : FAVORIS_PAR_DEFAUT.map(id => listings.find(item => item.id === id)).filter(Boolean);
+}
+
+/* Nom court pour les puces et le tableau : article retiré (les plus longs d'abord, sinon
+   « Les margelles » perd son « Le » et donne « s margelles ») puis initiale remise en majuscule. */
+function nomCourt(nom){
+  const sansArticle = nom.replace(/^(Les|L’|La|Le)\s*/i, '');
+  return sansArticle.charAt(0).toUpperCase() + sansArticle.slice(1);
+}
+
+/* Les puces du comparateur suivent les favoris affichés : comparer une annonce absente de la
+   collection n'a pas de sens, et les libellés en dur finissaient par mentir. */
+function renderComparePools(chosen){
+  const pools = document.querySelector('.compare-pools');
+  const section = document.querySelector('.mia-compare');
+  if(!pools) return;
+  if(section) section.hidden = chosen.length < 2;
+  pools.replaceChildren();
+  chosen.slice(0, 4).forEach((listing, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.comparePool = listing.id;
+    const active = index < 2;
+    button.className = active ? 'active' : '';
+    button.setAttribute('aria-pressed', String(active));
+    button.textContent = nomCourt(listing.name);
+    pools.appendChild(button);
+  });
+  const result = document.getElementById('compareResult');
+  if(result) result.hidden = true;
+}
+
+/* Une ligne de comparaison construite depuis l'annonce réelle — plus de valeurs recopiées à la main. */
+function compareRow(listing){
+  const p = listing.pricing || {};
+  const perPerson = p.openWeek || p.openWE;
+  const total = perPerson ? (perPerson * 4) + ' €'
+    : (listing.unitPrice ? listing.unitPrice + ' €' : (p.dayPrice ? p.dayPrice + ' €' : '—'));
+  const kidFacts = (listing.equipment || []).map(pair => pair[1]).filter(label => /jeu|ombre|pelouse|jardin|barrière|douche/i.test(label));
+  return {
+    name: nomCourt(listing.name),
+    total,
+    travel: listing.distance,
+    format: listing.model === 'open' ? 'Ouverte ou privée' : 'Toujours privée',
+    kids: kidFacts.slice(0, 2).join(' + ') || (listing.facts || []).slice(0, 2).join(' + '),
+    next: listing.availability
+  };
+}
+
+function renderFavorites(){
+  const grid = document.querySelector('.favorite-grid');
+  const listings = window.LTP?.listings;
+  if(!grid || !listings) return;
+  const chosen = favorisChoisis();
 
   const words = ['Aucun lieu','Un lieu','Deux lieux','Trois lieux','Quatre lieux','Cinq lieux','Six lieux'];
   const count = words[chosen.length] || (chosen.length + ' lieux');
   const intro = document.querySelector('[data-favorite-count]');
-  if(intro) intro.textContent = count + (chosen.length > 1 ? ' qui donnent' : ' qui donne') + ' déjà envie de préparer le sac.';
+  if(intro) intro.textContent = chosen.length
+    ? count + (chosen.length > 1 ? ' qui donnent' : ' qui donne') + ' déjà envie de préparer le sac.'
+    : 'Aucun favori pour l’instant — le cœur sur une annonce la range ici.';
   document.querySelectorAll('[data-space-view="favoris"] i').forEach(badge => { badge.textContent = String(chosen.length); });
-  // le comparateur travaille sur une sélection de démonstration : il n'a plus de sens sur des favoris choisis
-  const comparator = document.querySelector('.compare-card, [data-compare-pool]')?.closest('section');
-  if(comparator) comparator.hidden = true;
+  renderComparePools(chosen);
 
   grid.replaceChildren();
+  if(!chosen.length){
+    const empty = document.createElement('p');
+    empty.className = 'favorite-empty';
+    empty.textContent = 'Votre collection est vide. Parcourez les annonces et touchez le cœur pour en garder une de côté.';
+    grid.appendChild(empty);
+    return;
+  }
   chosen.forEach(listing => {
     const card = document.createElement('article');
     card.className = 'favorite-place';
@@ -128,11 +189,11 @@ function renderFavorites(){
 
 const conversations = {
   claire:{initial:'CL', name:'Claire', meta:'Hôte vérifiée · répond en 8 min', listing:'fiche.html?id=micocouliers', placeholder:'Écrire à Claire…', context:true, messages:[
-    ['incoming','Bonjour Mazen, tout est prêt pour dimanche. Vous pourrez vous garer juste devant le portail vert.','11:36'],
+    ['incoming','Bonjour Julie, tout est prêt pour dimanche. Vous pourrez vous garer juste devant le portail vert.','11:36'],
     ['outgoing','Super merci ! Les enfants peuvent apporter leurs brassards ?','11:39 · Lu'],
     ['incoming','Oui bien sûr. Le portillon sera ouvert à 15 h 50 et j’ai aussi quelques jeux d’eau sur place.','11:42']
   ]},
-  lucas:{initial:'LU', name:'Lucas', meta:'Hôte vérifié · répond en 20 min', listing:'fiche.html?id=collines', placeholder:'Écrire à Lucas…', context:false, messages:[['incoming','Bonjour Mazen, les serviettes sont bien comprises avec le jacuzzi.','Hier · 18:06']]},
+  lucas:{initial:'LU', name:'Lucas', meta:'Hôte vérifié · répond en 20 min', listing:'fiche.html?id=oliviers', placeholder:'Écrire à Lucas…', context:false, messages:[['incoming','Bonjour Julie, les serviettes sont bien comprises avec le jacuzzi.','Hier · 18:06']]},
   support:{initial:'L', name:'Équipe Loue ta piscine', meta:'L’équipe · 7 j/7', listing:'', placeholder:'Écrire à l’équipe…', context:false, messages:[['incoming','Bienvenue chez Loue ta piscine 👋 Nous restons disponibles si vous avez besoin de nous. Pour préparer une réponse ou retrouver une information, Maz peut vous aider à tout moment.','24 juillet']]},
   mia:{initial:'m', name:'Maz', meta:'Votre assistant · disponible 24 h/24', listing:'', placeholder:'Demander à Maz…', context:false, messages:[['incoming','Hello, moi c’est Maz. Je peux résumer une conversation, préparer une réponse ou retrouver une information sur votre réservation.','À l’instant']]}
 };
@@ -189,12 +250,14 @@ document.addEventListener('click', event => {
     const card = favorite.closest('[data-favorite-card]');
     const removed = card.classList.toggle('removed');
     favorite.setAttribute('aria-pressed', String(!removed));
-    try {
-      const ids = new Set(JSON.parse(localStorage.getItem('ltp-v2-favorites') || '[]'));
-      if(removed) ids.delete(card.dataset.favoriteCard);
-      else ids.add(card.dataset.favoriteCard);
-      localStorage.setItem('ltp-v2-favorites', JSON.stringify([...ids]));
-    } catch { /* la démo continue même sans stockage */ }
+    // on repart de ce qui est RÉELLEMENT affiché : sinon le premier retrait, parti d'une liste
+    // vide, effaçait toutes les autres cartes au rechargement suivant
+    const visibles = [...document.querySelectorAll('[data-favorite-card]')]
+      .filter(item => !item.classList.contains('removed'))
+      .map(item => item.dataset.favoriteCard);
+    try { localStorage.setItem('ltp-v2-favorites', JSON.stringify(visibles)); }
+    catch { /* la démo continue même sans stockage */ }
+    renderComparePools(visibles.map(id => (window.LTP?.listings || []).find(l => l.id === id)).filter(Boolean));
     showToast(removed ? 'Retiré des favoris · annuler en rappuyant' : 'Ajouté aux favoris');
     return;
   }
@@ -261,11 +324,7 @@ document.getElementById('runCompare').addEventListener('click', () => {
   const pools = [...document.querySelectorAll('[data-compare-pool].active')].map(item => item.dataset.comparePool);
   if(pools.length !== 2){ showToast('Sélectionnez exactement deux favoris'); return; }
   const priority = document.querySelector('[data-compare-priority].active').dataset.comparePriority;
-  const poolData = {
-    micocouliers:{name:'Micocouliers',total:'28 €',travel:'12 min',format:'Ouverte ou privée',kids:'Jeux + ombre',next:'Aujourd’hui · 17 h'},
-    verger:{name:'Verger',total:'24 €',travel:'18 min',format:'Ouverte ou privée',kids:'Pelouse + bouées',next:'Samedi · 14 h'},
-    bastide:{name:'Bastide',total:'72 €',travel:'15 min',format:'Toujours privée',kids:'Jardin calme',next:'Dimanche · 9 h'}
-  };
+  const poolData = Object.fromEntries((window.LTP?.listings || []).map(l => [l.id, compareRow(l)]));
   const insights = {
     family:'Pour une famille, regardez d’abord la ligne « enfants » puis le trajet.',
     price:'Le total est calculé ici pour 4 personnes, frais affichés inclus.',

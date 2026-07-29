@@ -13,6 +13,12 @@ try {
     ['name','location','description'].forEach(field => {
       if(override[field]) listing[field] = override[field];
     });
+    if(override.pricing && listing.pricing){
+      Object.assign(listing.pricing, override.pricing);
+      // le prix d'appel affiché en tête doit suivre le tarif réellement enregistré
+      const bas = Math.min(...Object.values(listing.pricing).filter(v => Number.isFinite(v) && v > 0));
+      if(Number.isFinite(bas)) listing.price = 'dès ' + bas + ' €';
+    }
   }
 } catch { /* réglage illisible : on garde l'annonce d'origine */ }
 const DAYS = makeSchedule(listing);

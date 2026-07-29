@@ -157,6 +157,13 @@ function publishListingOverride(){
     const value = field.value.trim();
     if(value) override[field.dataset.listingField] = value;
   });
+  // les tarifs aussi : le message promettait une annonce publiée, seuls les textes l'étaient
+  const pricing = {};
+  document.querySelectorAll('[data-listing-price]').forEach(input => {
+    const value = Number(input.value);
+    if(Number.isFinite(value) && value > 0) pricing[input.dataset.listingPrice] = value;
+  });
+  if(Object.keys(pricing).length) override.pricing = pricing;
   try {
     const previous = localStorage.getItem(OVERRIDE_KEY);
     const next = JSON.stringify({id:OVERRIDE_TARGET, ...override});
@@ -336,6 +343,8 @@ document.addEventListener('click', event => {
     document.body.classList.remove('reservation-detail-open');
     return;
   }
+  if(event.target.closest('[data-reservation-accept]')){ decideReservation(true); return; }
+  if(event.target.closest('[data-reservation-decline]')){ decideReservation(false); return; }
   if(event.target.closest('[data-reservation-ready]')){
     const record = reservationRecords.find(entry => entry.id === selectedReservationId);
     if(!record) return;
@@ -406,6 +415,21 @@ document.addEventListener('click', event => {
   }
 });
 
+/* Les planchers annoncés aux hôtes (6 €/pers, 40 €/2 h, 90 €/demi-journée, 120 €/jour) doivent
+   être tenus à la saisie aussi, pas seulement par les flèches : un prix tapé plus bas était accepté. */
+document.addEventListener('change', event => {
+  const input = event.target;
+  if(!(input instanceof HTMLInputElement) || input.type !== 'number') return;
+  const minimum = Number(input.min || 0);
+  if(!minimum || input.value === '') return;
+  if(Number(input.value) < minimum){
+    input.value = String(minimum);
+    const label = (input.getAttribute('aria-label') || 'Ce réglage').toLowerCase();
+    showToast('Le minimum pour ' + label + ' est de ' + minimum + ' — valeur ramenée au plancher');
+    input.focus();
+  }
+});
+
 document.addEventListener('click', event => {
   const step = event.target.closest('[data-number-step]');
   if(!step) return;
@@ -470,10 +494,58 @@ function selectReservation(item, openOnMobile = true){
   detail.querySelector('[data-reservation-field="payment"]').textContent = formatMoney(record.amount) + ' payé · ' + formatMoney(record.amount * .85) + ' net';
   detail.querySelector('[data-reservation-field="arrival"]').textContent = record.arrival;
   detail.querySelector('[data-reservation-field="prepare"]').textContent = record.prepare;
+  renderReservationActions(detail, record);
   if(openOnMobile && matchMedia('(max-width:900px)').matches){
     document.querySelector('.reservation-command')?.classList.add('detail-open');
     document.body.classList.add('reservation-detail-open');
   }
+}
+
+/* Les actions dépendent du statut : une demande « À valider » doit pouvoir être acceptée ou refusée,
+   sinon le tableau de bord réclame une action qu'aucun bouton ne permet. */
+function renderReservationActions(detail, record){
+  const zone = detail.querySelector('.reservation-detail-actions');
+  if(!zone) return;
+  const prenom = record.name.split(/\s+/)[0];
+  zone.replaceChildren();
+  const bouton = (label, attr, primaire) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = label;
+    if(primaire) b.className = 'primary';
+    b.setAttribute(attr, '');
+    return b;
+  };
+  if(record.status === 'pending'){
+    zone.append(bouton('Accepter la demande', 'data-reservation-accept', true), bouton('Refuser', 'data-reservation-decline'));
+  } else if(record.status === 'confirmed'){
+    zone.appendChild(bouton('Marquer comme prêt', 'data-reservation-ready', true));
+  }
+  const ecrire = bouton('Écrire à ' + prenom, 'data-host-view-jump', false);
+  ecrire.dataset.hostViewJump = 'messages';
+  zone.appendChild(ecrire);
+}
+
+function decideReservation(accepted){
+  const record = reservationRecords.find(entry => entry.id === selectedReservationId);
+  if(!record || record.status !== 'pending') return;
+  record.status = accepted ? 'confirmed' : 'cancelled';
+  renderReservations(reservationRecords);
+  const row = document.querySelector(`[data-reservation="${record.id}"]`);
+  if(row) selectReservation(row, false);
+  refreshPendingBadges();
+  showToast(accepted
+    ? record.name + ' est confirmé · le créneau est bloqué'
+    : 'Demande refusée · le créneau redevient disponible');
+}
+
+/* Les pastilles « à valider » de la barre latérale suivent le nombre réel de demandes en attente. */
+function refreshPendingBadges(){
+  const pending = reservationRecords.filter(entry => entry.status === 'pending').length;
+  document.querySelectorAll('[data-host-view="reservations"] i').forEach(badge => {
+    badge.textContent = String(pending);
+    badge.hidden = pending === 0;
+  });
 }
 
 function refreshOfferChoices(){
