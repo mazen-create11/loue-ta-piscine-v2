@@ -57,11 +57,13 @@ const FAVORIS_PAR_DEFAUT = ['micocouliers','verger','margelles'];
 
 function favorisChoisis(){
   const listings = window.LTP?.listings || [];
+  const brut = localStorage.getItem('ltp-v2-favorites');
+  // null = jamais touché → sélection de démonstration ; '[]' = vidé volontairement → collection vide
+  if(brut === null) return FAVORIS_PAR_DEFAUT.map(id => listings.find(item => item.id === id)).filter(Boolean);
   let ids = [];
-  try { ids = JSON.parse(localStorage.getItem('ltp-v2-favorites') || '[]'); }
+  try { ids = JSON.parse(brut || '[]'); }
   catch { ids = []; }
-  const chosen = ids.map(id => listings.find(item => item.id === id)).filter(Boolean);
-  return chosen.length ? chosen : FAVORIS_PAR_DEFAUT.map(id => listings.find(item => item.id === id)).filter(Boolean);
+  return ids.map(id => listings.find(item => item.id === id)).filter(Boolean);
 }
 
 /* Nom court pour les puces et le tableau : article retiré (les plus longs d'abord, sinon
@@ -193,7 +195,7 @@ const conversations = {
     ['outgoing','Super merci ! Les enfants peuvent apporter leurs brassards ?','11:39 · Lu'],
     ['incoming','Oui bien sûr. Le portillon sera ouvert à 15 h 50 et j’ai aussi quelques jeux d’eau sur place.','11:42']
   ]},
-  lucas:{initial:'LU', name:'Lucas', meta:'Hôte vérifié · répond en 20 min', listing:'fiche.html?id=oliviers', placeholder:'Écrire à Lucas…', context:false, messages:[['incoming','Bonjour Julie, les serviettes sont bien comprises avec le jacuzzi.','Hier · 18:06']]},
+  lucas:{initial:'SO', name:'Sonia', meta:'Hôte vérifiée · répond en ~1 h', listing:'fiche.html?id=oliviers', placeholder:'Écrire à Sonia…', context:false, messages:[['incoming','Bonjour Julie, les serviettes sont bien comprises avec le jacuzzi.','Hier · 18:06']]},
   support:{initial:'L', name:'Équipe Loue ta piscine', meta:'L’équipe · 7 j/7', listing:'', placeholder:'Écrire à l’équipe…', context:false, messages:[['incoming','Bienvenue chez Loue ta piscine 👋 Nous restons disponibles si vous avez besoin de nous. Pour préparer une réponse ou retrouver une information, Maz peut vous aider à tout moment.','24 juillet']]},
   mia:{initial:'m', name:'Maz', meta:'Votre assistant · disponible 24 h/24', listing:'', placeholder:'Demander à Maz…', context:false, messages:[['incoming','Hello, moi c’est Maz. Je peux résumer une conversation, préparer une réponse ou retrouver une information sur votre réservation.','À l’instant']]}
 };
@@ -216,7 +218,8 @@ function openConversation(id){
   const thread = document.getElementById('messageThread');
   thread.replaceChildren();
   const day = document.createElement('time');
-  day.textContent = 'Aujourd’hui';
+  const perso = window.LTPStore?.loadThread('guest', activeConversation) || [];
+  day.textContent = (!perso.length && data.messages.every(m => String(m[2]).includes('Hier'))) ? 'Hier' : 'Aujourd’hui';
   thread.appendChild(day);
   [...data.messages, ...(window.LTPStore?.loadThread('guest', activeConversation) || [])].forEach(message => {
     const bubble = document.createElement('div');
@@ -257,7 +260,14 @@ document.addEventListener('click', event => {
       .map(item => item.dataset.favoriteCard);
     try { localStorage.setItem('ltp-v2-favorites', JSON.stringify(visibles)); }
     catch { /* la démo continue même sans stockage */ }
-    renderComparePools(visibles.map(id => (window.LTP?.listings || []).find(l => l.id === id)).filter(Boolean));
+    const restants = visibles.map(id => (window.LTP?.listings || []).find(l => l.id === id)).filter(Boolean);
+    renderComparePools(restants);
+    document.querySelectorAll('[data-space-view="favoris"] i').forEach(badge => { badge.textContent = String(restants.length); });
+    const mots = ['Aucun lieu','Un lieu','Deux lieux','Trois lieux','Quatre lieux','Cinq lieux','Six lieux'];
+    const intro = document.querySelector('[data-favorite-count]');
+    if(intro) intro.textContent = restants.length
+      ? (mots[restants.length] || restants.length + ' lieux') + (restants.length > 1 ? ' qui donnent' : ' qui donne') + ' déjà envie de préparer le sac.'
+      : 'Aucun favori pour l’instant — le cœur sur une annonce la range ici.';
     showToast(removed ? 'Retiré des favoris · annuler en rappuyant' : 'Ajouté aux favoris');
     return;
   }
@@ -359,7 +369,8 @@ document.getElementById('messageComposer').addEventListener('submit', event => {
   document.getElementById('messageThread').appendChild(bubble);
   bubble.scrollIntoView({behavior:'smooth', block:'nearest'});
   input.value = '';
-  const stored = window.LTPStore?.playMasking(bubble, text, message) ?? message;
+  const confirmee = Boolean(conversations[activeConversation]?.context);
+  const stored = confirmee ? message : (window.LTPStore?.playMasking(bubble, text, message) ?? message);
   if(stored !== message) showToast('Coordonnées masquées jusqu’au paiement');
   window.LTPStore?.appendMessage('guest', activeConversation, 'outgoing', stored);
 });
@@ -410,6 +421,8 @@ document.getElementById('travelerAccountForm')?.addEventListener('submit', async
   button.textContent = 'Enregistrement…';
   try {
     if(window.LTPBackend) await window.LTPBackend.saveAccount('traveler', values);
+    const prenom = String(values.full_name || 'Julie').trim().split(/\s+/)[0];
+    document.querySelectorAll('[data-account-name]').forEach(item => { item.textContent = prenom; });
     showToast('Réglages enregistrés');
   } catch(error){ showToast(error.message || 'Impossible d’enregistrer'); }
   finally { button.disabled = false; button.textContent = 'Enregistrer les modifications'; }
@@ -420,7 +433,11 @@ document.addEventListener('click', event => {
   if(!action) return;
   if(action.dataset.accountAction === 'export'){
     const form = document.getElementById('travelerAccountForm');
+    // export lisible : cases à cocher en vrai/faux explicites, jamais « on » ni d'absence muette
     const payload = Object.fromEntries(new FormData(form));
+    ['quiet_preference','accessible','booking_notifications','message_notifications','marketing_notifications'].forEach(name => {
+      if(form.elements[name]) payload[name] = form.elements[name].checked;
+    });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));
     link.download = 'mes-donnees-loue-ta-piscine.json';
@@ -440,6 +457,42 @@ document.addEventListener('click', event => {
 window.addEventListener('ltp:backend-ready', loadAccount);
 setTimeout(loadAccount, 0);
 
+/* Les réservations réellement passées (clé ltp-bookings, écrite par la confirmation)
+   remplacent le ticket de démonstration : la promesse de synchronisation devient vraie. */
+function renderBookings(){
+  const list = document.getElementById('reservationList');
+  const demo = document.querySelector('[data-demo-ticket]');
+  if(!list) return;
+  let bookings = [];
+  try { bookings = JSON.parse(localStorage.getItem('ltp-bookings') || '[]'); }
+  catch { bookings = []; }
+  if(demo) demo.hidden = bookings.length > 0;
+  list.replaceChildren();
+  bookings.forEach(entry => {
+    const ticket = document.createElement('article');
+    ticket.className = 'reservation-ticket';
+    const copy = document.createElement('div');
+    const etat = document.createElement('small');
+    etat.textContent = (entry.onsite ? 'À RÉGLER SUR PLACE · ' : 'CONFIRMÉE · ') + String(entry.date).toUpperCase();
+    const titre = document.createElement('h2');
+    titre.textContent = entry.name;
+    const detail = document.createElement('p');
+    const qui = /journée|privat/.test(entry.mode || '') ? 'participants' : 'baigneurs';
+    detail.textContent = entry.time + ' · ' + entry.persons + ' ' + qui + ' · ' + entry.location + ' · ' + entry.total + ' €';
+    copy.append(etat, titre, detail);
+    const photo = document.createElement('img');
+    photo.src = entry.image;
+    photo.alt = entry.name;
+    photo.loading = 'lazy';
+    const lien = document.createElement('a');
+    lien.href = 'fiche.html?id=' + entry.id;
+    lien.textContent = 'Voir ma réservation';
+    ticket.append(copy, photo, lien);
+    list.appendChild(ticket);
+  });
+}
+
+renderBookings();
 renderFavorites();
 
 const initialView = new URLSearchParams(location.search).get('view') || 'favoris';

@@ -86,7 +86,7 @@ function cardTemplate(item, index, featured){
     </div>
     <div class="listing-info num">
       <div class="listing-top"><h3>${item.name}</h3><span class="rating">${item.rating}</span></div>
-      <p class="listing-location">${item.location} · ${item.distance}</p>
+      <p class="listing-location">${item.location} · ${state.place && state.place !== 'Aix-en-Provence' ? item.distance + ' d’Aix' : item.distance}</p>
       <p class="listing-instant${item.instant ? '' : ' on-request'}">${item.instant ? boltIcon + 'Réservation immédiate' : clockIcon + 'Sur demande — réponse sous 24 h'}</p>
       <div class="listing-price"><p><b>${item.price}</b> ${item.priceNote}<small>${item.day} · jusqu’à ${item.capacity} pers.</small></p><a href="fiche.html?id=${item.id}" data-stop>Voir</a></div>
     </div>
@@ -102,7 +102,7 @@ function renderListings(){
   const titre = document.getElementById('listingTitle');
   if(titre) titre.textContent = !state.place
     ? 'Toutes nos adresses'
-    : (state.place === 'Aix-en-Provence' ? 'Autour d’Aix' : `Autour de ${state.place}`);
+    : (state.place === 'Aix-en-Provence' ? 'Autour d’Aix' : `Autour ${/^[aeiouyhéè]/i.test(state.place) ? 'd’' : 'de '}${state.place}`);
   if(!items.length){
     // dire honnêtement pourquoi c'est vide plutôt que « essayez un autre filtre »
     const horsZone = !zoneCouverte();
@@ -398,7 +398,7 @@ document.addEventListener('click', event => {
   if(occasion){
     state.occasion = occasion.dataset.occasion;
     const picked = OCCASIONS.find(o => o.key === state.occasion);
-    selectMoment(picked.moment || state.moment, true);
+    selectMoment(picked.moment || '', true);
     document.getElementById('occasionSummary').textContent = picked.label;
     renderOccasion();
     return;
@@ -479,7 +479,7 @@ document.addEventListener('keydown', event => { if(event.key === 'Escape'){ clos
     rows.push(['Commission plateforme — 15 %', -(gross * COMMISSION)]);
     rows.push(['Net sur votre compte', net]);
     document.getElementById('simBreakdown').innerHTML = rows
-      .map(([label, value]) => `<div><span>${label}</span><span>${value < 0 ? '−' + money(Math.abs(value)) : money(value)}</span></div>`)
+      .map(([label, value]) => { const v = Math.abs(value) < .5 ? 0 : value; return `<div><span>${label}</span><span>${v < 0 ? '−' + money(Math.abs(v)) : money(v)}</span></div>`; })
       .join('');
     const tip = open < 3
       ? 'Deux créneaux supplémentaires par semaine peuvent améliorer la visibilité sans bloquer votre calendrier.'
@@ -529,7 +529,7 @@ document.addEventListener('keydown', event => { if(event.key === 'Escape'){ clos
     if(/bonjour|salut|hello|aide|aider/.test(query)) return ['Bien sûr. Dites-moi simplement qui vient, quand, et l’ambiance souhaitée. Je vous guide sans choisir à votre place.'];
     if(/aujourd|maintenant|ce soir|disponib|créneau|creneau/.test(query)) return ['Quatre créneaux sont encore visibles aujourd’hui autour d’Aix, dès 6 €. Je peux ouvrir la recherche directement sur les disponibilités.', {label:'Voir les créneaux', run:() => { close(); document.querySelector('.availability-rail')?.scrollIntoView({behavior:'smooth', block:'center'}); }}];
     if(/famille|enfant|bébé|bebe|petit/.test(query)) return ['Pour une famille, je regarde d’abord la profondeur, l’ombre, les règles enfants et les avis. Vous pourrez ensuite ajuster la date et le nombre de baigneurs.', {label:'Lancer la recherche famille', run:() => { close(); openSearch('place'); }}];
-    if(/prix|cher|budget|euro|€/.test(query)) return ['Les séances ouvertes commencent à 6 € par personne. Le prix affiché inclut déjà les frais de service : aucun supplément n’est ajouté à la dernière étape.', {label:'Voir les petits prix', run:() => { close(); document.querySelector('[data-detail="verger"]')?.scrollIntoView({behavior:'smooth', block:'center'}); }}];
+    if(/prix|cher|budget|euro|€|co[ûu]te|combien|tarif/.test(query)) return ['Les séances ouvertes commencent à 6 € par personne. Le prix affiché inclut déjà les frais de service : aucun supplément n’est ajouté à la dernière étape.', {label:'Voir les petits prix', run:() => { close(); document.querySelector('[data-detail="verger"]')?.scrollIntoView({behavior:'smooth', block:'center'}); }}];
     if(/favori|compare|compar/.test(query)) return ['Je peux comparer deux favoris sur le prix total, la durée, la distance, l’accueil des enfants et les équipements. Le choix final reste le vôtre.', {label:'Comparer mes favoris', run:() => { location.href='espace.html?view=favoris'; }}];
     if(/louer|hôte|hote|annonce|piscine à moi|ma piscine/.test(query)) return ['Je peux préparer votre description, améliorer vos photos et proposer des réglages. Rien n’est publié ni envoyé à un voyageur sans votre validation.', {label:'Ouvrir l’espace hôte', run:() => { location.href='hote.html?view=listing'; }}];
     if(/annul|rembours|problème|litige/.test(query)) return ['Si l’hôte annule, la réservation est remboursée. En cas de problème, le versement est suspendu pendant l’examen de la situation.'];

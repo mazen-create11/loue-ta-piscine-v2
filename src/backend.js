@@ -13,6 +13,8 @@ const demoState = {
   },
   hostProfile: {
     public_name: 'Claire',
+    email: 'claire.micocouliers@gmail.com',
+    phone: '06 44 71 28 93',
     city: 'Aix-en-Provence',
     verified: true,
     premium: false
@@ -105,7 +107,7 @@ async function saveAccount(role, payload){
 }
 
 async function requestPasswordReset(email){
-  if(!supabase) throw new Error('La réinitialisation sécurisée nécessite une connexion au service d’authentification.');
+  if(!supabase) return true; // mode démo : le vrai envoi passe par Supabase une fois branché
   const targetEmail = email || (await currentUser())?.email;
   if(!targetEmail) throw new Error('Ajoutez une adresse e-mail valide à votre compte.');
   const {error} = await supabase.auth.resetPasswordForEmail(targetEmail, {redirectTo:location.origin + '/espace.html?view=account'});

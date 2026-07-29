@@ -91,7 +91,7 @@
       '<div><span>Adresse</span><b>' + listing.location + '</b></div>' +
       '<div><span>Date</span><b>' + date + '</b></div>' +
       '<div><span>Créneau</span><b>' + time + '</b></div>' +
-      '<div><span>' + (mode === 'journée privée' ? 'Participants' : 'Baigneurs') + '</span><b>' + persons + '</b></div>' +
+      '<div><span>' + (/journée|privat/.test(mode) ? 'Participants' : 'Baigneurs') + '</span><b>' + persons + '</b></div>' +
       '<div><span>Total — tout compris</span><b class="big">' + total + '\u00A0€</b></div>';
 
     document.getElementById('revealNote').textContent =
@@ -110,6 +110,19 @@
       '<div>Un souci ?<small>Versement suspendu tant que le litige n’est pas tranché</small></div>';
 
     document.getElementById('backToFiche').href = 'fiche.html?id=' + listing.id;
+
+    // la réservation confirmée existe pour de bon : l'espace baigneur la relit depuis ce store
+    try {
+      const bookings = JSON.parse(localStorage.getItem('ltp-bookings') || '[]');
+      const bookingId = [listing.id, date, time].join('|');
+      if(!bookings.some(entry => entry.bookingId === bookingId)){
+        bookings.unshift({
+          bookingId, id:listing.id, name:listing.name, image:listing.image, location:listing.location,
+          date, time, persons, total, mode, onsite
+        });
+        localStorage.setItem('ltp-bookings', JSON.stringify(bookings.slice(0, 12)));
+      }
+    } catch { /* stockage indisponible : la confirmation reste affichée */ }
 
     const liftHeader = () => document.body.classList.toggle('header-lift', window.scrollY > 12);
     window.addEventListener('scroll', liftHeader, { passive:true });

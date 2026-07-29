@@ -4,6 +4,7 @@ const { listings, makeSchedule, euro } = window.LTP;
 
 const params = new URLSearchParams(location.search);
 const listing = listings.find(l => l.id === params.get('id')) || listings[0];
+if(params.get('id') && listing.id !== params.get('id')) history.replaceState(null, '', 'fiche.html?id=' + listing.id);
 
 /* Ce que l'hôte enregistre dans son espace (clé ltp-listing-override) s'applique ici :
    sans ça, l'éditeur promettait une synchronisation qui n'arrivait jamais. */
@@ -60,7 +61,7 @@ const chips = [];
 if(isOpen){ chips.push(['open','Séances ouvertes']); chips.push(['neutral','Privatisable']); }
 else chips.push(['open','Toujours privatisé']);
 if(dynamicPremium()) chips.push(['premium','★ Hôte Premium · abonné']);
-if(listing.facts[0].includes('°C')) chips.push(['neutral', (listing.type === 'sauna' ? '' : 'Chauffée · ') + listing.facts[0]]);
+if(listing.facts[0].includes('°C')) chips.push(['neutral', (listing.type === 'sauna' ? '' : listing.type === 'jacuzzi' ? 'Chauffé · ' : 'Chauffée · ') + listing.facts[0]]);
 if(listing.host.onsite) chips.push(['onsite','Paiement sur place · débloqué']);
 el('ficheChips').innerHTML = chips.map(c => '<span class="chip chip-' + c[0] + '">' + c[1] + '</span>').join('');
 
@@ -357,7 +358,7 @@ function addCustomRequest(){
 }
 
 function paymentBlock(){
-  if(!h.onsite) return '<p class="pay-note">Paiement en ligne sécurisé — le paiement sur place est réservé aux hôtes notés au-dessus de 4,5.</p>';
+  if(!h.onsite) return '<p class="pay-note">Paiement en ligne sécurisé — ' + h.name + ' n’a pas activé le paiement sur place.</p>';
   return '<div class="payment-methods" role="radiogroup" aria-label="Mode de paiement">' +
     '<label class="pay-choice"><input type="radio" name="payment" value="online"' + (state.payment === 'online' ? ' checked' : '') + '><span>Payer en ligne<small>Paiement sécurisé et confirmation immédiate</small></span></label>' +
     '<label class="pay-choice"><input type="radio" name="payment" value="onsite"' + (state.payment === 'onsite' ? ' checked' : '') + '><span>Payer sur place<small>Débloqué : ' + h.name + ' est noté·e ' + listing.rating + ', au-dessus du seuil de 4,5</small></span></label>' +

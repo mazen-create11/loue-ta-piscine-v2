@@ -44,7 +44,32 @@ function initials(name){
   return name.split(/\s+/).filter(Boolean).map(word => word[0]).join('').slice(0,2).toUpperCase();
 }
 
+/* KPIs et compteurs d'onglets calculés depuis les données : les chiffres en dur mentaient
+   (8 « à venir » pour 5 réservations affichées). */
+function refreshReservationCounters(records){
+  const now = new Date();
+  const today = records.filter(r => r.start.toDateString() === now.toDateString() && !['completed','cancelled'].includes(r.status));
+  const upcoming = records.filter(r => r.end > now && !['completed','cancelled'].includes(r.status));
+  const pending = records.filter(r => r.status === 'pending');
+  const confirmed = upcoming.filter(r => r.status !== 'pending');
+  const net = Math.round(confirmed.reduce((sum, r) => sum + r.amount, 0) * .85);
+  const kpis = document.querySelectorAll('.reservation-command-kpis article');
+  if(kpis.length >= 4){
+    kpis[0].querySelector('b').textContent = String(today.length);
+    kpis[0].querySelector('small').textContent = today.length ? 'prochaine à ' + formatTime(today[0].start) : 'rien aujourd’hui';
+    kpis[1].querySelector('b').textContent = String(upcoming.length);
+    kpis[2].querySelector('b').textContent = String(pending.length);
+    kpis[2].querySelector('small').textContent = pending.length ? 'action nécessaire' : 'tout est traité';
+    kpis[3].querySelector('b').textContent = formatMoney(net);
+  }
+  const tabUpcoming = document.querySelector('[data-reservation-filter="upcoming"] i');
+  if(tabUpcoming) tabUpcoming.textContent = String(upcoming.length);
+  const tabToday = document.querySelector('[data-reservation-filter="today"] i');
+  if(tabToday) tabToday.textContent = String(today.length);
+}
+
 function renderReservations(records){
+  refreshReservationCounters(records);
   const currentTime = Date.now();
   reservationRecords = records.slice().sort((a,b) => {
     const aPast = a.end.getTime() < currentTime || ['completed','cancelled'].includes(a.status);
@@ -221,7 +246,10 @@ function setHostView(view){
 function fillHostAccount(data){
   const form = document.getElementById('hostAccountForm');
   if(!form || !data) return;
-  const merged = {...data.profile, ...data.hostProfile, ...data.notifications};
+  // le compte hôte affiche les coordonnées de l'HÔTE : le profil voyageur (Julie) ne fournit
+  // que ce que hostProfile ne définit pas — avant, son e-mail écrasait celui de Claire
+  const merged = {...data.hostProfile, ...data.notifications,
+    full_name: data.hostProfile?.public_name || data.profile?.full_name};
   Object.entries(merged).forEach(([name,value]) => {
     const field = form.elements.namedItem(name);
     if(!field) return;
@@ -343,6 +371,17 @@ document.addEventListener('click', event => {
     document.body.classList.remove('reservation-detail-open');
     return;
   }
+  const amenityCat = event.target.closest('[data-amenity-cat]');
+  if(amenityCat){
+    // les catégories filtraient du vide : elles montrent désormais les équipements concernés
+    document.querySelectorAll('[data-amenity-cat]').forEach(item => item.classList.toggle('active', item === amenityCat));
+    const keys = amenityCat.dataset.amenityCat.split(',');
+    document.querySelectorAll('.amenity-grid label').forEach(label => {
+      const key = label.querySelector('[data-amenity]')?.dataset.amenity;
+      label.hidden = amenityCat.dataset.amenityCat !== 'all' && !keys.includes(key);
+    });
+    return;
+  }
   if(event.target.closest('[data-reservation-accept]')){ decideReservation(true); return; }
   if(event.target.closest('[data-reservation-decline]')){ decideReservation(false); return; }
   if(event.target.closest('[data-reservation-ready]')){
@@ -420,6 +459,8 @@ document.addEventListener('click', event => {
 document.addEventListener('change', event => {
   const input = event.target;
   if(!(input instanceof HTMLInputElement) || input.type !== 'number') return;
+  // l'éditeur de créneau a sa propre validation avec message inline : pas de correction muette ici
+  if(input.closest('#slotForm')) return;
   const minimum = Number(input.min || 0);
   if(!minimum || input.value === '') return;
   if(Number(input.value) < minimum){
@@ -491,7 +532,8 @@ function selectReservation(item, openOnMobile = true){
   detail.querySelector('[data-reservation-guests]').textContent = record.guestDetail;
   detail.querySelector('[data-reservation-history]').textContent = record.history;
   detail.querySelector('[data-reservation-field="format"]').textContent = record.format + ' · ' + Math.round(record.duration / 60) + ' h';
-  detail.querySelector('[data-reservation-field="payment"]').textContent = formatMoney(record.amount) + ' payé · ' + formatMoney(record.amount * .85) + ' net';
+  const netExact = new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',minimumFractionDigits:2}).format(record.amount * .85);
+  detail.querySelector('[data-reservation-field="payment"]').textContent = formatMoney(record.amount) + ' payé · ' + netExact + ' net';
   detail.querySelector('[data-reservation-field="arrival"]').textContent = record.arrival;
   detail.querySelector('[data-reservation-field="prepare"]').textContent = record.prepare;
   renderReservationActions(detail, record);
@@ -530,6 +572,11 @@ function decideReservation(accepted){
   const record = reservationRecords.find(entry => entry.id === selectedReservationId);
   if(!record || record.status !== 'pending') return;
   record.status = accepted ? 'confirmed' : 'cancelled';
+  try {
+    const decisions = JSON.parse(localStorage.getItem('ltp-host-decisions') || '{}');
+    decisions[record.id] = record.status;
+    localStorage.setItem('ltp-host-decisions', JSON.stringify(decisions));
+  } catch { /* la décision reste valable pour la session */ }
   renderReservations(reservationRecords);
   const row = document.querySelector(`[data-reservation="${record.id}"]`);
   if(row) selectReservation(row, false);
@@ -742,8 +789,8 @@ function renderPersistedSlot(slot){
 
 function refreshPlannerSummary(){
   const container = document.getElementById('hostSlotRows');
-  const openCount = container.querySelectorAll('input[type="checkbox"]:checked,.slot-published').length;
-  const reservationCount = [...container.querySelectorAll('em:not(.slot-published)')].filter(item => /réserv/i.test(item.textContent)).length;
+  const openCount = container.querySelectorAll('label:not([hidden]) input[type="checkbox"]:checked,label:not([hidden]) .slot-published').length;
+  const reservationCount = [...container.querySelectorAll('label:not([hidden]) em:not(.slot-published)')].filter(item => /réserv/i.test(item.textContent)).length;
   document.getElementById('slotPlannerSummary').textContent = openCount + ' créneau' + (openCount > 1 ? 'x' : '') + ' ouvert' + (openCount > 1 ? 's' : '') + ' · ' + reservationCount + ' réservation' + (reservationCount > 1 ? 's' : '');
 }
 
@@ -756,10 +803,28 @@ async function loadHostSlots(){
   } catch(error){ showToast(error.message || 'Impossible de charger les créneaux'); }
 }
 
-/* Au changement de jour : on retire les créneaux publiés affichés et on recharge ceux du jour. */
+/* Au changement de jour : on retire les créneaux publiés affichés et on recharge ceux du jour.
+   Les lignes de démonstration n'appartiennent qu'à AUJOURD'HUI — les afficher identiques tous
+   les jours faisait passer le calendrier pour un décor. */
 function refreshPersistedSlots(){
   document.querySelectorAll('#hostSlotRows [data-persisted-slot]').forEach(row => row.remove());
-  loadHostSlots();
+  const container = document.getElementById('hostSlotRows');
+  const estAujourdhui = selectedDayDate.toDateString() === new Date().toDateString();
+  container.querySelectorAll('label:not([data-persisted-slot])').forEach(row => { row.hidden = !estAujourdhui; });
+  let vide = container.querySelector('[data-empty-day]');
+  if(!vide){
+    vide = document.createElement('p');
+    vide.setAttribute('data-empty-day','');
+    vide.className = 'slot-empty-day';
+    vide.textContent = 'Aucun créneau ce jour — « + Ajouter un créneau » pour en ouvrir un.';
+    container.appendChild(vide);
+  }
+  Promise.resolve(window.LTPBackend?.listHostSlots?.() || []).then(slots => {
+    (slots || []).filter(slot => slot.status === 'open').forEach(renderPersistedSlot);
+    const visibles = container.querySelectorAll('label:not([hidden])').length;
+    vide.hidden = estAujourdhui || visibles > 0;
+    refreshPlannerSummary();
+  }).catch(() => { vide.hidden = estAujourdhui; });
 }
 
 document.querySelector('[data-add-slot]').addEventListener('click', openSlotEditor);
@@ -946,7 +1011,72 @@ if('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: red
   items.forEach(item => { item.classList.add('experience-reveal'); observer.observe(item); });
 }
 
-renderReservations(demoReservations());
+/* Les décisions Accepter/Refuser survivent au rechargement, et les compteurs partent des données. */
+function demoReservationsAvecDecisions(){
+  const records = demoReservations();
+  try {
+    const decisions = JSON.parse(localStorage.getItem('ltp-host-decisions') || '{}');
+    records.forEach(record => { if(decisions[record.id]) record.status = decisions[record.id]; });
+  } catch { /* stockage illisible : on garde les statuts de démo */ }
+  return records;
+}
+
+renderReservations(demoReservationsAvecDecisions());
+refreshPendingBadges();
+
+/* La semaine du tableau de bord et la date de virement suivent le calendrier réel —
+   elles étaient écrites en dur au 27 juillet et allaient périmer. */
+(function alignDashboardOnToday(){
+  const buttons = document.querySelectorAll('#hostCalendar .host-week button');
+  if(buttons.length === 7){
+    const now = new Date(); now.setHours(0,0,0,0);
+    const monday = new Date(now);
+    monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+    buttons.forEach((button, i) => {
+      const date = new Date(monday.getTime() + i * 86400000);
+      const nom = button.querySelector('small');
+      const num = button.querySelector('b');
+      if(nom) nom.textContent = JOURS[i];
+      if(num) num.textContent = pad(date.getDate());
+      const passe = date < now;
+      button.classList.toggle('past', passe);
+      if(passe){
+        const etat = button.querySelector('span');
+        if(etat) etat.textContent = 'Terminé';
+        const detail = button.querySelector('em');
+        if(detail) detail.remove();
+        button.setAttribute('aria-label', JOURS[i] + ' ' + date.getDate() + ', terminé');
+      }
+    });
+  }
+  const prochainMercredi = new Date();
+  prochainMercredi.setDate(prochainMercredi.getDate() + ((3 - prochainMercredi.getDay() + 7) % 7 || 7));
+  const libelle = capitalize(new Intl.DateTimeFormat('fr-FR', {weekday:'long', day:'numeric', month:'long'}).format(prochainMercredi));
+  document.querySelectorAll('.revenue-kpis article span').forEach(span => {
+    if(/^Mercredi \d/.test(span.textContent)) span.textContent = libelle;
+  });
+})();
+
+/* Les fils de messages et le panneau de notifications reprennent les horaires RÉELS
+   des réservations — ils étaient figés à 16:00 quel que soit le planning. */
+(function alignConversationsOnRecords(){
+  reservationRecords.forEach(record => {
+    const thread = hostConversations[record.id];
+    if(!thread) return;
+    const heure = formatTime(record.start) + ' – ' + formatTime(record.end);
+    const jour = record.start.toDateString() === new Date().toDateString()
+      ? 'aujourd’hui'
+      : record.start.toLocaleDateString('fr-FR', {weekday:'long'});
+    if(record.status === 'completed'){ return; }
+    thread.meta = 'Réservation ' + jour + ' · ' + formatTime(record.start);
+    thread.booking = record.format + ' · ' + heure;
+    thread.detail = record.guests + ' voyageurs · ' + statusLabel(record.status).toLowerCase();
+  });
+  const notif = document.querySelector('#hostNotificationPanel [data-host-view-jump="reservations"] small');
+  const martin = reservationRecords.find(record => record.id === 'martin');
+  if(notif && martin) notif.textContent = martin.name + ' · ' +
+    (martin.start.toDateString() === new Date().toDateString() ? 'aujourd’hui ' : '') + formatTime(martin.start);
+})();
 setInterval(() => {
   const next = reservationRecords.find(record => record.end > new Date() && !['cancelled','completed'].includes(record.status));
   refreshDashboard(next);

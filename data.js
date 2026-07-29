@@ -34,7 +34,7 @@ const listings = [
     pricing:{ dayPrice:250 },
     equipment:[['deck','6 transats face à la vue'],['parking','Parking privé 3 places'],['shower','Douche extérieure'],['light','Éclairage de nuit']],
     extras:[{id:'serv',lbl:'Serviettes — lot de 4',sub:'fournies pliées',price:6},{id:'apero',lbl:'Plateau apéritif',sub:'produits locaux, 4 pers.',price:24}],
-    host:{name:'Julien', initial:'J', response:'~2 h', premium:false, onsite:false},
+    host:{name:'Julien', initial:'J', response:'~2 h', premium:false, onsite:false, phone:'06 51 08 42 76', address:'4 chemin du Miroir, 13260 Cassis'},
     visit:{date:'3 juin 2026', points:['Dispositif de sécurité normé','Analyse d’eau du mois consultée','Profondeurs affichées','Abords en bon état','Douche en état de marche','Accès indépendant','Photos conformes','Jauge cohérente','Trousse de premiers secours','Identité de l’hôte vérifiée']},
     rules:['Musique au volume raisonnable','Pas de verre autour de la piscine','Douche avant baignade','Départ à l’heure — rotation 30 min'],
     reviewsList:[{text:'La vue est irréelle, et être seuls change tout.',author:'Sophie — juillet 2026 · privatisation'},{text:'Accueil parfait, piscine impeccable.',author:'Marc — juin 2026 · privatisation'}]
@@ -52,7 +52,7 @@ const listings = [
     pricing:{ openWeek:6, openWE:7, openBleue:9, priv:58, privBleue:82, halfDay:110, dayPrice:180 },
     equipment:[['deck','Grande pelouse ombragée'],['shower','Douche extérieure'],['wc','WC accessibles'],['fence','Barrière de sécurité normée']],
     extras:[{id:'jeux',lbl:'Malle de jeux d’eau',sub:'brassards, frites, ballons',price:5},{id:'serv',lbl:'Serviettes — lot de 4',sub:'lavées entre chaque séance',price:6}],
-    host:{name:'Nadia', initial:'N', response:'~45 min', premium:true, onsite:true},
+    host:{name:'Nadia', initial:'N', response:'~45 min', premium:true, onsite:true, phone:'07 68 24 91 35', address:'18 rue du Verger, 84120 Pertuis'},
     visit:{date:'28 mai 2026', points:['Dispositif de sécurité normé','Analyse d’eau consultée','Profondeurs affichées','Abords non glissants','Douche en état de marche','Sanitaires accessibles','Accès indépendant','Photos conformes','Jauge cohérente','Premiers secours à proximité','Perche et bouée visibles','Identité de l’hôte vérifiée']},
     rules:['Enfants accompagnés d’un adulte dans l’eau','Pas d’animaux','Pique-nique autorisé au coin repas','Douche avant baignade'],
     reviewsList:[{text:'Anniversaire des 8 ans réussi — les jeux d’eau font tout.',author:'Laura — juillet 2026 · séance ouverte'},{text:'Nadia est adorable, on reviendra.',author:'Hugo — juin 2026 · séance ouverte'}]
@@ -70,7 +70,7 @@ const listings = [
     pricing:{ openWeek:8, openWE:9, openBleue:12, openNight:15, priv:72, privBleue:98, privNight:120, halfDay:120, dayPrice:220 },
     equipment:[['light','Éclairage du bassin'],['deck','4 transats'],['shower','Douche extérieure'],['gate','Accès par le jardin']],
     extras:[{id:'serv',lbl:'Serviettes — lot de 4',sub:'fournies pliées',price:6},{id:'lanterne',lbl:'Lanternes & plaids',sub:'pour prolonger la soirée',price:9}],
-    host:{name:'Paul', initial:'P', response:'~3 h', premium:false, onsite:false},
+    host:{name:'Paul', initial:'P', response:'~3 h', premium:false, onsite:false, phone:'06 32 87 15 60', address:'7 impasse des Margelles, 84160 Lourmarin'},
     visit:{date:'19 juin 2026', points:['Dispositif de sécurité normé','Analyse d’eau consultée','Profondeurs affichées','Abords en bon état','Éclairage vérifié','Accès indépendant','Photos conformes','Jauge cohérente','Premiers secours à proximité','Identité de l’hôte vérifiée']},
     rules:['Musique jusqu’à 21 h','Pas de verre autour de la piscine','Départ à l’heure — rotation 30 min'],
     reviewsList:[{text:'Nager à la tombée du jour, lumière incroyable.',author:'Inès — juillet 2026 · heure bleue'},{text:'Le cadre vaut le déplacement depuis Aix.',author:'Théo — juin 2026 · séance ouverte'}]
@@ -88,7 +88,7 @@ const listings = [
     pricing:{ dayPrice:160 },
     equipment:[['robe','Peignoirs & chaussons'],['heat','38 °C toute l’année'],['light','Jardin éclairé le soir'],['shower','Douche attenante']],
     extras:[{id:'serv',lbl:'Serviettes chaudes',sub:'2 par personne',price:4},{id:'tisane',lbl:'Tisanes & thé glacé',sub:'à volonté',price:5}],
-    host:{name:'Sonia', initial:'S', response:'~1 h', premium:false, onsite:false},
+    host:{name:'Sonia', initial:'S', response:'~1 h', premium:false, onsite:false, phone:'07 45 63 20 18', address:'22 avenue des Oliviers, 13100 Aix-en-Provence'},
     visit:{date:'7 juin 2026', points:['Carnet sanitaire à jour','Température contrôlée','Traitement de l’eau vérifié','Douche en état de marche','Accès indépendant','Photos conformes','Identité de l’hôte vérifiée']},
     rules:['Douche savonnée obligatoire avant l’eau','Pas de verre dans le jacuzzi','2 h maximum recommandées à 38 °C','Déconseillé aux moins de 12 ans'],
     reviewsList:[{text:'Parenthèse parfaite après le travail, à 8 minutes de chez nous.',author:'Camille — juillet 2026'},{text:'Propre, chaud, calme. Rien à redire.',author:'Yanis — juin 2026'}]
@@ -106,7 +106,7 @@ const listings = [
     pricing:{ dayPrice:120 },
     equipment:[['heat','Poêle à pierres 70–90 °C'],['shower','Douche froide extérieure'],['wc','Vestiaire dédié'],['robe','Serviettes fournies']],
     extras:[{id:'huiles',lbl:'Huiles essentielles',sub:'eucalyptus ou pin',price:3},{id:'tisane',lbl:'Tisanes après séance',sub:'servies au jardin',price:5}],
-    host:{name:'Marc', initial:'M', response:'~2 h', premium:true, onsite:true},
+    host:{name:'Marc', initial:'M', response:'~2 h', premium:true, onsite:true, phone:'06 74 39 58 02', address:'3 montée de la Bastide, 13510 Éguilles'},
     visit:{date:'15 juin 2026', points:['Poêle et température contrôlés','Consignes de sécurité affichées','Douche en état de marche','Vestiaire propre','Accès indépendant','Photos conformes','Identité de l’hôte vérifiée']},
     rules:['Séance sur serviette obligatoire','Hydratation : eau à disposition','15 min maximum par passage recommandées','Déconseillé aux moins de 16 ans'],
     reviewsList:[{text:'Un vrai sauna de jardin, comme dans le Nord. Rare ici.',author:'Elsa — juin 2026'},{text:'Marc explique tout, séance parfaite.',author:'Romain — mai 2026'}]
@@ -156,7 +156,7 @@ function openSlots(listing, seed, i, we){
   const dayTaken = i < 7 && !FULLY_FREE(i) && mix(20) === 4;
   if(dayTaken) return [ s('9 h – 11 h', 1, cap, pp, p.priv), s('11 h – 13 h', 2, cap, pp, p.priv), BUF, { t:'14 h – 21 h · journée privée', regime:'priv' } ];
   const afternoon = i < 7 && !FULLY_FREE(i) && mix(21) === 2 ? { t:'13 h 30 – 16 h 30 · demi-journée', regime:'priv' } : s('14 h – 16 h', 3, cap, pp, p.priv);
-  const out = [ s('9 h – 11 h', 1, cap, pp, p.priv), s('11 h – 13 h', 2, cap, pp, p.priv), BUF, afternoon, BUF, s('17 h – 19 h', 4, cap, pp, p.priv) ];
+  const out = [ s('9 h – 11 h', 1, cap, pp, p.priv), BUF, s('11 h 30 – 13 h 30', 2, cap, pp, p.priv), BUF, afternoon, BUF, s('17 h – 19 h', 4, cap, pp, p.priv) ];
   if(p.openBleue) out.push(BUF, { ...s('19 h 30 – 21 h 30', 5, Math.max(4, cap - 2), p.openBleue, p.privBleue), bleue:true });
   if(p.openNight) out.push(BUF, { ...s('22 h – 1 h', 6, Math.max(4, cap - 4), p.openNight, p.privNight), night:true });
   return out;

@@ -1485,3 +1485,21 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 /* Champ « Où » : le conteneur porte déjà l'état de focus (focus-within) — l'anneau global
    sur l'input créait un double liseré. On ne coupe le focus que là où un substitut existe. */
 .place-input input:focus-visible{outline:none;box-shadow:none}
+.host-demo-note{font-size:11.5px}
+
+/* Finitions de la contre-inspection. */
+/* pastilles d'étapes complétées : le ✓ héritait du font-size:0 du numéro masqué */
+.listing-journey nav button.done>span::after{font-size:11px}
+/* la carte d'avis seule sur la dernière page ne s'étire plus sur toute la hauteur */
+.review-page{align-content:start}
+/* le bloc « Préparer avec Maz » ne gonfle plus pour remplir un fil court */
+.message-shell .conversation-maz-compose,.conversation-maz-compose{align-self:end;flex-grow:0;margin-top:auto}
+/* pieds des cartes favoris alignés : prix et lien au même niveau sur les trois cartes */
+.favorite-place{display:flex;flex-direction:column}
+.favorite-place-copy{display:flex;flex-direction:column;flex:1}
+.favorite-place-copy>div:last-child{margin-top:auto}
+/* la pastille d'état du détail de réservation ne s'étire plus en ovale */
+.reservation-detail header [data-reservation-state]{align-self:flex-start;height:fit-content}
+.amenity-categories button{font:inherit;border:1px solid var(--border-subtle);background:transparent;color:inherit;border-radius:99px;padding:6px 14px;min-height:34px;cursor:pointer}
+.amenity-categories button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.slot-empty-day{margin:8px 0 0;padding:22px 16px;border:1px dashed var(--border-subtle);border-radius:14px;color:var(--muted,#57696D);text-align:center;font-size:14px}
