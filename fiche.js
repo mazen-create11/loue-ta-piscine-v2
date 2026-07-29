@@ -261,12 +261,17 @@ function renderDays(){
   el('weekNext').disabled = start + 7 >= DAYS.length;
   visible.forEach((dy, offset) => {
     const i = start + offset;
+    const floor = dayFloor(dy);
+    const off = floor === 'réservé' || floor === 'complet';
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'day num' + (state.day === i ? ' active' : '');
+    b.className = 'day num' + (state.day === i ? ' active' : '') + (off ? ' unavailable' : '');
     b.setAttribute('role','tab');
     b.setAttribute('aria-selected', state.day === i);
-    b.innerHTML = '<small>' + dy.lbl[0] + '</small><b>' + dy.lbl[1] + '</b><span>' + dayFloor(dy) + '</span>';
+    // un jour indisponible pour le format choisi ne doit pas être cliquable : avant, il
+    // s'ouvrait sur un panneau vide et le client croyait à un bug
+    if(off){ b.disabled = true; b.setAttribute('aria-disabled','true'); }
+    b.innerHTML = '<small>' + dy.lbl[0] + '</small><b>' + dy.lbl[1] + '</b><span>' + floor + '</span>';
     b.addEventListener('click', () => { state.day = i; state.slot = null; state.privatise = state.format !== 'slot'; render(); });
     dayStrip.appendChild(b);
   });

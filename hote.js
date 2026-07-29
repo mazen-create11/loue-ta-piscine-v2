@@ -591,10 +591,66 @@ document.getElementById('addHostRule').addEventListener('click', () => {
 
 document.querySelectorAll('#customRules button').forEach(button => button.addEventListener('click', () => button.parentElement.remove()));
 
-document.querySelectorAll('.calendar-days button').forEach(button => button.addEventListener('click', () => {
-  document.querySelectorAll('.calendar-days button').forEach(item => item.classList.toggle('active', item === button));
-  document.querySelector('.slot-planner>header b').textContent = button.querySelector('small').textContent + ' ' + button.querySelector('b').textContent + ' juillet';
-}));
+/* Le calendrier hôte était figé sur la semaine du 27 juillet : dates en dur, flèches mortes,
+   et « juillet » collé au nom du jour quel que soit le mois. La semaine est désormais générée
+   depuis la date réelle, et les flèches naviguent. */
+let weekStart = (() => {
+  const monday = new Date();
+  monday.setHours(0, 0, 0, 0);
+  monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+  return monday;
+})();
+let selectedDayDate = new Date();
+
+const JOURS = ['Lun.','Mar.','Mer.','Jeu.','Ven.','Sam.','Dim.'];
+const MOIS_LONG = new Intl.DateTimeFormat('fr-FR', {day:'numeric', month:'long'});
+const semaineLabel = () => {
+  const fin = new Date(weekStart.getTime() + 6 * 86400000);
+  return (MOIS_LONG.format(weekStart) + ' – ' + MOIS_LONG.format(fin)).toUpperCase();
+};
+
+function renderHostWeek(){
+  const container = document.querySelector('.calendar-days');
+  const header = container?.closest('section')?.querySelector('header');
+  if(!container || !header) return;
+  header.querySelector('small').textContent = semaineLabel();
+  const now = new Date(); now.setHours(0, 0, 0, 0);
+  const offset = Math.round((weekStart - now) / 86400000);
+  header.querySelector('h2').textContent = offset === 0 || (offset < 0 && offset > -7)
+    ? 'Cette semaine' : (offset > 0 && offset < 8 ? 'Semaine prochaine' : 'Semaine du ' + MOIS_LONG.format(weekStart));
+  container.replaceChildren();
+  for(let i = 0; i < 7; i++){
+    const date = new Date(weekStart.getTime() + i * 86400000);
+    const button = document.createElement('button');
+    button.type = 'button';
+    if(date.toDateString() === selectedDayDate.toDateString()) button.className = 'active';
+    if(date < now) button.classList.add('past');
+    button.dataset.calDate = localDateValue(date);
+    const nom = document.createElement('small'); nom.textContent = JOURS[i];
+    const num = document.createElement('b'); num.className = 'num'; num.textContent = pad(date.getDate());
+    button.append(nom, num);
+    button.addEventListener('click', () => {
+      selectedDayDate = date;
+      renderHostWeek();
+      document.querySelector('.slot-planner>header b').textContent =
+        capitalize(new Intl.DateTimeFormat('fr-FR', {weekday:'long', day:'numeric', month:'long'}).format(date));
+      refreshPersistedSlots();
+    });
+    container.appendChild(button);
+  }
+}
+
+document.querySelectorAll('[aria-label="Semaine précédente"],[aria-label="Semaine suivante"]').forEach(arrow => {
+  arrow.addEventListener('click', () => {
+    const sens = arrow.getAttribute('aria-label') === 'Semaine suivante' ? 7 : -7;
+    weekStart = new Date(weekStart.getTime() + sens * 86400000);
+    renderHostWeek();
+    showToast('Semaine du ' + MOIS_LONG.format(weekStart));
+  });
+});
+renderHostWeek();
+document.querySelector('.slot-planner>header b').textContent =
+  capitalize(new Intl.DateTimeFormat('fr-FR', {weekday:'long', day:'numeric', month:'long'}).format(selectedDayDate));
 
 const slotEditor = document.getElementById('slotEditor');
 const slotForm = document.getElementById('slotForm');
@@ -657,6 +713,9 @@ function openSlotEditor(){
 function renderPersistedSlot(slot){
   const container = document.getElementById('hostSlotRows');
   if(container.querySelector('[data-persisted-slot="' + slot.id + '"]')) return;
+  // un créneau publié pour mercredi n'a rien à faire dans la liste du lundi
+  const jour = new Date(slot.start_at || slot.startAt);
+  if(jour.toDateString() !== selectedDayDate.toDateString()) return;
   const start = new Date(slot.start_at || slot.startAt);
   const end = new Date(slot.end_at || slot.endAt);
   const format = slot.format;
@@ -697,6 +756,12 @@ async function loadHostSlots(){
   } catch(error){ showToast(error.message || 'Impossible de charger les créneaux'); }
 }
 
+/* Au changement de jour : on retire les créneaux publiés affichés et on recharge ceux du jour. */
+function refreshPersistedSlots(){
+  document.querySelectorAll('#hostSlotRows [data-persisted-slot]').forEach(row => row.remove());
+  loadHostSlots();
+}
+
 document.querySelector('[data-add-slot]').addEventListener('click', openSlotEditor);
 document.querySelectorAll('[data-close-slot]').forEach(button => button.addEventListener('click', closeSlotEditor));
 slotForm.addEventListener('input', event => {
@@ -713,9 +778,18 @@ slotForm.addEventListener('submit', async event => {
   try {
     if(!window.LTPBackend) throw new Error('Le service de disponibilités n’est pas encore prêt.');
     const created = await window.LTPBackend.publishAvailabilitySlot(slotPayload());
+    // on rejoint le jour du créneau : il apparaît là où il vivra, pas dans la liste affichée
+    const jourCreneau = new Date(created.start_at || created.startAt);
+    selectedDayDate = jourCreneau;
+    weekStart = new Date(jourCreneau);
+    weekStart.setHours(0, 0, 0, 0);
+    weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
+    renderHostWeek();
+    document.querySelector('.slot-planner>header b').textContent =
+      capitalize(new Intl.DateTimeFormat('fr-FR', {weekday:'long', day:'numeric', month:'long'}).format(jourCreneau));
     renderPersistedSlot(created);
     closeSlotEditor();
-    showToast('Créneau publié et visible dans votre calendrier');
+    showToast('Créneau publié le ' + MOIS_LONG.format(jourCreneau));
   } catch(errorValue){
     error.textContent = errorValue.message || 'Impossible de publier ce créneau.';
     error.hidden = false;
@@ -814,9 +888,8 @@ document.addEventListener('click', event => {
     return;
   }
   if(action.dataset.accountAction === 'calendar'){
-    const selectedDay = Number(document.querySelector('.calendar-days .active b')?.textContent || new Date().getDate());
-    const calendarDate = new Date();
-    calendarDate.setDate(selectedDay);
+    // la vraie date sélectionnée, pas un numéro de jour recollé sur le mois courant
+    const calendarDate = new Date(selectedDayDate);
     const toIcal = date => [date.getFullYear(),pad(date.getMonth() + 1),pad(date.getDate())].join('') + 'T' + pad(date.getHours()) + pad(date.getMinutes()) + '00';
     const slots = [...document.querySelectorAll('#hostSlotRows label')].map((row,index) => {
       const times = row.querySelector('time')?.textContent.match(/\d{2}:\d{2}/g) || [];

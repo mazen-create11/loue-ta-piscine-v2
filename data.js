@@ -135,6 +135,10 @@ function makeSchedule(listing){
   return days;
 }
 
+/* Jours 3 et 6 : toujours entièrement libres. Sans cette garantie, la première semaine saturait
+   et les formats journée (290 €) et demi-journée (139 €) menaient à sept pastilles « réservé ». */
+const FULLY_FREE = (i) => i === 3 || i === 6;
+
 function openSlots(listing, seed, i, we){
   const p = listing.pricing;
   const pp = we ? p.openWE : p.openWeek;
@@ -142,15 +146,16 @@ function openSlots(listing, seed, i, we){
   const mix = (k) => (seed + i * 13 + k * 7) % 17;
   /* Les réservations s'amincissent avec la distance : jours proches chargés, semaine 2 presque libre. */
   const booked = (k, c) => {
+    if(FULLY_FREE(i)) return 0;
     const m = mix(k);
     if(i >= 7) return m % 5 === 0 ? 1 + m % 3 : 0;
     return m > 12 ? c : m % Math.max(1, c - 2);
   };
   const s = (t, k, c, price, priv) => ({ t, regime:'open', cap:c, booked:Math.min(c, booked(k, c)), priceP:price, pricePriv:priv });
   const BUF = { buffer:true };
-  const dayTaken = i < 7 && mix(20) === 4;
+  const dayTaken = i < 7 && !FULLY_FREE(i) && mix(20) === 4;
   if(dayTaken) return [ s('9 h – 11 h', 1, cap, pp, p.priv), s('11 h – 13 h', 2, cap, pp, p.priv), BUF, { t:'14 h – 21 h · journée privée', regime:'priv' } ];
-  const afternoon = i < 7 && mix(21) === 2 ? { t:'13 h 30 – 16 h 30 · demi-journée', regime:'priv' } : s('14 h – 16 h', 3, cap, pp, p.priv);
+  const afternoon = i < 7 && !FULLY_FREE(i) && mix(21) === 2 ? { t:'13 h 30 – 16 h 30 · demi-journée', regime:'priv' } : s('14 h – 16 h', 3, cap, pp, p.priv);
   const out = [ s('9 h – 11 h', 1, cap, pp, p.priv), s('11 h – 13 h', 2, cap, pp, p.priv), BUF, afternoon, BUF, s('17 h – 19 h', 4, cap, pp, p.priv) ];
   if(p.openBleue) out.push(BUF, { ...s('19 h 30 – 21 h 30', 5, Math.max(4, cap - 2), p.openBleue, p.privBleue), bleue:true });
   if(p.openNight) out.push(BUF, { ...s('22 h – 1 h', 6, Math.max(4, cap - 4), p.openNight, p.privNight), night:true });
@@ -162,7 +167,7 @@ function privateSlots(listing, seed, i){
   const times = two ? ['10 h – 12 h','14 h – 16 h','17 h – 19 h'] : ['10 h – 11 h','11 h – 12 h','17 h – 18 h','18 h – 19 h','19 h – 20 h','20 h – 21 h'];
   const out = [];
   times.forEach((t, k) => {
-    const taken = i < 7 && (seed + i * 11 + k * 5) % 7 === 3;
+    const taken = i < 7 && !FULLY_FREE(i) && (seed + i * 11 + k * 5) % 7 === 3;
     out.push(taken ? { t, regime:'priv' } : { t, regime:'unit', price:listing.unitPrice, cap:listing.capacity });
     if(k < times.length - 1 && (two || k === (times.length / 2 | 0) - 1)) out.push({ buffer:true });
   });

@@ -4,7 +4,7 @@ const { listings } = window.LTP;
 
 const TODAY = new Date();
 const state = {
-  type:'all', moment:'', place:'Aix-en-Provence', date:'', dateLabel:'Ce week-end',
+  type:'all', moment:'', place:'Aix-en-Provence', postal:'13100', date:'', dateLabel:'Ce week-end', shortcut:'',
   adults:2, kids:2, babies:0, timeslot:'', occasion:'',
   searchStep:'place', view:'grid', month:new Date(TODAY.getFullYear(), TODAY.getMonth(), 1),
   favorites:new Set(JSON.parse(localStorage.getItem('ltp-v2-favorites') || '[]'))
@@ -215,7 +215,21 @@ function renderSuggestions(cities){
   }).join('');
 }
 
+/* Un mois sans aucune date réservable ne doit jamais s'ouvrir : on avance jusqu'au premier
+   mois utile (fin de mois, la totalité des cases était grisée). */
+function premierMoisUtile(){
+  const minDate = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+  const fin = new Date(state.month.getFullYear(), state.month.getMonth() + 1, 0);
+  if(fin < minDate) return new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+  return state.month;
+}
+
+function dateISO(date){
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
 function renderCalendar(){
+  state.month = premierMoisUtile();
   const year = state.month.getFullYear();
   const month = state.month.getMonth();
   const monthName = new Intl.DateTimeFormat('fr-FR', {month:'long', year:'numeric'}).format(state.month);
@@ -232,7 +246,9 @@ function renderCalendar(){
   const slots = [
     ['', 'Peu importe'], ['matin', 'Le matin'], ['apres-midi', 'L’après-midi'], ['soir', 'En soirée']
   ];
-  searchStage.innerHTML = `<div class="date-shortcuts"><button type="button" data-shortcut="today">Aujourd’hui</button><button type="button" data-shortcut="weekend">Ce week-end</button><button type="button" data-shortcut="flex">Flexible</button></div><div class="calendar-head"><b>${monthName}</b><div><button type="button" data-month="prev" aria-label="Mois précédent">‹</button><button type="button" data-month="next" aria-label="Mois suivant">›</button></div></div><div class="calendar-week"><span>Lu</span><span>Ma</span><span>Me</span><span>Je</span><span>Ve</span><span>Sa</span><span>Di</span></div><div class="calendar-grid num">${cells.join('')}</div>
+  const offset = monthOffset();
+  const shortcuts = [['today','Aujourd’hui'],['weekend','Ce week-end'],['flex','Flexible']];
+  searchStage.innerHTML = `<div class="date-shortcuts">${shortcuts.map(([key,label]) => `<button type="button" data-shortcut="${key}" class="${state.shortcut === key ? 'active' : ''}" aria-pressed="${state.shortcut === key}">${label}</button>`).join('')}</div><div class="calendar-head"><b>${monthName}</b><div><button type="button" data-month="prev" aria-label="Mois précédent" ${offset <= 0 ? 'disabled' : ''}>‹</button><button type="button" data-month="next" aria-label="Mois suivant" ${offset >= 11 ? 'disabled' : ''}>›</button></div></div><div class="calendar-week"><span>Lu</span><span>Ma</span><span>Me</span><span>Je</span><span>Ve</span><span>Sa</span><span>Di</span></div><div class="calendar-grid num">${cells.join('')}</div>
     <div class="time-pref"><span class="time-pref-label">Vers quelle heure ?</span><div class="time-chips">${slots.map(([key, label]) => `<button type="button" data-timeslot="${key}" class="${state.timeslot === key ? 'active' : ''}">${label}</button>`).join('')}</div><small>On vous montre aussi les créneaux à deux heures près.</small></div>`;
 }
 
@@ -343,9 +359,30 @@ document.addEventListener('click', event => {
     return;
   }
   const date = event.target.closest('[data-date]');
-  if(date){ state.date = date.dataset.date; state.dateLabel = new Intl.DateTimeFormat('fr-FR', {weekday:'short', day:'numeric', month:'short'}).format(new Date(`${state.date}T12:00:00`)); dateSummary.textContent = state.dateLabel; updateSearchSummary(); renderCalendar(); return }
+  if(date){ state.date = date.dataset.date; state.shortcut = ''; state.dateLabel = new Intl.DateTimeFormat('fr-FR', {weekday:'short', day:'numeric', month:'short'}).format(new Date(`${state.date}T12:00:00`)); dateSummary.textContent = state.dateLabel; updateSearchSummary(); renderCalendar(); return }
   const shortcut = event.target.closest('[data-shortcut]');
-  if(shortcut){ state.dateLabel = shortcut.dataset.shortcut === 'today' ? 'Aujourd’hui' : shortcut.dataset.shortcut === 'weekend' ? 'Ce week-end' : 'Dates flexibles'; dateSummary.textContent = state.dateLabel; updateSearchSummary(); return }
+  if(shortcut){
+    // le raccourci choisit vraiment une date, sinon il contredisait la case restée surlignée
+    const key = shortcut.dataset.shortcut;
+    state.shortcut = key;
+    if(key === 'today'){
+      state.date = dateISO(TODAY);
+      state.dateLabel = 'Aujourd’hui';
+    } else if(key === 'weekend'){
+      const samedi = new Date(TODAY);
+      samedi.setDate(samedi.getDate() + ((6 - samedi.getDay() + 7) % 7 || 7));
+      state.date = dateISO(samedi);
+      state.month = new Date(samedi.getFullYear(), samedi.getMonth(), 1);
+      state.dateLabel = 'Ce week-end';
+    } else {
+      state.date = '';
+      state.dateLabel = 'Dates flexibles';
+    }
+    dateSummary.textContent = state.dateLabel;
+    renderCalendar();
+    updateSearchSummary();
+    return;
+  }
   const guest = event.target.closest('[data-guest]');
   if(guest){
     const group = GUEST_GROUPS.find(g => g.key === guest.dataset.group);
