@@ -523,7 +523,7 @@ renderFavorites();
       entry.target.classList.add('is-visible');
       observer.unobserve(entry.target);
     });
-  }, {rootMargin:'0px 0px -7% 0px', threshold:.08});
+  }, {rootMargin:'100000px 0px 0px 0px', threshold:0});
   items.forEach(item => { item.classList.add('experience-reveal'); observer.observe(item); });
 })();
 

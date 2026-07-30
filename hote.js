@@ -1026,7 +1026,7 @@ if('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: red
       entry.target.classList.add('is-visible');
       observer.unobserve(entry.target);
     });
-  }, {threshold:.08});
+  }, {rootMargin:'100000px 0px 0px 0px', threshold:0});
   items.forEach(item => { item.classList.add('experience-reveal'); observer.observe(item); });
 }
 

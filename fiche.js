@@ -186,7 +186,7 @@ goToReview(0, false);
 
 const h = listing.host;
 el('ficheHost').innerHTML =
-  '<div class="host-avatar" aria-hidden="true">' + h.initial + '</div>' +
+  '<div class="host-avatar" aria-hidden="true">' + h.name.slice(0, 2).toUpperCase() + '</div>' +
   '<div><b>' + h.name + '</b>' +
   '<p class="host-meta num">' + (h.premium ? 'Hôte Premium abonné · visibilité renforcée · ' : '') + 'note ' + listing.rating + (h.onsite ? ' · paiement sur place débloqué grâce à sa note' : '') + ' · répond en ' + h.response + '</p>' +
   '<p>Messagerie intégrée avant réservation — les coordonnées sont communiquées automatiquement après confirmation.</p>' +
@@ -487,10 +487,13 @@ function syncFav(){
   favBtn.setAttribute('aria-pressed', favs.has(listing.id));
 }
 favBtn.addEventListener('click', () => {
-  favs.has(listing.id) ? favs.delete(listing.id) : favs.add(listing.id);
+  const ajout = !favs.has(listing.id);
+  ajout ? favs.add(listing.id) : favs.delete(listing.id);
   localStorage.setItem(favKey, JSON.stringify([...favs]));
   syncFav();
+  if(ajout) favBtn.classList.add('pop');
 });
+favBtn.addEventListener('animationend', () => favBtn.classList.remove('pop'));
 syncFav();
 
 function showToast(message){
@@ -523,7 +526,7 @@ document.addEventListener('click', ev => {
       entry.target.classList.add('is-visible');
       observer.unobserve(entry.target);
     });
-  }, {rootMargin:'0px 0px -7% 0px', threshold:.08});
+  }, {rootMargin:'100000px 0px 0px 0px', threshold:0});
   items.forEach(item => { item.classList.add('experience-reveal'); observer.observe(item); });
 })();
 })();

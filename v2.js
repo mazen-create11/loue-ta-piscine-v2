@@ -590,7 +590,7 @@ if(SEARCH_ORDER.includes(startupSearch)){
 
 (function experienceMotion(){
   if(!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const items = document.querySelectorAll('.moments-head,.moment-card,.world-intro,.world-card,.proof-intro,.proof-card,.faq-head,.faq details,.host-copy,.simulator');
+  const items = document.querySelectorAll('.moments-head,.world-intro,.world-card,.proof-intro,.proof-card,.faq-head,.faq details,.host-copy,.simulator');
   if(!items.length) return;
   document.body.classList.add('motion-ready');
   const observer = new IntersectionObserver(entries => {
@@ -599,7 +599,23 @@ if(SEARCH_ORDER.includes(startupSearch)){
       entry.target.classList.add('is-visible');
       observer.unobserve(entry.target);
     });
-  }, {rootMargin:'0px 0px -7% 0px', threshold:.08});
+  }, {rootMargin:'100000px 0px 0px 0px', threshold:0});
   items.forEach(item => { item.classList.add('experience-reveal'); observer.observe(item); });
+  /* Les cartes moments vivent dans un rail horizontal sur mobile : défilée hors du rail,
+     une carte ne peut jamais intersecter le viewport → on révèle le trio quand le RAIL entre
+     (le stagger CSS par nth-child reste joué). */
+  const rail = document.querySelector('.moment-grid');
+  if(rail){
+    const cards = rail.querySelectorAll('.moment-card');
+    cards.forEach(card => card.classList.add('experience-reveal'));
+    const railObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if(!entry.isIntersecting) return;
+        cards.forEach(card => card.classList.add('is-visible'));
+        railObserver.disconnect();
+      });
+    }, {rootMargin:'100000px 0px 0px 0px', threshold:0});
+    railObserver.observe(rail);
+  }
 })();
 })();
