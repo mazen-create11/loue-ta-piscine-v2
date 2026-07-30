@@ -124,9 +124,12 @@ function updateFavoriteCount(){
 }
 
 function toggleFavorite(id){
+  const ajout = !state.favorites.has(id);
   if(state.favorites.has(id)) state.favorites.delete(id); else state.favorites.add(id);
   localStorage.setItem('ltp-v2-favorites', JSON.stringify([...state.favorites]));
   renderListings();
+  // le pop ne joue que sur le cœur qu'on vient d'ajouter, pas sur tous les favoris re-rendus
+  if(ajout) document.querySelector(`[data-favorite="${CSS.escape(id)}"]`)?.classList.add('pop');
 }
 
 function selectType(type){

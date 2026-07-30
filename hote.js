@@ -1097,6 +1097,21 @@ refreshPendingBadges();
   const martin = reservationRecords.find(record => record.id === 'martin');
   if(notif && martin) notif.textContent = martin.name + ' · ' +
     (martin.start.toDateString() === new Date().toDateString() ? 'aujourd’hui ' : '') + formatTime(martin.start);
+  // le fil rendu en dur dans le HTML doit dire la même chose que les données
+  const actif = hostConversations[activeHostConversation];
+  const recordActif = reservationRecords.find(record => record.id === activeHostConversation);
+  if(actif && recordActif){
+    const headMeta = document.querySelector('#hostThread>header div small');
+    if(headMeta) headMeta.textContent = actif.meta;
+    const bookingDay = document.querySelector('.host-thread-booking span');
+    if(bookingDay) bookingDay.textContent = recordActif.start.toDateString() === new Date().toDateString()
+      ? 'AUJOURD’HUI'
+      : recordActif.start.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
+    const bookingLine = document.querySelector('.host-thread-booking b');
+    if(bookingLine) bookingLine.textContent = actif.booking;
+    const bookingDetail = document.querySelector('.host-thread-booking small');
+    if(bookingDetail) bookingDetail.textContent = actif.detail;
+  }
 })();
 setInterval(() => {
   const next = reservationRecords.find(record => record.end > new Date() && !['cancelled','completed'].includes(record.status));
