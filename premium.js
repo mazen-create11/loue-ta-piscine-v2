@@ -59,11 +59,11 @@ layer.innerHTML = `
         </div>
         <div class="premium-compare-line"><span><small>SANS ABONNEMENT</small><b>Chercher, réserver et écrire aux hôtes</b></span><i>+</i><span><small>AVEC MAZ+</small><b>Recherche personnelle, comparaison et suivi proactif</b></span></div>
         <div class="premium-checkout">
-          <div><span>MAZ+</span><strong>4,90 €<small>/ mois</small></strong><p>Sans engagement · annulation en un clic</p></div>
+          <div><span>MAZ+</span><strong>4,90 €<small>/ mois</small></strong><p>Sans engagement · annulation en un clic</p></div>
           <button type="button" data-subscribe="guest"><span>Activer Maz+</span><small>Essai découverte de 7 jours</small></button>
         </div>
         <section class="premium-membership" data-premium-membership="guest" hidden>
-          <header><span><i></i><b>Maz+ est actif</b><small data-renewal-date="guest"></small></span><strong>4,90 €<small>/ mois</small></strong></header>
+          <header><span><i></i><b>Maz+ est actif</b><small data-renewal-date="guest"></small></span><strong>4,90 €<small>/ mois</small></strong></header>
           <div><span><b>Formule</b><small>Recherche, comparaison et suivi</small></span><span><b>Engagement</b><small>Aucun · arrêt à tout moment</small></span><span><b>Compte</b><small>Avantages disponibles immédiatement</small></span></div>
           <button type="button" data-cancel-premium="guest">Résilier l’abonnement</button>
         </section>
@@ -78,17 +78,17 @@ layer.innerHTML = `
         </div>
         <div class="premium-compare-line"><span><small>SANS ABONNEMENT</small><b>Publier, gérer le calendrier, recevoir et répondre</b></span><i>+</i><span><small>AVEC MAZ HÔTE</small><b>Création assistée, brouillons, conseils et badge d’abonné</b></span></div>
         <div class="premium-checkout">
-          <div><span>MAZ HÔTE</span><strong>14,90 €<small>/ mois</small></strong><p>Assistant complet · badge inclus · sans engagement</p></div>
+          <div><span>MAZ HÔTE</span><strong>14,90 €<small>/ mois</small></strong><p>Assistant complet · badge inclus · sans engagement</p></div>
           <button type="button" data-subscribe="host"><span>Passer à Maz Hôte</span><small>Activer les outils avancés</small></button>
         </div>
         <section class="premium-membership" data-premium-membership="host" hidden>
-          <header><span><i></i><b>Maz Hôte est actif</b><small data-renewal-date="host"></small></span><strong>14,90 €<small>/ mois</small></strong></header>
+          <header><span><i></i><b>Maz Hôte est actif</b><small data-renewal-date="host"></small></span><strong>14,90 €<small>/ mois</small></strong></header>
           <div><span><b>Annonce</b><small>Outils Maz et badge actifs</small></span><span><b>Réponses</b><small>Brouillons disponibles en messagerie</small></span><span><b>Engagement</b><small>Aucun · arrêt à tout moment</small></span></div>
           <button type="button" data-cancel-premium="host">Résilier l’abonnement</button>
         </section>
         <aside class="premium-boost">
           <div><small>VISIBILITÉ À LA CARTE</small><h4>Mettre une annonce À la une</h4><p>7 jours dans le groupe sponsorisé en tête des résultats. Toujours signalé comme mise en avant payée.</p></div>
-          <strong>6,90 €<small>/ annonce</small></strong>
+          <strong>6,90 €<small>/ annonce</small></strong>
           <button type="button" data-buy-boost>Booster 7 jours</button>
         </aside>
         <p class="premium-ethics"><b>Trois signaux, trois sens.</b> « Vérifié » confirme les contrôles de confiance. « Hôte Premium » indique l’abonnement. « À la une » signale une visibilité achetée.</p>

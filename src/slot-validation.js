@@ -14,7 +14,7 @@ export function validateSlotInput(input){
   if(Number.isNaN(startAt.getTime()) || Number.isNaN(endAt.getTime())) throw new Error('Renseignez une date et des horaires valides.');
   if(endAt <= startAt) throw new Error('L’heure de fin doit être après l’heure de début.');
   if(endAt - startAt > 14 * 3600000) throw new Error('Un créneau ne peut pas dépasser 14 heures.');
-  if(!Number.isFinite(priceAmount) || priceAmount < 6 || priceAmount > 5000) throw new Error('Renseignez un tarif entre 6 € — le plancher de la plateforme — et 5 000 €.');
+  if(!Number.isFinite(priceAmount) || priceAmount < 6 || priceAmount > 5000) throw new Error('Renseignez un tarif entre 6 € — le plancher de la plateforme — et 5 000 €.');
   if(!Number.isInteger(capacity) || capacity < 1 || capacity > 100) throw new Error('La capacité doit être comprise entre 1 et 100 personnes.');
 
   return {format,startAt:startAt.toISOString(),endAt:endAt.toISOString(),priceAmount,priceUnit,capacity};

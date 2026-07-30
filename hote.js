@@ -19,8 +19,15 @@ const formatTime = date => pad(date.getHours()) + ':' + pad(date.getMinutes());
 const formatMoney = value => new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(value);
 const capitalize = value => value.charAt(0).toUpperCase() + value.slice(1);
 
+/* Les horaires démo étaient regénérés à chaque chargement (la même réservation changeait
+   d'heure entre deux visites) : on les fige pour la journée. */
 function demoReservations(){
   const now = new Date();
+  let fige = null;
+  try {
+    const stored = JSON.parse(localStorage.getItem('ltp-demo-schedule') || 'null');
+    if(stored && stored.day === now.toDateString()) fige = stored.starts;
+  } catch { fige = null; }
   const at = minutes => {
     const date = new Date(now.getTime() + minutes * 60000);
     date.setMinutes(Math.ceil(date.getMinutes() / 15) * 15, 0, 0);
@@ -33,6 +40,16 @@ function demoReservations(){
     {id:'lea',name:'Léa & Nino',start:at(5 * 1440 + 300),duration:180,format:'Créneau de nuit',guests:2,amount:30,status:'confirmed',guestDetail:'2 adultes',history:'Déjà venus deux fois',arrival:'Entrée côté jardin',prepare:'Éclairage + serviettes',ref:'LTP-2782'},
     {id:'emma',name:'Emma D.',start:at(-2 * 1440),duration:120,format:'Séance ouverte',guests:4,amount:28,status:'completed',guestDetail:'2 adultes · 2 enfants',history:'Voyageuse régulière',arrival:'Entrée principale',prepare:'Terminé',ref:'LTP-2719'}
   ];
+  if(fige){
+    records.forEach(record => { if(fige[record.id]) record.start = new Date(fige[record.id]); });
+  } else {
+    try {
+      localStorage.setItem('ltp-demo-schedule', JSON.stringify({
+        day: now.toDateString(),
+        starts: Object.fromEntries(records.map(record => [record.id, record.start.toISOString()]))
+      }));
+    } catch { /* stockage indisponible : horaires recalculés à chaque visite */ }
+  }
   return records.map(record => ({...record,end:new Date(record.start.getTime() + record.duration * 60000)}));
 }
 
@@ -105,7 +122,9 @@ function renderReservations(records){
   });
   const next = reservationRecords.find(record => record.end > today && !['cancelled','completed'].includes(record.status));
   refreshDashboard(next);
-  const first = list.querySelector('[data-reservation]');
+  const activeFilter = document.querySelector('[data-reservation-filter].active');
+  if(activeFilter) filterReservations(activeFilter.dataset.reservationFilter, activeFilter);
+  const first = list.querySelector('[data-reservation]:not([hidden])');
   if(first) selectReservation(first, false);
 }
 
@@ -449,7 +468,7 @@ document.addEventListener('click', event => {
     const open = day.classList.toggle('available');
     day.setAttribute('aria-pressed', String(open));
     day.querySelector('span').textContent = open ? 'Ouvert' : 'Fermé';
-    day.querySelector('em').textContent = open ? '14 h – 20 h' : 'Appuyer pour ouvrir';
+    day.querySelector('em').textContent = open ? '14 h – 20 h' : 'Ouvrir ce jour';
     showToast(open ? 'Créneau ouvert aux familles' : 'Journée fermée');
   }
 });
@@ -777,7 +796,7 @@ function renderPersistedSlot(slot){
   const title = document.createElement('b');
   title.textContent = slotLabels[format] || 'Créneau';
   const details = document.createElement('small');
-  details.textContent = start.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) + ' · ' + price.toLocaleString('fr-FR') + ' €' + unit + ' · ' + slot.capacity + ' places';
+  details.textContent = start.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) + ' · ' + price.toLocaleString('fr-FR') + ' €' + unit + ' · ' + slot.capacity + ' places';
   copy.append(title,details);
   const state = document.createElement('em');
   state.className = 'slot-published';
@@ -1041,6 +1060,8 @@ refreshPendingBadges();
       const passe = date < now;
       button.classList.toggle('past', passe);
       if(passe){
+        button.classList.remove('booked','available');
+        button.removeAttribute('aria-pressed');
         const etat = button.querySelector('span');
         if(etat) etat.textContent = 'Terminé';
         const detail = button.querySelector('em');

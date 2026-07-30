@@ -55,7 +55,8 @@
           <strong class="num">1&nbsp;324&nbsp;€</strong>
           <p>net après commission</p>
           <div class="earning-chart" aria-label="Progression des revenus sur quatre semaines"><i style="--h:35%"><small>S1</small></i><i style="--h:52%"><small>S2</small></i><i style="--h:68%"><small>S3</small></i><i class="active" style="--h:88%"><small>S4</small></i></div>
-          <div class="host-payout"><span>Prochain virement</span><b class="num">486 € · mercredi</b></div>
+          <div class="host-payout"><span>Prochain virement</span><b class="num">486 € · mercredi</b></div>
+                  <button type="button" class="host-earning-link" data-host-view-jump="bookings">Voir 6 mois de revenus →</button>
         </article>
 
         <article class="host-next">
@@ -68,12 +69,12 @@
       </section>
 
       <section class="host-calendar-card" id="hostCalendar" aria-labelledby="hostCalendarTitle">
-        <header><div><p>Disponibilités</p><h2 id="hostCalendarTitle">La semaine en un coup d’œil</h2></div><div class="calendar-legend"><span><i></i>Ouvert</span><span><i></i>Réservé</span></div></header>
+        <header><div><p>Disponibilités</p><h2 id="hostCalendarTitle">La semaine en un coup d’œil</h2></div><div class="calendar-legend"><span><i></i>Ouvert</span><span><i></i>Réservé</span><span><i></i>Fermé</span></div></header>
         <div class="host-week" role="list">
           <button type="button" class="past" aria-label="Lundi 27, terminé"><small>Lun.</small><b class="num">27</b><span>Terminé</span></button>
           <button type="button" class="booked" aria-label="Mardi 28, deux réservations"><small>Mar.</small><b class="num">28</b><span>2 réservations</span><em>16 h · 19 h</em></button>
           <button type="button" class="available" aria-pressed="true"><small>Mer.</small><b class="num">29</b><span>Ouvert</span><em>14 h – 20 h</em></button>
-          <button type="button" aria-pressed="false"><small>Jeu.</small><b class="num">30</b><span>Fermé</span><em>Appuyer pour ouvrir</em></button>
+          <button type="button" aria-pressed="false"><small>Jeu.</small><b class="num">30</b><span>Fermé</span><em>Ouvrir ce jour</em></button>
           <button type="button" class="available" aria-pressed="true"><small>Ven.</small><b class="num">31</b><span>Ouvert</span><em>17 h – 21 h</em></button>
           <button type="button" class="booked" aria-label="Samedi 1er août, complet"><small>Sam.</small><b class="num">01</b><span>Complet</span><em>3 réservations</em></button>
           <button type="button" class="available" aria-pressed="true"><small>Dim.</small><b class="num">02</b><span>Ouvert</span><em>10 h – 18 h</em></button>
@@ -102,7 +103,7 @@
           <article><span>02</span><h3>Des photos téléphone plus propres</h3><p>Recadrage, lumière et couleurs améliorés sans inventer d’équipement.</p><button type="button" data-host-photo>Importer mes photos</button></article>
           <article><span>03</span><h3>Une annonce prête à publier</h3><p>Description courte, équipements et règles préparés depuis vos réponses.</p><button type="button" data-host-ai="copy">Préparer l’annonce</button></article>
         </div>
-        <aside class="host-premium-card"><div><small>Maz Hôte</small><h3>Publiez mieux, sans perdre la main.</h3><p>Assistant complet et badge d’abonné. La mise en avant « À la une » reste une option séparée et clairement signalée.</p></div><button type="button" data-open-premium="host">Découvrir · 14,90 €/mois</button></aside>
+        <aside class="host-premium-card"><div><small>Maz Hôte</small><h3>Publiez mieux, sans perdre la main.</h3><p>Assistant complet et badge d’abonné. La mise en avant « À la une » reste une option séparée et clairement signalée.</p></div><button type="button" data-open-premium="host">Découvrir · 14,90 €/mois</button></aside>
         <input class="sr-only" id="hostPhotoInput" type="file" accept="image/*" multiple>
       </section>
       </section>
@@ -198,10 +199,10 @@
           <div class="slot-planner">
             <header><div><b>Lundi 27 juillet</b><small id="slotPlannerSummary">3 créneaux ouverts · 1 réservation</small></div><button type="button" data-add-slot>+ Ajouter un créneau</button></header>
             <div class="slot-planner-list" id="hostSlotRows">
-              <label><time>09:00 — 11:00</time><span><b>Séance ouverte</b><small>7 € / personne · 12 places</small></span><input type="checkbox" checked data-sync="format-open"></label>
-              <label><time>14:00 — 16:00</time><span><b>Privatisation</b><small>68 € · confirmé par la famille Martin</small></span><em>Réservé</em></label>
-              <label><time>19:30 — 21:30</time><span><b>Heure bleue</b><small>12 € / personne · 8 places</small></span><input type="checkbox" checked data-sync="format-blue"></label>
-              <label class="night"><time>22:00 — 01:00</time><span><b>Créneau de nuit</b><small>15 € / personne · musique douce après 22 h</small></span><input type="checkbox" checked data-sync="format-night"></label>
+              <label><time>09:00 — 11:00</time><span><b>Séance ouverte</b><small>7 € / personne · 12 places</small></span><input type="checkbox" checked data-sync="format-open"></label>
+              <label><time>14:00 — 16:00</time><span><b>Privatisation</b><small>68 € · confirmé par la famille Martin</small></span><em>Réservé</em></label>
+              <label><time>19:30 — 21:30</time><span><b>Heure bleue</b><small>12 € / personne · 8 places</small></span><input type="checkbox" checked data-sync="format-blue"></label>
+              <label class="night"><time>22:00 — 01:00</time><span><b>Créneau de nuit</b><small>15 € / personne · musique douce après 22 h</small></span><input type="checkbox" checked data-sync="format-night"></label>
             </div>
           </div>
           <aside class="calendar-settings"><h2>Réglages rapides</h2><label><span><b>Rotation</b><small>Temps entre deux groupes</small></span><select data-sync="rotation"><option>30 minutes</option><option>45 minutes</option><option>1 heure</option></select></label><label><span><b>Réservation instantanée</b><small>Confirmer sans validation manuelle</small></span><input type="checkbox" checked data-sync="instant"></label><label><span><b>Préavis minimum</b><small>Temps avant une réservation</small></span><select data-sync="notice"><option>2 heures</option><option>4 heures</option><option>24 heures</option></select></label></aside>
@@ -211,14 +212,14 @@
       <section class="host-panel" data-host-panel="reservations" hidden>
         <header class="cockpit-head reservations-head"><div><p>Réservations</p><h1>Chaque arrivée,<br>sans angle mort.</h1><span>Voyageurs, horaires, paiement et préparation réunis au même endroit.</span></div><div><button type="button" data-export-reservations>Exporter la semaine</button></div></header>
         <section class="reservation-command">
-          <div class="reservation-command-kpis"><article><span>Aujourd’hui</span><b class="num">2</b><small>prochaine à 16 h</small></article><article><span>À venir</span><b class="num">8</b><small>7 prochains jours</small></article><article><span>À préparer</span><b class="num">1</b><small>action nécessaire</small></article><article><span>Revenus confirmés</span><b class="num">486 €</b><small>après commission</small></article></div>
+          <div class="reservation-command-kpis"><article><span>Aujourd’hui</span><b class="num">2</b><small>prochaine à 16 h</small></article><article><span>À venir</span><b class="num">8</b><small>7 prochains jours</small></article><article><span>À préparer</span><b class="num">1</b><small>action nécessaire</small></article><article><span>Revenus confirmés</span><b class="num">486 €</b><small>après commission</small></article></div>
           <div class="reservation-toolbar"><div role="tablist" aria-label="Filtrer les réservations"><button class="active" type="button" data-reservation-filter="upcoming">À venir <i>8</i></button><button type="button" data-reservation-filter="today">Aujourd’hui <i>2</i></button><button type="button" data-reservation-filter="past">Terminées</button></div><label><span class="sr-only">Rechercher une réservation</span><input type="search" placeholder="Nom, date ou format…" data-reservation-search></label></div>
           <div class="reservation-layout">
             <div class="reservation-list" id="hostReservationList" aria-live="polite"></div>
             <aside class="reservation-detail" id="hostReservationDetail" aria-live="polite">
               <header><div><span data-reservation-date>AUJOURD’HUI · 16:00</span><h2>Famille Martin</h2><p data-reservation-ref>Réservation #LTP-2741</p></div><i data-reservation-state>Confirmée</i><button class="reservation-detail-close" type="button" data-close-reservation aria-label="Fermer la réservation">×</button></header>
               <div class="reservation-guests"><span>FM</span><div><b data-reservation-guests>2 adultes · 2 enfants</b><small data-reservation-history>Déjà venus une fois · note voyageur 5/5</small></div></div>
-              <dl><div><dt>Format</dt><dd data-reservation-field="format">Privatisation · 2 h</dd></div><div><dt>Paiement</dt><dd data-reservation-field="payment">68 € payé · 57,80 € net</dd></div><div><dt>Arrivée</dt><dd data-reservation-field="arrival">Portillon côté jardin</dd></div><div><dt>À préparer</dt><dd data-reservation-field="prepare">Parasol + 4 serviettes</dd></div></dl>
+              <dl><div><dt>Format</dt><dd data-reservation-field="format">Privatisation · 2 h</dd></div><div><dt>Paiement</dt><dd data-reservation-field="payment">68 € payé · 57,80 € net</dd></div><div><dt>Arrivée</dt><dd data-reservation-field="arrival">Portillon côté jardin</dd></div><div><dt>À préparer</dt><dd data-reservation-field="prepare">Parasol + 4 serviettes</dd></div></dl>
               <div class="reservation-detail-actions"><button type="button" data-host-view-jump="messages">Écrire à la famille</button><button type="button" data-reservation-ready>Marquer comme prêt</button></div>
             </aside>
           </div>
@@ -227,8 +228,8 @@
 
       <section class="host-panel" data-host-panel="bookings" hidden>
         <header class="cockpit-head"><div><p>Revenus</p><h1>Ce que votre bassin<br>vous rapporte.</h1><span>Montants nets, paiements et prochains virements.</span></div><div><button type="button" data-export-revenue>Exporter</button></div></header>
-        <div class="revenue-kpis"><article><small>CE MOIS</small><b class="num">1 324 €</b><span>+25 % vs juin</span></article><article><small>À VERSER</small><b class="num">486 €</b><span>Mercredi 29 juillet</span></article><article><small>TAUX D’OCCUPATION</small><b class="num">74 %</b><span>22 créneaux réservés</span></article></div>
-        <section class="revenue-detail"><article><header><div><small>6 DERNIERS MOIS</small><h2>Une saison qui monte.</h2></div><b class="num">4 915 €</b></header><div class="revenue-bars" aria-label="Revenus mensuels"><i style="--h:32%"><span>Fév.</span></i><i style="--h:40%"><span>Mars</span></i><i style="--h:53%"><span>Avr.</span></i><i style="--h:66%"><span>Mai</span></i><i style="--h:80%"><span>Juin</span></i><i class="active" style="--h:100%"><span>Juil.</span></i></div></article><aside><h2>Derniers paiements</h2><div><span>Famille Martin<small>Privatisation · 27 juil.</small></span><b>+ 57,80 €</b></div><div><span>Sarah L.<small>4 places · 26 juil.</small></span><b>+ 23,80 €</b></div><div><span>Karim B.<small>Heure bleue · 24 juil.</small></span><b>+ 81,60 €</b></div></aside></section>
+        <div class="revenue-kpis"><article><small>CE MOIS</small><b class="num">1 324 €</b><span>+25 % vs juin</span></article><article><small>À VERSER</small><b class="num">486 €</b><span>Mercredi 29 juillet</span></article><article><small>TAUX D’OCCUPATION</small><b class="num">74 %</b><span>22 créneaux réservés</span></article></div>
+        <section class="revenue-detail"><article><header><div><small>6 DERNIERS MOIS</small><h2>Une saison qui monte.</h2></div><b class="num">4 915 €</b></header><div class="revenue-bars" aria-label="Revenus mensuels"><i style="--h:32%"><span>Fév.</span></i><i style="--h:40%"><span>Mars</span></i><i style="--h:53%"><span>Avr.</span></i><i style="--h:66%"><span>Mai</span></i><i style="--h:80%"><span>Juin</span></i><i class="active" style="--h:100%"><span>Juil.</span></i></div></article><aside><h2>Derniers paiements</h2><div><span>Famille Martin<small>Privatisation · 27 juil.</small></span><b>+ 57,80 €</b></div><div><span>Sarah L.<small>4 places · 26 juil.</small></span><b>+ 23,80 €</b></div><div><span>Inès K.<small>Heure bleue · 24 juil.</small></span><b>+ 81,60 €</b></div></aside></section>
       </section>
 
       <section class="host-panel" data-host-panel="messages" hidden>

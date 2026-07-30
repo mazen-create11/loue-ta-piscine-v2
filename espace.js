@@ -233,13 +233,20 @@ function openConversation(id){
   });
   messageModal.hidden = false;
   document.body.classList.add('conversation-open');
+  // le geste retour doit fermer le fil, pas éjecter l'utilisateur de son espace
+  if(!(window.history.state && window.history.state.ltpThread)) window.history.pushState({ltpThread:true}, '');
   setTimeout(() => document.getElementById('messageInput').focus(), 80);
 }
 
-function closeConversation(){
+function closeConversation(fromPop){
   messageModal.hidden = true;
   document.body.classList.remove('conversation-open');
+  if(!fromPop && window.history.state && window.history.state.ltpThread) window.history.back();
 }
+
+window.addEventListener('popstate', () => {
+  if(!messageModal.hidden) closeConversation(true);
+});
 
 document.addEventListener('click', event => {
   const view = event.target.closest('[data-space-view]');
@@ -478,16 +485,26 @@ function renderBookings(){
     titre.textContent = entry.name;
     const detail = document.createElement('p');
     const qui = /journée|privat/.test(entry.mode || '') ? 'participants' : 'baigneurs';
-    detail.textContent = entry.time + ' · ' + entry.persons + ' ' + qui + ' · ' + entry.location + ' · ' + entry.total + ' €';
+    detail.textContent = entry.time + ' · ' + entry.persons + ' ' + qui + ' · ' + entry.location + ' · ' + entry.total + ' €';
     copy.append(etat, titre, detail);
     const photo = document.createElement('img');
     photo.src = entry.image;
     photo.alt = entry.name;
     photo.loading = 'lazy';
+    // « Voir ma réservation » doit montrer LA réservation (récap complet), pas la fiche publique
+    const params = new URLSearchParams({id:entry.id, total:entry.total, persons:entry.persons, mode:entry.mode || '', date:entry.date || '', time:entry.time || ''});
+    if(entry.onsite) params.set('paiement', 'place');
     const lien = document.createElement('a');
-    lien.href = 'fiche.html?id=' + entry.id;
+    lien.href = 'confirmation.html?' + params.toString();
     lien.textContent = 'Voir ma réservation';
-    ticket.append(copy, photo, lien);
+    const revoir = document.createElement('a');
+    revoir.className = 'ghost';
+    revoir.href = 'fiche.html?id=' + entry.id;
+    revoir.textContent = 'Revoir l’annonce';
+    const actions = document.createElement('div');
+    actions.className = 'reservation-ticket-actions';
+    actions.append(lien, revoir);
+    ticket.append(copy, photo, actions);
     list.appendChild(ticket);
   });
 }

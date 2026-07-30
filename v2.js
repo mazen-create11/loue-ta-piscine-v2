@@ -467,7 +467,7 @@ document.addEventListener('keydown', event => { if(event.key === 'Escape'){ clos
 
     document.getElementById('simOpenVal').textContent = open;
     document.getElementById('simPrivVal').textContent = priv;
-    document.getElementById('simPriceVal').textContent = price.toLocaleString('fr-FR', {minimumFractionDigits:price % 1 ? 2 : 0}) + ' €';
+    document.getElementById('simPriceVal').textContent = price.toLocaleString('fr-FR', {minimumFractionDigits:price % 1 ? 2 : 0}) + ' €';
     document.getElementById('simSeatsVal').textContent = seats;
     document.getElementById('simTotal').textContent = money(net);
 
@@ -527,9 +527,9 @@ document.addEventListener('keydown', event => { if(event.key === 'Escape'){ clos
   const answerFor = value => {
     const query = value.toLocaleLowerCase('fr');
     if(/bonjour|salut|hello|aide|aider/.test(query)) return ['Bien sûr. Dites-moi simplement qui vient, quand, et l’ambiance souhaitée. Je vous guide sans choisir à votre place.'];
-    if(/aujourd|maintenant|ce soir|disponib|créneau|creneau/.test(query)) return ['Quatre créneaux sont encore visibles aujourd’hui autour d’Aix, dès 6 €. Je peux ouvrir la recherche directement sur les disponibilités.', {label:'Voir les créneaux', run:() => { close(); document.querySelector('.availability-rail')?.scrollIntoView({behavior:'smooth', block:'center'}); }}];
+    if(/aujourd|maintenant|ce soir|disponib|créneau|creneau/.test(query)) return ['Quatre créneaux sont encore visibles aujourd’hui autour d’Aix, dès 6 €. Je peux ouvrir la recherche directement sur les disponibilités.', {label:'Voir les créneaux', run:() => { close(); document.querySelector('.availability-rail')?.scrollIntoView({behavior:'smooth', block:'center'}); }}];
     if(/famille|enfant|bébé|bebe|petit/.test(query)) return ['Pour une famille, je regarde d’abord la profondeur, l’ombre, les règles enfants et les avis. Vous pourrez ensuite ajuster la date et le nombre de baigneurs.', {label:'Lancer la recherche famille', run:() => { close(); openSearch('place'); }}];
-    if(/prix|cher|budget|euro|€|co[ûu]te|combien|tarif/.test(query)) return ['Les séances ouvertes commencent à 6 € par personne. Le prix affiché inclut déjà les frais de service : aucun supplément n’est ajouté à la dernière étape.', {label:'Voir les petits prix', run:() => { close(); document.querySelector('[data-detail="verger"]')?.scrollIntoView({behavior:'smooth', block:'center'}); }}];
+    if(/prix|cher|budget|euro|€|co[ûu]te|combien|tarif/.test(query)) return ['Les séances ouvertes commencent à 6 € par personne. Le prix affiché inclut déjà les frais de service : aucun supplément n’est ajouté à la dernière étape.', {label:'Voir les petits prix', run:() => { close(); document.querySelector('[data-detail="verger"]')?.scrollIntoView({behavior:'smooth', block:'center'}); }}];
     if(/favori|compare|compar/.test(query)) return ['Je peux comparer deux favoris sur le prix total, la durée, la distance, l’accueil des enfants et les équipements. Le choix final reste le vôtre.', {label:'Comparer mes favoris', run:() => { location.href='espace.html?view=favoris'; }}];
     if(/louer|hôte|hote|annonce|piscine à moi|ma piscine/.test(query)) return ['Je peux préparer votre description, améliorer vos photos et proposer des réglages. Rien n’est publié ni envoyé à un voyageur sans votre validation.', {label:'Ouvrir l’espace hôte', run:() => { location.href='hote.html?view=listing'; }}];
     if(/annul|rembours|problème|litige/.test(query)) return ['Si l’hôte annule, la réservation est remboursée. En cas de problème, le versement est suspendu pendant l’examen de la situation.'];
