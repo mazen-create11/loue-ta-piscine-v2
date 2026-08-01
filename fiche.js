@@ -53,7 +53,9 @@ const el = id => document.getElementById(id);
 document.title = listing.name + ' — Loue ta piscine';
 el('ficheLoc').textContent = listing.location + ' · à ' + listing.distance;
 el('ficheName').textContent = listing.name;
-el('ficheDims').textContent = listing.dims;
+el('ficheDims').textContent = listing.dims + (listing.type === 'piscine'
+  ? ' · ' + listing.capacity + ' baigneurs' + (listing.dayCap > listing.capacity ? ' (' + listing.dayCap + ' en journée)' : '')
+  : '');
 el('ficheRating').innerHTML = listing.rating + ' <small>· ' + listing.reviews + ' avis</small>';
 el('ficheDesc').textContent = listing.description;
 
@@ -517,7 +519,8 @@ document.addEventListener('click', ev => {
 
 (function ficheMotion(){
   if(!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const items = document.querySelectorAll('.fiche-gallery,.fiche-content>*,.book-panel');
+  /* jamais .book-panel : son translateY de repli mobile serait écrasé par .is-visible{transform:none} */
+  const items = document.querySelectorAll('.fiche-gallery,.fiche-content>*');
   if(!items.length) return;
   document.body.classList.add('motion-ready');
   const observer = new IntersectionObserver(entries => {
