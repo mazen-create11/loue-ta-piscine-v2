@@ -6,7 +6,7 @@ const listings = [
   {
     id:'micocouliers', type:'piscine', name:'La piscine des Micocouliers', location:'Aix-en-Provence', distance:'12 min',
     image:'assets/famille-bleue-v2.webp',
-    gallery:['assets/famille-bleue-v2.webp','assets/bassin-2.webp','assets/famille-jeux-v2.webp','assets/portillon.webp','assets/provencale.webp'],
+    gallery:['assets/famille-bleue-v2.webp','assets/bassin-2.webp','assets/mico-jardin-crepuscule-v1.webp','assets/mico-transats-doree-v1.webp','assets/portillon.webp'],
     rating:'4,93', reviews:41, price:'dès 7\u00A0€', priceNote:'/pers · séance 2 h', day:'290\u00A0€ la journée', capacity:12, dayCap:15, dayHours:'9 h – 19 h',
     badges:['Séance ouverte'], instant:true, availability:'Aujourd’hui 17 h', moments:['nage','apres-midi','anniversaire','soir'],
     facts:['27 °C','10 × 5 m','Douche','Jardin'],
@@ -24,7 +24,7 @@ const listings = [
   {
     id:'collines', type:'piscine', name:'Le miroir des collines', location:'Cassis', distance:'25 min',
     image:'assets/moderne.webp',
-    gallery:['assets/moderne.webp','assets/hero-bleue.webp','assets/margelle.webp'],
+    gallery:['assets/moderne.webp','assets/collines-debordement-v1.webp','assets/collines-terrasse-v1.webp'],
     rating:'4,88', reviews:26, price:'34\u00A0€', priceNote:'/h · 2 h minimum', day:'250\u00A0€ la journée', capacity:10, dayCap:10, dayHours:'9 h – 19 h',
     badges:['Privatisé'], instant:false, availability:'Demain 10 h', moments:['nage','apres-midi','soir'],
     facts:['Vue dégagée','Débordement','Transats','Parking'],
@@ -42,7 +42,7 @@ const listings = [
   {
     id:'verger', type:'piscine', name:'La piscine du verger', location:'Pertuis', distance:'18 min',
     image:'assets/famille-jeux-v2.webp',
-    gallery:['assets/famille-jeux-v2.webp','assets/familiale.webp','assets/famille-hero-v2.webp'],
+    gallery:['assets/famille-jeux-v2.webp','assets/familiale.webp','assets/verger-jeux-pelouse-v1.webp','assets/verger-gouter-v1.webp'],
     rating:'4,97', reviews:58, price:'dès 6\u00A0€', priceNote:'/pers · séance 2 h', day:'180\u00A0€ la journée', capacity:12, dayCap:12, dayHours:'9 h – 19 h',
     badges:['À la une','Séance ouverte'], instant:true, availability:'Samedi 14 h', moments:['apres-midi','anniversaire'],
     facts:['Jeux d’eau','Pelouse','Coin repas','Douche'],
@@ -60,7 +60,7 @@ const listings = [
   {
     id:'margelles', type:'piscine', name:'Les margelles blondes', location:'Lourmarin', distance:'30 min',
     image:'assets/margelle.webp',
-    gallery:['assets/margelle.webp','assets/hero-bleue.webp','assets/provencale.webp'],
+    gallery:['assets/margelle.webp','assets/margelles-lanternes-v1.webp','assets/margelles-crepuscule-v1.webp'],
     rating:'4,91', reviews:33, price:'12\u00A0€', priceNote:'/pers · créneau du soir', day:'220\u00A0€ la journée', capacity:8, dayCap:8, dayHours:'10 h – 20 h',
     badges:['Heure bleue'], instant:true, availability:'Ce soir 19 h', moments:['soir','nage'],
     facts:['Éclairage','Vue jardin','Transats','Douche'],
@@ -78,7 +78,7 @@ const listings = [
   {
     id:'oliviers', type:'jacuzzi', name:'Le jacuzzi des Oliviers', location:'Marseille 4ᵉ', distance:'8 min',
     image:'assets/jacuzzi-convivial-v3.webp',
-    gallery:['assets/jacuzzi-convivial-v3.webp','assets/jacuzzi-terrasse-v2.webp','assets/spa.webp'],
+    gallery:['assets/jacuzzi-convivial-v3.webp','assets/jacuzzi-terrasse-v2.webp','assets/oliviers-vapeur-v1.webp'],
     rating:'4,85', reviews:19, price:'25\u00A0€', priceNote:'/h · privatisé', day:'160\u00A0€ la journée', capacity:4, dayCap:4, dayHours:'10 h – 20 h',
     badges:['Privatisé'], instant:true, availability:'Ce soir 20 h', moments:['soir','apres-midi'],
     facts:['38 °C','4 places','Peignoirs','Jardin'],
@@ -96,7 +96,7 @@ const listings = [
   {
     id:'bastide', type:'sauna', name:'Le sauna de la bastide', location:'Aix-en-Provence', distance:'15 min',
     image:'assets/sauna-jardin-v3.webp',
-    gallery:['assets/sauna-jardin-v3.webp','assets/sauna-jardin-v2.webp','assets/sauna.webp'],
+    gallery:['assets/sauna-jardin-v3.webp','assets/sauna-jardin-v2.webp','assets/bastide-cedre-interieur-v1.webp'],
     rating:'4,94', reviews:31, price:'18\u00A0€', priceNote:'/h · privatisé', day:'120\u00A0€ la journée', capacity:6, dayCap:6, dayHours:'9 h – 21 h',
     badges:['Paiement sur place'], instant:true, availability:'Dimanche 9 h', moments:['soir','apres-midi'],
     facts:['Cèdre','80 °C','Douche froide','Jardin'],
